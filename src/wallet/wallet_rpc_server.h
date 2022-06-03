@@ -4,7 +4,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#pragma  once 
+#pragma  once
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -51,6 +51,7 @@ namespace tools
         MAP_JON_RPC_WE("sign_transfer",             on_sign_transfer,             wallet_public::COMMAND_SIGN_TRANSFER)
         MAP_JON_RPC_WE("submit_transfer",           on_submit_transfer,           wallet_public::COMMAND_SUBMIT_TRANSFER)
         MAP_JON_RPC_WE("search_for_transactions",   on_search_for_transactions,   wallet_public::COMMAND_RPC_SEARCH_FOR_TRANSACTIONS)
+        MAP_JON_RPC_WE("get_transfers",             on_get_transfers,             wallet_public::COMMAND_RPC_GET_TRANSFERS)
         MAP_JON_RPC_WE("get_restore_info",          on_getwallet_restore_info,    wallet_public::COMMAND_RPC_GET_WALLET_RESTORE_INFO)
         MAP_JON_RPC_WE("get_seed_phrase_info",      on_get_seed_phrase_info,      wallet_public::COMMAND_RPC_GET_SEED_PHRASE_INFO)
         MAP_JON_RPC_WE("get_mining_history",        on_get_mining_history,        wallet_public::COMMAND_RPC_GET_MINING_HISTORY)
@@ -92,8 +93,9 @@ namespace tools
       bool on_sign_transfer(const wallet_public::COMMAND_SIGN_TRANSFER::request& req, wallet_public::COMMAND_SIGN_TRANSFER::response& res, epee::json_rpc::error& er, connection_context& cntx);
       bool on_submit_transfer(const wallet_public::COMMAND_SUBMIT_TRANSFER::request& req, wallet_public::COMMAND_SUBMIT_TRANSFER::response& res, epee::json_rpc::error& er, connection_context& cntx);
       bool on_search_for_transactions(const wallet_public::COMMAND_RPC_SEARCH_FOR_TRANSACTIONS::request& req, wallet_public::COMMAND_RPC_SEARCH_FOR_TRANSACTIONS::response& res, epee::json_rpc::error& er, connection_context& cntx);
+      bool on_get_transfers(const wallet_public::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_public::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx = NULL);
       bool on_get_mining_history(const wallet_public::COMMAND_RPC_GET_MINING_HISTORY::request& req, wallet_public::COMMAND_RPC_GET_MINING_HISTORY::response& res, epee::json_rpc::error& er, connection_context& cntx);
-      
+
       bool on_contracts_send_proposal(const wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx);
       bool on_contracts_accept_proposal(const wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx);
       bool on_contracts_get_all(const wallet_public::COMMAND_CONTRACTS_GET_ALL::request& req, wallet_public::COMMAND_CONTRACTS_GET_ALL::response& res, epee::json_rpc::error& er, connection_context& cntx);

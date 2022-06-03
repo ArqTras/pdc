@@ -747,7 +747,7 @@ namespace tools
     return true;
   }
 //test
-bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
+bool wallet_rpc_server::on_get_transfers(const wallet_public::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_public::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
  {
    if (!m_wallet) return not_open(er);
 
