@@ -37,7 +37,7 @@ using namespace epee;
           er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR; \
           er.message = "WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR"; \
           return false; \
-        } 
+        }
 
 
 namespace tools
@@ -157,26 +157,26 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::handle_http_request(const epee::net_utils::http::http_request_info& query_info, epee::net_utils::http::http_response_info& response, connection_context& m_conn_context)
   {
-    response.m_response_code = 200; 
-    response.m_response_comment = "Ok"; 
-    std::string reference_stub; 
-    bool call_found = false; 
+    response.m_response_code = 200;
+    response.m_response_comment = "Ok";
+    std::string reference_stub;
+    bool call_found = false;
     if (m_deaf)
     {
-      response.m_response_code = 500; 
-      response.m_response_comment = "Internal Server Error"; 
+      response.m_response_code = 500;
+      response.m_response_comment = "Internal Server Error";
       return true;
     }
     if (!handle_http_request_map(query_info, response, m_conn_context, call_found, reference_stub) && response.m_response_code == 200)
     {
-      response.m_response_code = 500; 
-      response.m_response_comment = "Internal Server Error"; 
+      response.m_response_code = 500;
+      response.m_response_comment = "Internal Server Error";
       return true;
     }
     if (!call_found)
     {
-      response.m_response_code = 404; 
-      response.m_response_comment = "Not Found"; 
+      response.m_response_code = 404;
+      response.m_response_comment = "Not Found";
       return true;
     }
     return true;
@@ -225,7 +225,7 @@ namespace tools
       m_wallet.get_utxo_distribution(distribution);
       for (const auto& ent : distribution)
         res.utxo_distribution.push_back(currency::print_money_brief(ent.first) + ":" + std::to_string(ent.second));
-      
+
       res.current_height = m_wallet.get_top_block_height();
       return true;
     }
@@ -269,7 +269,7 @@ namespace tools
 
       if (req.offset == 0 && !req.exclude_unconfirmed)
         m_wallet.get_unconfirmed_transfers(res.transfers, req.exclude_mining_txs);
-      
+
       bool start_from_end = true;
       if (req.order == ORDER_FROM_BEGIN_TO_END)
       {
@@ -317,7 +317,7 @@ namespace tools
     }
     bool wrap = false;
     std::vector<currency::tx_destination_entry>& dsts = ctp.dsts;
-    for (auto it = req.destinations.begin(); it != req.destinations.end(); it++) 
+    for (auto it = req.destinations.begin(); it != req.destinations.end(); it++)
     {
       currency::tx_destination_entry de;
       de.addr.resize(1);
@@ -388,7 +388,7 @@ namespace tools
       {
         currency::create_and_add_tx_payer_to_container_from_address(extra, m_wallet.get_account().get_keys().account_address, m_wallet.get_top_block_height(), m_wallet.get_core_runtime_config());
       }
-      
+
       if (!req.hide_receiver)
       {
         for (auto& d : dsts)
@@ -419,19 +419,19 @@ namespace tools
     {
       er.code = WALLET_RPC_ERROR_CODE_DAEMON_IS_BUSY;
       er.message = e.what();
-      return false; 
+      return false;
     }
     catch (const std::exception& e)
     {
       er.code = WALLET_RPC_ERROR_CODE_GENERIC_TRANSFER_ERROR;
       er.message = e.what();
-      return false; 
+      return false;
     }
     catch (...)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
       er.message = "WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR";
-      return false; 
+      return false;
     }
     return true;
   }
@@ -627,8 +627,8 @@ namespace tools
       {
         res.tx_hash = string_tools::pod_to_hex(currency::get_transaction_hash(tx));
       }
-      
-      
+
+
     }
     catch (const tools::error::daemon_busy& e)
     {
@@ -682,7 +682,7 @@ namespace tools
       return false;
     }
 
-    WALLET_RPC_BEGIN_TRY_ENTRY();    
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     currency::transaction tx = AUTO_VAL_INIT(tx);
     m_wallet.submit_transfer(tx_signed_blob, tx);
     res.tx_hash = epee::string_tools::pod_to_hex(currency::get_transaction_hash(tx));
@@ -719,12 +719,12 @@ namespace tools
           return true; // continue
         }
       }
-    
+
       if (wti.is_income && req.in)
         res.in.push_back(wti);
 
       if (!wti.is_income && req.out)
-        res.out.push_back(wti);   
+        res.out.push_back(wti);
 
       return true; // continue
     }, false /* enumerate_forward */);
@@ -746,20 +746,89 @@ namespace tools
     m_wallet.get_mining_history(res, req.v);
     return true;
   }
+//test
+bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res, epee::json_rpc::error& er, const connection_context *ctx)
+ {
+   if (!m_wallet) return not_open(er);
+
+   uint64_t min_height = 0, max_height = CRYPTONOTE_MAX_BLOCK_NUMBER;
+   if (req.filter_by_height)
+   {
+     min_height = req.min_height;
+     max_height = req.max_height <= max_height ? req.max_height : max_height;
+   }
+
+   boost::optional<uint32_t> account_index = req.account_index;
+   std::set<uint32_t> subaddr_indices = req.subaddr_indices;
+   if (req.all_accounts)
+   {
+     account_index = boost::none;
+     subaddr_indices.clear();
+   }
+
+   if (req.in)
+   {
+     std::list<std::pair<crypto::hash, tools::wallet2::payment_details>> payments;
+     m_wallet->get_payments(payments, min_height, max_height, account_index, subaddr_indices);
+     for (std::list<std::pair<crypto::hash, tools::wallet2::payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+       res.in.push_back(wallet_rpc::transfer_entry());
+       fill_transfer_entry(res.in.back(), i->second.m_tx_hash, i->first, i->second);
+     }
+   }
+
+   if (req.out)
+   {
+     std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>> payments;
+     m_wallet->get_payments_out(payments, min_height, max_height, account_index, subaddr_indices);
+     for (std::list<std::pair<crypto::hash, tools::wallet2::confirmed_transfer_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+       res.out.push_back(wallet_rpc::transfer_entry());
+       fill_transfer_entry(res.out.back(), i->first, i->second);
+     }
+   }
+
+   if (req.pending || req.failed) {
+     std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>> upayments;
+     m_wallet->get_unconfirmed_payments_out(upayments, account_index, subaddr_indices);
+     for (std::list<std::pair<crypto::hash, tools::wallet2::unconfirmed_transfer_details>>::const_iterator i = upayments.begin(); i != upayments.end(); ++i) {
+       const tools::wallet2::unconfirmed_transfer_details &pd = i->second;
+       bool is_failed = pd.m_state == tools::wallet2::unconfirmed_transfer_details::failed;
+       if (!((req.failed && is_failed) || (!is_failed && req.pending)))
+         continue;
+       std::list<wallet_rpc::transfer_entry> &entries = is_failed ? res.failed : res.pending;
+       entries.push_back(wallet_rpc::transfer_entry());
+       fill_transfer_entry(entries.back(), i->first, i->second);
+     }
+   }
+
+   if (req.pool)
+   {
+     m_wallet->update_pool_state();
+
+     std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>> payments;
+     m_wallet->get_unconfirmed_payments(payments, account_index, subaddr_indices);
+     for (std::list<std::pair<crypto::hash, tools::wallet2::pool_payment_details>>::const_iterator i = payments.begin(); i != payments.end(); ++i) {
+       res.pool.push_back(wallet_rpc::transfer_entry());
+       fill_transfer_entry(res.pool.back(), i->first, i->second);
+     }
+   }
+
+   return true;
+ }
+
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_contracts_send_proposal(const wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx)
   {
-    WALLET_RPC_BEGIN_TRY_ENTRY();       
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     currency::transaction tx = AUTO_VAL_INIT(tx);
     currency::transaction template_tx = AUTO_VAL_INIT(template_tx);
-    m_wallet.send_escrow_proposal(req, tx, template_tx);  
+    m_wallet.send_escrow_proposal(req, tx, template_tx);
     return true;
     WALLET_RPC_CATCH_TRY_ENTRY();
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_contracts_accept_proposal(const wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx)
   {
-    WALLET_RPC_BEGIN_TRY_ENTRY(); 
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     m_wallet.accept_proposal(req.contract_id, req.acceptance_fee);
     return true;
     WALLET_RPC_CATCH_TRY_ENTRY();
@@ -767,7 +836,7 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_contracts_get_all(const wallet_public::COMMAND_CONTRACTS_GET_ALL::request& req, wallet_public::COMMAND_CONTRACTS_GET_ALL::response& res, epee::json_rpc::error& er, connection_context& cntx)
   {
-    WALLET_RPC_BEGIN_TRY_ENTRY();    
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     tools::wallet2::escrow_contracts_container ecc;
     m_wallet.get_contracts(ecc);
     res.contracts.resize(ecc.size());
@@ -784,7 +853,7 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_contracts_release(const wallet_public::COMMAND_CONTRACTS_RELEASE::request& req, wallet_public::COMMAND_CONTRACTS_RELEASE::response& res, epee::json_rpc::error& er, connection_context& cntx)
   {
-    WALLET_RPC_BEGIN_TRY_ENTRY();    
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     m_wallet.finish_contract(req.contract_id, req.release_type);
     return true;
     WALLET_RPC_CATCH_TRY_ENTRY();
@@ -800,14 +869,14 @@ namespace tools
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_contracts_accept_cancel(const wallet_public::COMMAND_CONTRACTS_ACCEPT_CANCEL::request& req, wallet_public::COMMAND_CONTRACTS_ACCEPT_CANCEL::response& res, epee::json_rpc::error& er, connection_context& cntx)
   {
-    WALLET_RPC_BEGIN_TRY_ENTRY();    
+    WALLET_RPC_BEGIN_TRY_ENTRY();
     m_wallet.accept_cancel_contract(req.contract_id);
     return true;
     WALLET_RPC_CATCH_TRY_ENTRY();
   }
   //------------------------------------------------------------------------------------------------------------------------------
   bool wallet_rpc_server::on_marketplace_get_my_offers(const wallet_public::COMMAND_MARKETPLACE_GET_MY_OFFERS::request& req, wallet_public::COMMAND_MARKETPLACE_GET_MY_OFFERS::response& res, epee::json_rpc::error& er, connection_context& cntx)
-  { 
+  {
     WALLET_RPC_BEGIN_TRY_ENTRY();
     m_wallet.get_actual_offers(res.offers);
     size_t offers_count_before_filtering = res.offers.size();
