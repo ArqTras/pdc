@@ -16,22 +16,22 @@
 #define CURRENCY_GENESIS_NONCE                          (CURRENCY_FORMATION_VERSION + 101011010121) //bender's nightmare
 
 
-                                                        
+
 #define CURRENCY_MAX_BLOCK_NUMBER                       500000000
 #define CURRENCY_MAX_BLOCK_SIZE                         500000000  // block header blob limit, never used!
 #define CURRENCY_TX_MAX_ALLOWED_INPUTS                  256        // limited primarily by asset surjection proof
 #define CURRENCY_TX_MAX_ALLOWED_OUTS                    2000
 #define CURRENCY_TX_MIN_ALLOWED_OUTS                    2      // effective starting HF4 Zarcanum
-#define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           0xc5   // addresses start with 'Zx'
-#define CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x3678 // integrated addresses start with 'iZ'
-#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x36f8 // integrated addresses start with 'iZ' (new format)
-#define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0x98c8 // auditable addresses start with 'aZx'
-#define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x8a49 // auditable integrated addresses start with 'aiZX'
+#define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           0x1989   // addresses start with 'Zx' Px
+#define CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x32f7 // integrated addresses start with 'iZ' iP
+#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x32f7 // integrated addresses start with 'iZ' (new format) iP
+#define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0x54c7 // auditable addresses start with 'aZx' aPx
+#define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x1d87c9 // auditable integrated addresses start with 'aiZX' aiPX
 #define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              10
 #define CURRENT_TRANSACTION_VERSION                     2
 #define TRANSACTION_VERSION_INITAL                      0
 #define TRANSACTION_VERSION_PRE_HF4                     1
-#define TRANSACTION_VERSION_POST_HF4                    2 
+#define TRANSACTION_VERSION_POST_HF4                    2
 #define HF1_BLOCK_MAJOR_VERSION                         1
 #define HF3_BLOCK_MAJOR_VERSION                         2
 #define HF3_BLOCK_MINOR_VERSION                         0
@@ -44,15 +44,15 @@
 #define CURRENT_BLOCK_MINOR_VERSION                     0
 #define CURRENCY_BLOCK_FUTURE_TIME_LIMIT                60*60*2
 #define CURRENCY_POS_BLOCK_FUTURE_TIME_LIMIT            60*20
-                                                        
+
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
-                                                        
+
 #define POS_START_HEIGHT                                0
-                                                        
+
 #define CURRENCY_REWARD_BLOCKS_WINDOW                   400
 #define CURRENCY_BLOCK_GRANTED_FULL_REWARD_ZONE         125000 //size of block (bytes) after which reward for block calculated using block size
 #define CURRENCY_COINBASE_BLOB_RESERVED_SIZE            1100
-#define CURRENCY_MAX_TRANSACTION_BLOB_SIZE              (CURRENCY_BLOCK_GRANTED_FULL_REWARD_ZONE - CURRENCY_COINBASE_BLOB_RESERVED_SIZE*2) 
+#define CURRENCY_MAX_TRANSACTION_BLOB_SIZE              (CURRENCY_BLOCK_GRANTED_FULL_REWARD_ZONE - CURRENCY_COINBASE_BLOB_RESERVED_SIZE*2)
 #define CURRENCY_FREE_TX_MAX_BLOB_SIZE                  1024 // soft txpool-based limit for free-of-charge txs (such as BC_OFFERS_SERVICE_INSTRUCTION_DEL)
 #define CURRENCY_DISPLAY_DECIMAL_POINT                  12
 
@@ -101,8 +101,8 @@
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          2000      //by default, blocks ids count in synchronizing
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              200       //by default, blocks count in blocks downloading
 #define BLOCKS_SYNCHRONIZING_DEFAULT_SIZE               2000000   //by default keep synchronizing packets not bigger then 2MB
-#define CURRENCY_PROTOCOL_MAX_BLOCKS_REQUEST_COUNT      500     
-#define CURRENCY_PROTOCOL_MAX_TXS_REQUEST_COUNT         500    
+#define CURRENCY_PROTOCOL_MAX_BLOCKS_REQUEST_COUNT      500
+#define CURRENCY_PROTOCOL_MAX_TXS_REQUEST_COUNT         500
 
 
 #define CURRENCY_ALT_BLOCK_LIVETIME_COUNT               (CURRENCY_BLOCKS_PER_DAY*7)//one week
@@ -111,17 +111,17 @@
 
 
 #ifndef TESTNET
-#define P2P_DEFAULT_PORT                                11121
-#define RPC_DEFAULT_PORT                                11211
-#define STRATUM_DEFAULT_PORT                            11777
+#define P2P_DEFAULT_PORT                                19121
+#define RPC_DEFAULT_PORT                                19211
+#define STRATUM_DEFAULT_PORT                            19777
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #define DIFFICULTY_POS_STARTER                          1
-#else 
-#define P2P_DEFAULT_PORT                                (11211 + CURRENCY_FORMATION_VERSION)
-#define RPC_DEFAULT_PORT                                12111
-#define STRATUM_DEFAULT_PORT                            11888
-#define STRARUM_DEFAULT_PORT                            51113
+#else
+#define P2P_DEFAULT_PORT                                (19211 + CURRENCY_FORMATION_VERSION)
+#define RPC_DEFAULT_PORT                                19111
+#define STRATUM_DEFAULT_PORT                            19888
+#define STRARUM_DEFAULT_PORT                            59113
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
 #define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
 #define DIFFICULTY_POS_STARTER                          1
@@ -152,7 +152,7 @@
 //PoS definitions
 #define POS_SCAN_WINDOW                                 60*10 //seconds // 10 minutes
 #define POS_SCAN_STEP                                   15    //seconds
-#define POS_MAX_ACTUAL_TIMESTAMP_TO_MINED               (POS_SCAN_WINDOW+100)                       
+#define POS_MAX_ACTUAL_TIMESTAMP_TO_MINED               (POS_SCAN_WINDOW+100)
 
 #define POS_STARTER_KERNEL_HASH                         "00000000000000000006382a8d8f94588ce93a1351924f6ccb9e07dd287c6e4b"
 #define POS_MODFIFIER_INTERVAL                          10
@@ -179,7 +179,7 @@
 
 #define WALLET_FILE_MAX_KEYS_SIZE                       10000 //
 #define WALLET_BRAIN_DATE_OFFSET                        1543622400
-#define WALLET_BRAIN_DATE_QUANTUM                       604800 //by last word we encode a number of week since launch of the project AND password flag, 
+#define WALLET_BRAIN_DATE_QUANTUM                       604800 //by last word we encode a number of week since launch of the project AND password flag,
                                                                //which let us to address tools::mnemonic_encoding::NUMWORDS weeks after project launch
                                                                //which is about 15 years
 #define WALLET_BRAIN_DATE_MAX_WEEKS_COUNT               800
@@ -193,9 +193,9 @@
 
 
 
-#define CURRENCY_NAME_ABR                               "ZANO"
-#define CURRENCY_NAME_BASE                              "Zano"
-#define CURRENCY_NAME_SHORT_BASE                        "Zano"
+#define CURRENCY_NAME_ABR                               "PDC"
+#define CURRENCY_NAME_BASE                              "Pdc"
+#define CURRENCY_NAME_SHORT_BASE                        "Pdc"
 #ifndef TESTNET
 #define CURRENCY_NAME                                   CURRENCY_NAME_BASE
 #define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE
@@ -205,7 +205,7 @@
 #endif
 
 //premine
-#define PREMINE_AMOUNT                                  (17517203000000000000U) // 13827203.0 reserved for coinswap, 3690000.0 - premine  
+#define PREMINE_AMOUNT                                  (17517203000000000000U) // 13827203.0 reserved for coinswap, 3690000.0 - premine
 
 //alias registration wallet
 #define ALIAS_REWARDS_ACCOUNT_SPEND_PUB_KEY             "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
@@ -213,7 +213,7 @@
 #define ALIAS_REWARDS_ACCOUNT_VIEW_SEC_KEY              "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
 
 #define ALIAS_MINIMUM_PUBLIC_SHORT_NAME_ALLOWED         6
-#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "37947f7b6a5268c5d0a48bde73d7a426f0b5f24648f74024279540207dc70031" 
+#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "37947f7b6a5268c5d0a48bde73d7a426f0b5f24648f74024279540207dc70031"
 
 
 #define ALIAS_NAME_MAX_LEN                              255
@@ -229,7 +229,7 @@
 
 #define CURRENCY_POOLDATA_FOLDERNAME_PREFIX             "poolstate_"
 #define CURRENCY_POOLDATA_FOLDERNAME_SUFFIX             "_v1"
-#define CURRENCY_BLOCKCHAINDATA_FOLDERNAME_PREFIX       "blockchain_" 
+#define CURRENCY_BLOCKCHAINDATA_FOLDERNAME_PREFIX       "blockchain_"
 #define CURRENCY_BLOCKCHAINDATA_FOLDERNAME_SUFFIX       "_v2"
 
 #define P2P_NET_DATA_FILENAME                           "p2pstate.bin"
@@ -265,13 +265,13 @@
 /////// Hard forks setup //////////////////////////////
 #ifndef TESTNET
 // Mainnet
-#define ZANO_HARDFORK_01_AFTER_HEIGHT                   194624    // 2019-09-21 20:25:16
-#define ZANO_HARDFORK_02_AFTER_HEIGHT                   999999    // 2021-04-05 09:11:45
-#define ZANO_HARDFORK_03_AFTER_HEIGHT                   1082577   // 2021-06-01 23:28:10
-#define ZANO_HARDFORK_04_AFTER_HEIGHT                   2555000   // 2024-03-21 11:49:55
-#define ZANO_HARDFORK_04_TIMESTAMP_ACTUAL               1711021795ull // block 2555000, 2024-03-21 11:49:55 UTC
-#define ZANO_HARDFORK_05_AFTER_HEIGHT                   999999999999999999  
-#define ZANO_HARDFORK_05_MIN_BUILD_VER                  354
+#define ZANO_HARDFORK_01_AFTER_HEIGHT                   20    // 2019-09-21 20:25:16
+#define ZANO_HARDFORK_02_AFTER_HEIGHT                   40    // 2021-04-05 09:11:45
+#define ZANO_HARDFORK_03_AFTER_HEIGHT                   60   // 2021-06-01 23:28:10
+#define ZANO_HARDFORK_04_AFTER_HEIGHT                   100   // 2024-03-21 11:49:55
+#define ZANO_HARDFORK_04_TIMESTAMP_ACTUAL               1712800000ull // block 100, 2024-03-21 11:49:55 UTC
+#define ZANO_HARDFORK_05_AFTER_HEIGHT                   999999999999999999
+#define ZANO_HARDFORK_05_MIN_BUILD_VER                  3
 #else
 // Testnet
 #define ZANO_HARDFORK_01_AFTER_HEIGHT                   0
@@ -300,11 +300,11 @@ static_assert(PREMINE_AMOUNT / WALLET_MAX_ALLOWED_OUTPUT_AMOUNT < CURRENCY_MINER
 
 #define CURRENCY_RELAY_TXS_MAX_COUNT                    5
 
-#ifndef TESTNET
-  #define WALLET_ASSETS_WHITELIST_URL                     "https://api.zano.org/assets_whitelist.json"
-#else
-  #define WALLET_ASSETS_WHITELIST_URL                     "https://api.zano.org/assets_whitelist_testnet.json"
-#endif
+//#ifndef TESTNET
+//  #define WALLET_ASSETS_WHITELIST_URL                     "https://api.zano.org/assets_whitelist.json"
+//#else
+//  #define WALLET_ASSETS_WHITELIST_URL                     "https://api.zano.org/assets_whitelist_testnet.json"
+//#endif
 
 
 #define WALLET_ASSETS_WHITELIST_VALIDATION_PUBLIC_KEY   "" //TODO@#@

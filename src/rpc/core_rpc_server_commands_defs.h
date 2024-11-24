@@ -55,7 +55,7 @@ namespace currency
   };
 
 
-  struct update_alias_rpc_details 
+  struct update_alias_rpc_details
   {
     std::string old_address;
     std::string alias;
@@ -154,7 +154,7 @@ namespace currency
 
   struct COMMAND_RPC_GET_ASSETS_LIST
   {
-    DOC_COMMAND("Return list of assets registered in Zano blockchain");
+    DOC_COMMAND("Return list of assets registered in Pdc blockchain");
 
     struct request
     {
@@ -174,7 +174,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(status)                     DOC_DSCR("Status code of operation, OK if success")     DOC_EXMP(API_RETURN_CODE_OK)     DOC_END
-        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Zano blockchain")     DOC_EXMP_AUTO(1)     DOC_END
+        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Pdc blockchain")     DOC_EXMP_AUTO(1)     DOC_END
       END_KV_SERIALIZE_MAP()
     };
   };
@@ -252,7 +252,7 @@ namespace currency
       END_KV_SERIALIZE_MAP()
     };
   };
-  
+
 
   template<class t_block_complete_entry>
   struct COMMAND_RPC_GET_BLOCKS_FAST_T
@@ -287,7 +287,7 @@ namespace currency
 
   typedef COMMAND_RPC_GET_BLOCKS_FAST_T<block_complete_entry> COMMAND_RPC_GET_BLOCKS_FAST;
   typedef COMMAND_RPC_GET_BLOCKS_FAST_T<block_direct_data_entry> COMMAND_RPC_GET_BLOCKS_DIRECT;
-  
+
   //-----------------------------------------------
   struct COMMAND_RPC_GET_TRANSACTIONS
   {
@@ -345,7 +345,7 @@ namespace currency
   struct COMMAND_RPC_FIND_OUTS_IN_RECENT_BLOCKS
   {
     DOC_COMMAND("Retrieves information about outputs in recent blocks that are targeted for the given address with the corresponding secret view key.")
-  
+
     static constexpr uint64_t blocks_limit_default = 5;
 
     struct request
@@ -445,7 +445,7 @@ namespace currency
   struct COMMAND_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES
   {
     DOC_COMMAND("Obtain global outputs' indexes for the given txs.")
-    
+
     struct request
     {
       std::list<crypto::hash> txids;
@@ -545,9 +545,9 @@ namespace currency
     };
 
 
-#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_COINBASE                       0x0000000000000001LL 
-#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_NOT_ALLOWED                    0x0000000000000002LL 
-#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_POS_COINBASE                   0x0000000000000004LL 
+#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_COINBASE                       0x0000000000000001LL
+#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_NOT_ALLOWED                    0x0000000000000002LL
+#define RANDOM_OUTPUTS_FOR_AMOUNTS_FLAGS_POS_COINBASE                   0x0000000000000004LL
 
 #pragma pack (push, 1)
     struct out_entry
@@ -611,7 +611,7 @@ namespace currency
       std::vector<offsets_distribution> amounts;
       uint64_t            height_upper_limit; // if nonzero, all the decoy outputs must be either older than, or the same age as this height
       bool                use_forced_mix_outs;
-      uint64_t            coinbase_percents;     //from 0 to 100, estimate percents of coinbase outputs included in decoy sets  
+      uint64_t            coinbase_percents;     //from 0 to 100, estimate percents of coinbase outputs included in decoy sets
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(amounts)                    DOC_DSCR("List of amount distributions specifying where to look for decoys, based on old bare outputs or ZC outputs.") DOC_EXMP_AUTO(1) DOC_END
         KV_SERIALIZE(height_upper_limit)         DOC_DSCR("Maximum blockchain height from which decoys can be taken. If nonzero, decoys must be at this height or older.") DOC_EXMP(2555000) DOC_END
@@ -815,7 +815,7 @@ namespace currency
     uint64_t tx_process_attachment;
     uint64_t tx_process_inputs;
     uint64_t tx_push_global_index;
-    uint64_t tx_check_exist;  
+    uint64_t tx_check_exist;
     uint64_t tx_append_time;
     uint64_t tx_append_rl_wait;
     uint64_t tx_append_is_expired;
@@ -826,7 +826,7 @@ namespace currency
 
 
     uint64_t tx_store_db;
-    
+
     uint64_t tx_check_inputs_prefix_hash;
     uint64_t tx_check_inputs_attachment_check;
     uint64_t tx_check_inputs_loop;
@@ -845,7 +845,7 @@ namespace currency
     uint64_t tx_count;
     uint64_t writer_tx_count;
 
-   
+
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(block_processing_time_0)
       KV_SERIALIZE(block_processing_time_1)
@@ -871,7 +871,7 @@ namespace currency
       KV_SERIALIZE(tx_store_db)
       KV_SERIALIZE(tx_print_log)
       KV_SERIALIZE(tx_prapare_append)
-      KV_SERIALIZE(tx_mixin_count)      
+      KV_SERIALIZE(tx_mixin_count)
 
       KV_SERIALIZE(tx_check_inputs_prefix_hash)
       KV_SERIALIZE(tx_check_inputs_attachment_check)
@@ -997,7 +997,7 @@ namespace currency
       uint64_t transactions_cnt_per_day;
       uint64_t transactions_volume_per_day;
       nodetool::maintainers_info_external mi;
-      uint64_t pos_sequence_factor; 
+      uint64_t pos_sequence_factor;
       uint64_t pow_sequence_factor;
       uint64_t last_pow_timestamp;
       uint64_t last_pos_timestamp;
@@ -1076,7 +1076,7 @@ namespace currency
         KV_SERIALIZE(expiration_median_timestamp)DOC_DSCR("Median of timestamps of the last N blocks, used to determine the expiration status of transactions. This information is only provided if the COMMAND_RPC_GET_INFO_FLAG_EXPIRATIONS_MEDIAN flag is set.") DOC_EXMP(1719585827) DOC_END
       END_KV_SERIALIZE_MAP()
     };
-  };    
+  };
   //-----------------------------------------------
   struct COMMAND_RPC_STOP_MINING
   {
@@ -1146,7 +1146,7 @@ namespace currency
       std::string wallet_address;
       std::string stakeholder_address;           // address for stake return (PoS blocks)
       pos_entry pe;                              // for PoS blocks
-      bool pos_block;                            // is pos block 
+      bool pos_block;                            // is pos block
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_BLOB_AS_HEX_STRING(explicit_transaction) DOC_DSCR("A transaction blob that must be explicitly included in the block.") DOC_EXMP("5fa8eaaf231a305053260ff91d69c6ef1ecbd0f5") DOC_END
@@ -1193,7 +1193,7 @@ namespace currency
     DOC_COMMAND("Adds new block to the blockchain. Request should contain one string with hex-encoded block blob.");
 
     typedef std::vector<std::string> request;
-    
+
     struct response
     {
       std::string status;
@@ -1203,7 +1203,7 @@ namespace currency
       END_KV_SERIALIZE_MAP()
     };
   };
-  
+
   //-----------------------------------------------
 
   struct COMMAND_RPC_SUBMITBLOCK2
@@ -1246,7 +1246,7 @@ namespace currency
       std::string hash;
       std::string difficulty;
       uint64_t reward;
-      
+
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(major_version)              DOC_DSCR("Major version of the block.") DOC_EXMP(3) DOC_END
         KV_SERIALIZE(minor_version)              DOC_DSCR("Minor version of the block.") DOC_EXMP(0) DOC_END
@@ -1261,7 +1261,7 @@ namespace currency
         KV_SERIALIZE(reward)                     DOC_DSCR("Total mining reward of the block including transaction fees (if applicable).") DOC_EXMP(0) DOC_END
       END_KV_SERIALIZE_MAP()
   };
-  
+
   struct COMMAND_RPC_GET_LAST_BLOCK_HEADER
   {
     DOC_COMMAND("Returns the block header information of the most recent block.");
@@ -1271,7 +1271,7 @@ namespace currency
     {
       std::string status;
       block_header_response block_header;
-      
+
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(block_header)               DOC_DSCR("Detailed header information of the block.") DOC_EXMP_AUTO() DOC_END
         KV_SERIALIZE(status)                     DOC_DSCR("Status of the call.") DOC_EXMP(API_RETURN_CODE_OK) DOC_END
@@ -1279,7 +1279,7 @@ namespace currency
     };
 
   };
-  
+
   //-----------------------------------------------
 
   struct COMMAND_RPC_GET_BLOCK_HEADER_BY_HASH
@@ -1299,7 +1299,7 @@ namespace currency
     {
       std::string status;
       block_header_response block_header;
-      
+
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(block_header)               DOC_DSCR("Detailed header information of the block.") DOC_EXMP_AUTO() DOC_END
         KV_SERIALIZE(status)                     DOC_DSCR("Status of the call.") DOC_EXMP(API_RETURN_CODE_OK) DOC_END
@@ -1326,7 +1326,7 @@ namespace currency
     {
       std::string status;
       block_header_response block_header;
-      
+
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(block_header)               DOC_DSCR("Detailed header information of the block.") DOC_EXMP_AUTO() DOC_END
         KV_SERIALIZE(status)                     DOC_DSCR("Status of the call.") DOC_EXMP(API_RETURN_CODE_OK) DOC_END
@@ -1604,7 +1604,7 @@ namespace currency
     std::vector<tx_extra_rpc_entry> extra;
     std::vector<tx_extra_rpc_entry> attachments;
     std::string object_in_json;
-   
+
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE_BLOB_AS_BASE64_STRING(blob)  DOC_DSCR("Serialized form of the transaction, encoded in Base64.") DOC_EXMP("ARMBgKCUpY0dBBoAAAAAAAAAABoCAAAAAAAAABoKAAAAAAAAABoPAAAAAAAAACVA4FRLH") DOC_END
       KV_SERIALIZE(blob_size)                   DOC_DSCR("Size of the serialized transaction in bytes.") DOC_EXMP(6794) DOC_END
@@ -1859,7 +1859,7 @@ namespace currency
       END_KV_SERIALIZE_MAP()
     };
   };
-  
+
   //-----------------------------------------------
 
   // TODO looks like it is never used, a typo?
@@ -2040,4 +2040,3 @@ namespace currency
   };
 
 }
-

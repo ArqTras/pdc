@@ -18,7 +18,7 @@
 #include "static_helpers.h"
 #include "wallet_helpers.h"
 
-#define ANDROID_PACKAGE_NAME    "com.zano_mobile"
+#define ANDROID_PACKAGE_NAME    "com.pdc_mobile"
 
 #define LOGS_FOLDER             "logs"
 
@@ -97,11 +97,11 @@ namespace plain_wallet
   {
     get_set_working_dir(true, dir);
   }
-  
+
   std::string get_wallets_folder()
   {
-#ifdef CAKEWALLET    
-    std::string path = "";    
+#ifdef CAKEWALLET
+    std::string path = "";
 #elif WIN32
     std::string path = get_bundle_working_dir() + "/" + WALLETS_FOLDER_NAME + "/";
 #else
@@ -112,7 +112,7 @@ namespace plain_wallet
 
   std::string get_app_config_folder()
   {
-#ifdef CAKEWALLET    
+#ifdef CAKEWALLET
     std::string path = "";
 #elif WIN32
     std::string path = get_bundle_working_dir() + "/" + APP_CONFIG_FOLDER + "/";
@@ -169,7 +169,7 @@ namespace plain_wallet
       //wait other callers finish
       local_ptr->gjobs_lock.lock();
       local_ptr->gjobs_lock.unlock();
-      bool r = local_ptr->gwm.quick_stop_no_save();        
+      bool r = local_ptr->gwm.quick_stop_no_save();
       LOG_PRINT_L0("[QUICK_STOP_NO_SAVE] return " << r);
       //let's prepare wallet manager for quick shutdown
       local_ptr.reset();
@@ -215,7 +215,7 @@ namespace plain_wallet
     set_bundle_working_dir(working_dir);
 
     initialize_logs(log_level);
-    std::string argss_1 = std::string("--remote-node=") + ip + ":" + port;    
+    std::string argss_1 = std::string("--remote-node=") + ip + ":" + port;
     std::string argss_2 = std::string("--disable-logs-init");
     char * args[4];
     static const char* arg0_stub = "stub";
@@ -229,7 +229,7 @@ namespace plain_wallet
       LOG_ERROR("Failed to init wallets_manager");
       return GENERAL_INTERNAL_ERRROR_INIT;
     }
-    
+
     ptr->gwm.set_use_deffered_global_outputs(true);
 
     if (!ptr->postponed_run_wallet && !ptr->postponed_main_worked_started)
@@ -328,7 +328,7 @@ namespace plain_wallet
 
   std::string generate_random_key(uint64_t lenght)
   {
-    std::string buff; 
+    std::string buff;
     buff.resize(lenght);
     crypto::generate_random_bytes(lenght, const_cast<char*>(buff.data()));
     return tools::base58::encode(buff);
@@ -381,7 +381,7 @@ namespace plain_wallet
   {
     const std::string src_folder_path = get_bundle_working_dir();
     boost::system::error_code ec;
-    const std::string full_target_path = target_dir + "/Zano_export" + std::to_string(epee::misc_utils::get_tick_count());
+    const std::string full_target_path = target_dir + "/Pdc_export" + std::to_string(epee::misc_utils::get_tick_count());
     boost::filesystem::create_directory(full_target_path, ec);
     if (ec)
     {
@@ -439,7 +439,7 @@ namespace plain_wallet
     std::stringstream res;
     res << "{ \"valid\": " << (valid?"true":"false") << ", \"auditable\": "
       << (apa.is_auditable() ? "true" : "false")
-      << ",\"payment_id\": " << (pid.size() ? "true" : "false") 
+      << ",\"payment_id\": " << (pid.size() ? "true" : "false")
       << ",\"wrap\": " << (wrap ? "true" : "false")
       << "}";
     return res.str();
@@ -461,7 +461,7 @@ namespace plain_wallet
       if (!inst_ptr->postponed_run_wallet)
       {
         inst_ptr->gwm.run_wallet(ok_response.result.wallet_id);
-      }      
+      }
 
       return epee::serialization::store_t_to_json(ok_response);
     }
@@ -678,7 +678,7 @@ namespace plain_wallet
         rsp.error_code = tools::get_seed_phrase_info(sip.seed_phrase, sip.seed_password, rsp.response_data);
         res = epee::serialization::store_t_to_json(rsp);
       }
-    }    
+    }
     else if (method_name == "invoke")
     {
       res = invoke(instance_id, params);
@@ -712,7 +712,7 @@ namespace plain_wallet
   {
     auto inst_ptr = std::atomic_load(&ginstance_ptr);
     if (!inst_ptr)
-    { 
+    {
       return "{\"status\": \"canceled\"}";
     }
     //TODO: need refactoring
