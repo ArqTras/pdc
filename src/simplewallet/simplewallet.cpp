@@ -1550,7 +1550,7 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
     return false;
   }
   //check if amount is bigger then erc20 fee
-  uint64_t zano_needed_for_wrap = std::stoll(res.tx_cost.zano_needed_for_erc20);
+  uint64_t zano_needed_for_wrap = std::stoll(res.tx_cost.pdc_needed_for_erc20);
   if (amount <= zano_needed_for_wrap)
   {
     fail_msg_writer() << "Too small amount to cover ERC20 fee. ERC20 cost is: "
