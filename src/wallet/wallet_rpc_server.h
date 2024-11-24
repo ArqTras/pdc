@@ -4,7 +4,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#pragma  once 
+#pragma  once
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -13,7 +13,7 @@
 #include "wallet2.h"
 #include "common/command_line.h"
 
-#define ZANO_ACCESS_TOKEN "Zano-Access-Token"
+#define ZANO_ACCESS_TOKEN "Pdc-Access-Token"
 
 namespace tools
 {
@@ -33,7 +33,7 @@ namespace tools
       m_pwallet_provider->lock();
 //#ifndef MOBILE_WALLET_BUILD
       m_wallet_ptr = m_pwallet_provider->get_wallet();
-//#endif   
+//#endif
       if (!m_wallet_ptr.get())
       {
         throw std::runtime_error("Wallet object closed");
@@ -158,7 +158,7 @@ namespace tools
         MAP_JON_RPC_WE("assets_whitelist_get",                on_assets_whitelist_get,          wallet_public::COMMAND_ASSETS_WHITELIST_GET)
         MAP_JON_RPC_WE("assets_whitelist_add",                on_assets_whitelist_add,          wallet_public::COMMAND_ASSETS_WHITELIST_ADD)
         MAP_JON_RPC_WE("assets_whitelist_remove",             on_assets_whitelist_remove,       wallet_public::COMMAND_ASSETS_WHITELIST_REMOVE)
-        
+
         MAP_JON_RPC_WE("deploy_asset",                        on_asset_deploy,                  wallet_public::COMMAND_ASSETS_DEPLOY)
         MAP_JON_RPC_WE("emit_asset",                          on_asset_emit,                    wallet_public::COMMAND_ASSETS_EMIT)
         MAP_JON_RPC_WE("update_asset",                        on_asset_update,                  wallet_public::COMMAND_ASSETS_UPDATE)
@@ -204,8 +204,8 @@ namespace tools
     bool on_get_mining_history(const wallet_public::COMMAND_RPC_GET_MINING_HISTORY::request& req, wallet_public::COMMAND_RPC_GET_MINING_HISTORY::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_register_alias(const wallet_public::COMMAND_RPC_REGISTER_ALIAS::request& req, wallet_public::COMMAND_RPC_REGISTER_ALIAS::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_update_alias(const wallet_public::COMMAND_RPC_UPDATE_ALIAS::request& req, wallet_public::COMMAND_RPC_UPDATE_ALIAS::response& res, epee::json_rpc::error& er, connection_context& cntx);
-    
-      
+
+
     bool on_contracts_send_proposal(const wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_SEND_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_contracts_accept_proposal(const wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::request& req, wallet_public::COMMAND_CONTRACTS_ACCEPT_PROPOSAL::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_contracts_get_all(const wallet_public::COMMAND_CONTRACTS_GET_ALL::request& req, wallet_public::COMMAND_CONTRACTS_GET_ALL::response& res, epee::json_rpc::error& er, connection_context& cntx);
@@ -230,7 +230,7 @@ namespace tools
     bool on_assets_whitelist_get(const wallet_public::COMMAND_ASSETS_WHITELIST_GET::request& req, wallet_public::COMMAND_ASSETS_WHITELIST_GET::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_assets_whitelist_add(const wallet_public::COMMAND_ASSETS_WHITELIST_ADD::request& req, wallet_public::COMMAND_ASSETS_WHITELIST_ADD::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_assets_whitelist_remove(const wallet_public::COMMAND_ASSETS_WHITELIST_REMOVE::request& req, wallet_public::COMMAND_ASSETS_WHITELIST_REMOVE::response& res, epee::json_rpc::error& er, connection_context& cntx);
-    
+
     bool on_asset_deploy(const wallet_public::COMMAND_ASSETS_DEPLOY::request& req, wallet_public::COMMAND_ASSETS_DEPLOY::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_asset_emit(const wallet_public::COMMAND_ASSETS_EMIT::request& req, wallet_public::COMMAND_ASSETS_EMIT::response& res, epee::json_rpc::error& er, connection_context& cntx);
     bool on_asset_update(const wallet_public::COMMAND_ASSETS_UPDATE::request& req, wallet_public::COMMAND_ASSETS_UPDATE::response& res, epee::json_rpc::error& er, connection_context& cntx);

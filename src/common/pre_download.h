@@ -21,8 +21,8 @@ namespace tools
   };
 
 #ifndef TESTNET
-  static constexpr pre_download_entry c_pre_download_mdbx = { "http://95.217.42.247/pre-download/zano_mdbx_95_2892700.pak", "68e819cd119e4af1b81f1852e42978d662f1e6355124352f3e835db32b5a8230", 6414724487, 10468823040 };
-  static constexpr pre_download_entry c_pre_download_lmdb = { "http://95.217.42.247/pre-download/zano_lmdb_95_2892700.pak", "605eb4eb0903aa7b3a2a046514ef349d45c7de31d2702fd9dc104ca65705d6eb", 7860127140, 10204872704 };
+  static constexpr pre_download_entry c_pre_download_mdbx = { "", "", 0, 0 };
+  static constexpr pre_download_entry c_pre_download_lmdb = { "", "", 0, 0 };
 #else
   static constexpr pre_download_entry c_pre_download_mdbx = { "", "", 0, 0 };
   static constexpr pre_download_entry c_pre_download_lmdb = { "", "", 0, 0 };
@@ -42,7 +42,7 @@ namespace tools
     std::string db_main_file_path = working_folder + "/" + dbbs.get_db_main_file_name();
 
     pre_download_entry pre_download = dbbs.get_engine_type() == db::db_lmdb ? c_pre_download_lmdb : c_pre_download_mdbx;
-    
+
     // override pre-download link if necessary
     std::string url = pre_download.url;
     if (command_line::has_arg(vm, command_line::arg_predownload_link))
@@ -218,7 +218,7 @@ namespace tools
     LOG_PRINT_GREEN("Manually processing blocks from 1 to " << total_blocks << "...", LOG_LEVEL_0);
 
     for (uint64_t i = 1; i != total_blocks; i++)
-    { 
+    {
       std::list<currency::block> blocks;
       std::list<currency::transaction> txs;
       bool r = source_core.get_blocks(i, 1, blocks, txs);
@@ -242,7 +242,7 @@ namespace tools
         return false;
       }
     }
-    
+
     LOG_PRINT_GREEN("Processing finished, " << total_blocks << " successfully added.", LOG_LEVEL_0);
     target_core.deinit();
     source_core.deinit();
@@ -256,4 +256,3 @@ namespace tools
     return true;
   }
 }
-
