@@ -4,20 +4,21 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#pragma once 
+#pragma once
 #include <string>
 namespace currency
 {
-#pragma pack(push, 1)
-#ifndef TESTNET
+  #pragma pack(push, 1)
   struct genesis_tx_raw_data
   {
-    uint64_t const v[161];
-    uint8_t const r[7];
+    uint64_t const v[15];
+    uint8_t const r[6];
   };
+  #pragma pack(pop)
+  extern const genesis_tx_raw_data ggenesis_tx_raw;
 
 #else
-  struct genesis_tx_raw_data 
+  struct genesis_tx_raw_data
   {
     uint64_t const v[42];
     uint8_t const r[2];
@@ -26,7 +27,3 @@ namespace currency
 #pragma pack(pop)
   extern const genesis_tx_raw_data ggenesis_tx_raw;
 }
-
-
-
-
