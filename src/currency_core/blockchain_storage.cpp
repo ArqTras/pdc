@@ -1407,7 +1407,7 @@ bool blockchain_storage::calculate_block_reward_for_next_top_block(size_t next_b
   size_t blocks_size_median = misc_utils::median(last_blocks_sizes);
   LOG_PRINT_MAGENTA("blocks_size_median = " << blocks_size_median, LOG_LEVEL_2);
   block_reward_without_fee = get_block_reward(get_top_block_height() + 1, blocks_size_median, next_block_cumulative_size);
-  CHECK_AND_ASSERT_MES(block_reward_without_fee != 0, false, "block size " << next_block_cumulative_size << " is bigger than allowed for this blockchain, blocks_size_median: " << blocks_size_median);
+//  CHECK_AND_ASSERT_MES(block_reward_without_fee != 0, false, "block size " << next_block_cumulative_size << " is bigger than allowed for this blockchain, blocks_size_median: " << blocks_size_median);
   return true;
 }
 //------------------------------------------------------------------
