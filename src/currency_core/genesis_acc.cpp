@@ -23,8 +23,11 @@ namespace currency
     const genesis_tx_dictionary_entry ggenesis_dict[1] = {
     {11874369273325982160ULL,0}
     };
-#endif
-
+#endif 
+  
 
 
 }
+
+
+
