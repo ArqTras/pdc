@@ -58,7 +58,7 @@ using namespace currency;
 
 #define WALLET_TX_MAX_ALLOWED_FEE                                     (COIN * 100)
 
-#define WALLET_FETCH_RANDOM_OUTS_SIZE                                 200
+#define WALLET_FETCH_RANDOM_OUTS_SIZE                                 200  
 
 
 
@@ -443,15 +443,15 @@ void wallet2::process_ado_in_new_transaction(const currency::asset_descriptor_op
     else if (ado.operation_type == ASSET_DESCRIPTOR_OPERATION_EMIT || ado.operation_type == ASSET_DESCRIPTOR_OPERATION_PUBLIC_BURN)
     {
       // do nothing on emit/burn
-      //
-      //
+      // 
+      // 
       //auto it = m_own_asset_descriptors.find(asset_id);
       //if (it == m_own_asset_descriptors.end())
       //  break;
       //asset had been updated
       //add_rollback_event(ptc.height, asset_update_event{ it->first, it->second });
       //epee::misc_utils::cast_assign_a_to_b(ado.opt_descriptor, it->second);
-
+      
     }
     else if (ado.operation_type == ASSET_DESCRIPTOR_OPERATION_UPDATE)
     {
@@ -540,7 +540,7 @@ void wallet2::add_to_last_zc_global_indexs(uint64_t h, uint64_t last_zc_output_i
     }
     else if (h < m_last_zc_global_indexs.begin()->first)
     {
-      //looks like reorganize, pop all records before
+      //looks like reorganize, pop all records before 
       while (m_last_zc_global_indexs.size() && m_last_zc_global_indexs.begin()->first >= h)
       {
         m_last_zc_global_indexs.erase(m_last_zc_global_indexs.begin());
@@ -583,7 +583,7 @@ uint64_t wallet2::get_actual_zc_global_index()
     }
   }
   WLT_THROW_IF_FALSE_WITH_CODE(false, "doesn't have anything that match expected height = " << m_last_known_daemon_height - WALLET_DEFAULT_TX_SPENDABLE_AGE, API_RETURN_CODE_INTERNAL_ERROR);
-  throw std::runtime_error(""); //mostly to suppress compiler warning
+  throw std::runtime_error(""); //mostly to suppress compiler warning 
 }
 //----------------------------------------------------------------------------------------------------
 void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t height, const currency::block& b, const std::vector<uint64_t>* pglobal_indexes)
@@ -705,7 +705,7 @@ void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t 
 
     if (!pglobal_indexes || (pglobal_indexes->size() == 0 && tx.vout.size() != 0))
     {
-      //if tx contain htlc_out, then we would need global_indexes anyway, to be able later detect redeem of htlc
+      //if tx contain htlc_out, then we would need global_indexes anyway, to be able later detect redeem of htlc 
       if (m_use_deffered_global_outputs && htlc_info_list.size() == 0)
       {
         pglobal_indexes = nullptr;
@@ -770,7 +770,7 @@ void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t 
             {
               // We encountered an output with a key image already seen. This implies only one can be spent in the future (assuming the first isn't spent yet).
               // To address this, we disregard such outputs and log a warning.
-              //
+              // 
               // It was later revealed that auditable wallets could still be vulnerable: an attacker might quickly broadcast a transaction
               // using the same output's ephemeral keys + the same tx pub key. If the malicious transaction (potentially for a lesser amount)
               // arrives first, the recipient would be unable to spend the funds from the second, real transaction.
@@ -778,7 +778,7 @@ void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t 
               // Sadly, this fix only applies to classic RingCT transactions and is incompatible with our use of Confidential Assets.
               // Consequently, we adopted a solution suggested by @crypto_zoidberg: verifying in zero knowledge that the sender possesses the transaction's
               // secret key. This verification is integrated with the balance proof (double Schnorr proof).
-              //
+              // 
               // However, we continue to omit outputs with duplicate key images since they could originate from the same source (albeit impractically).
               // -- sowle
 
@@ -882,7 +882,7 @@ void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t 
             auto amount_gindex_pair = std::make_pair(td.m_amount, td.m_global_output_index);
             m_active_htlcs[amount_gindex_pair] = transfer_index;
             m_active_htlcs_txid[ptc.tx_hash()] = transfer_index;
-            //add payer to extra options
+            //add payer to extra options 
             currency::tx_payer payer = AUTO_VAL_INIT(payer);
             if (het.is_wallet_owns_redeem)
             {
@@ -974,7 +974,7 @@ void wallet2::process_new_transaction(const currency::transaction& tx, uint64_t 
 
   //check if there are asset_registration that belong to this wallet
   const asset_descriptor_operation* pado = get_type_in_variant_container<const asset_descriptor_operation>(tx.extra);
-  if (pado && (ptc.employed_entries.receive.size() || ptc.employed_entries.spent.size() || (pado->opt_descriptor.has_value() && pado->opt_descriptor->owner == m_account.get_public_address().spend_public_key) ||
+  if (pado && (ptc.employed_entries.receive.size() || ptc.employed_entries.spent.size() || (pado->opt_descriptor.has_value() && pado->opt_descriptor->owner == m_account.get_public_address().spend_public_key) || 
       (pado->opt_asset_id.has_value() && m_own_asset_descriptors.count(pado->opt_asset_id.value()))
     ))
   {
@@ -1113,7 +1113,7 @@ void wallet2::accept_proposal(const crypto::hash& contract_id, uint64_t b_accept
   construct_param.split_strategy_id = get_current_split_strategy();
 
   //little hack for now, we add multisig_entry before transaction actually get to blockchain
-  //to let prepare_transaction (which is called from build_escrow_release_templates) work correct
+  //to let prepare_transaction (which is called from build_escrow_release_templates) work correct 
   //this code definitely need to be rewritten later (very bad design)
   size_t n = get_multisig_out_index(tx.vout);
   THROW_IF_FALSE_WALLET_EX(n != tx.vout.size(), error::wallet_internal_error, "Multisig out not found in tx template in proposal");
@@ -1129,7 +1129,7 @@ void wallet2::accept_proposal(const crypto::hash& contract_id, uint64_t b_accept
   tdb.m_flags &= ~(WALLET_TRANSFER_DETAIL_FLAG_SPENT);
   //---------------------------------
   //@#@ todo: proper handling with zarcanum_based stuff
-  //figure out fee that was left for release contract
+  //figure out fee that was left for release contract 
   THROW_IF_FALSE_WALLET_INT_ERR_EX(tx.vout[n].type() == typeid(tx_out_bare), "Unexpected output type in accept proposal");
   THROW_IF_FALSE_WALLET_INT_ERR_EX(boost::get<tx_out_bare>(tx.vout[n]).amount > (contr_it->second.private_detailes.amount_to_pay +
     contr_it->second.private_detailes.amount_b_pledge +
@@ -1488,7 +1488,7 @@ bool wallet2::handle_contract(wallet_public::wallet_transfer_info& wti, const bc
   static_cast<wallet_public::escrow_contract_details_basic&>(wti.contract.back()) = ed;
   wti.contract.back().contract_id = ms_id;
 
-  //fee workaround: in consolidating transactions impossible no figure out which part of participants paid fee for tx, so we correct it
+  //fee workaround: in consolidating transactions impossible no figure out which part of participants paid fee for tx, so we correct it 
   //in code which know escrow protocol, and we know that fee paid by B(seller)
   if (ed.is_a)
   {
@@ -1504,7 +1504,7 @@ bool wallet2::handle_contract(wallet_public::wallet_transfer_info& wti, const bc
 bool wallet2::handle_cancel_proposal(wallet_public::wallet_transfer_info& wti, const bc_services::escrow_cancel_templates_body& ectb, const std::vector<currency::payload_items_v>& decrypted_attach)
 {
   PROFILE_FUNC("wallet2::handle_cancel_proposal");
-  //validate cancel proposal
+  //validate cancel proposal 
   WLT_CHECK_AND_ASSERT_MES(ectb.tx_cancel_template.vin.size() && ectb.tx_cancel_template.vin[0].type() == typeid(currency::txin_multisig), false, "Wrong cancel ecrow proposal");
   crypto::hash contract_id = boost::get<currency::txin_multisig>(ectb.tx_cancel_template.vin[0]).multisig_out_id;
   auto it = m_contracts.find(contract_id);
@@ -1610,10 +1610,10 @@ void wallet2::prepare_wti(wallet_public::wallet_transfer_info& wti, const proces
   load_wallet_transfer_info_flags(wti);
   bc_services::extract_market_instructions(wti.marketplace_entries, wti.tx.attachment);
 
-  // escrow transactions, which are built with TX_FLAG_SIGNATURE_MODE_SEPARATE flag actually encrypt attachments
+  // escrow transactions, which are built with TX_FLAG_SIGNATURE_MODE_SEPARATE flag actually encrypt attachments 
   // with buyer as a sender, and seller as receiver, despite the fact that for both sides transaction seen as outgoing.
-  // so here to decrypt tx properly we need to figure out, if this transaction is actually escrow acceptance.
-  //we check if spent_indices have zero then input do not belong to this account, which means that we are seller for this
+  // so here to decrypt tx properly we need to figure out, if this transaction is actually escrow acceptance. 
+  //we check if spent_indices have zero then input do not belong to this account, which means that we are seller for this 
   //escrow, and decryption should be processed as income flag
 
   //let's assume that the one who pays for tx fee is sender of tx
@@ -1770,10 +1770,10 @@ void wallet2::unprocess_htlc_triggers_on_block_removed(uint64_t height)
     }
     else
     {
-      // this means that wallet created atomic by itself, and second part didn't redeem it,
+      // this means that wallet created atomic by itself, and second part didn't redeem it, 
       // so refund money became available, and now we back again to unavailable state
       tr.m_flags |= WALLET_TRANSFER_DETAIL_FLAG_SPENT; //reset spent flag
-      m_found_free_amounts.clear(); //reset free amounts cache
+      m_found_free_amounts.clear(); //reset free amounts cache 
       tr.m_spent_height = 0;
     }
     //re-add to active contracts
@@ -1832,7 +1832,7 @@ void wallet2::process_htlc_triggers_on_block_added(uint64_t height)
     {
       // this means that wallet created atomic by itself, and second part didn't redeem it, so refund money should become available
       tr.m_flags &= ~(WALLET_TRANSFER_DETAIL_FLAG_SPENT); //reset spent flag
-      m_found_free_amounts.clear(); //reset free amounts cache
+      m_found_free_amounts.clear(); //reset free amounts cache 
       tr.m_spent_height = 0;
     }
 
@@ -2029,7 +2029,7 @@ void wallet2::pull_blocks(size_t& blocks_added, std::atomic<bool>& stop, bool& f
     full_reset_needed = true;
     m_full_resync_requested_at_h = get_blockchain_current_size() - blocks_added;
   }
-
+    
   if (full_reset_needed)
   {
     //back up m_unconfirmed_txs
@@ -2079,7 +2079,7 @@ void wallet2::handle_pulled_blocks(size_t& blocks_added, std::atomic<bool>& stop
     {
       if (height != m_minimum_height)
       {
-        //internal error:
+        //internal error: 
         WLT_THROW_IF_FALSE_WALLET_INT_ERR_EX(false,
           "height{" << height << "} > processed_blocks_count{" << processed_blocks_count << "}");
       }
@@ -2669,7 +2669,7 @@ void wallet2::handle_unconfirmed_tx(process_transaction_context& ptc)
 
 void wallet2::scan_tx_pool(bool& has_related_alias_in_unconfirmed)
 {
-  //get transaction pool content
+  //get transaction pool content 
   currency::COMMAND_RPC_GET_TX_POOL::request req = AUTO_VAL_INIT(req);
   currency::COMMAND_RPC_GET_TX_POOL::response res = AUTO_VAL_INIT(res);
   bool r = m_core_proxy->call_COMMAND_RPC_GET_TX_POOL(req, res);
@@ -2680,7 +2680,7 @@ void wallet2::scan_tx_pool(bool& has_related_alias_in_unconfirmed)
   THROW_IF_TRUE_WALLET_EX(res.status != API_RETURN_CODE_OK, error::get_blocks_error, res.status);
 
 
-  //- @#@ ----- debug
+  //- @#@ ----- debug 
 #ifdef _DEBUG
   std::stringstream ss;
   ss << "TXS FROM POOL: " << ENDL;
@@ -2700,7 +2700,7 @@ void wallet2::scan_tx_pool(bool& has_related_alias_in_unconfirmed)
   }
   std::string config_tx = ss.str();
 #endif
-  //- @#@ ----- debug
+  //- @#@ ----- debug 
 
   std::unordered_map<crypto::hash, currency::transaction> unconfirmed_in_transfers_local(std::move(m_unconfirmed_in_transfers));
   multisig_entries_map unconfirmed_multisig_transfers_from_tx_pool;
@@ -2898,7 +2898,7 @@ void wallet2::refresh(size_t& blocks_fetched, bool& received_money, std::atomic<
         m_height_of_start_sync = 0;
         had_full_reset = true;
         continue;
-      }
+      } 
       blocks_fetched += added_blocks;
       if (!added_blocks)
         break;
@@ -3776,8 +3776,8 @@ bool wallet2::balance(std::unordered_map<crypto::public_key, wallet_public::asse
         e.awaiting_out += subtransfer.amount;
         if (subtransfer.asset_id == currency::native_coin_asset_id)
         {
-          // this "if" present here only due to sophisticated checks in escrow_custom_test, which
-          // inaccuracy might be driven by tangled processing of sent transactions and unconfirmed
+          // this "if" present here only due to sophisticated checks in escrow_custom_test, which 
+          // inaccuracy might be driven by tangled processing of sent transactions and unconfirmed 
           // transactions in pre-refactoring era (few weeks before this commit)
           if (!(utx.second.contract.size() && utx.second.contract[0].state == wallet_public::escrow_contract_details_basic::contract_released_burned))
           {
@@ -3787,7 +3787,7 @@ bool wallet2::balance(std::unordered_map<crypto::public_key, wallet_public::asse
       }
     }
 
-    //has outgoing entries for each asset
+    //has outgoing entries for each asset 
     //if (utx.second.has_outgoing_entries())
     //{
       //collect change to unconfirmed
@@ -3797,7 +3797,7 @@ bool wallet2::balance(std::unordered_map<crypto::public_key, wallet_public::asse
       if (it_employed_entry == subtransfers_by_assets_map.end() || !(it_employed_entry->second)) // if is_incoming == false, then we need to check for change and add it to total
       {
         //it_employed_entry == subtransfers_by_assets_map.end() is a case when amount sent exactly equal amount received (someone producing more outputs for example)
-        //still need to add to total as it is a change
+        //still need to add to total as it is a change 
         wallet_public::asset_balance_entry_base& e = balances[emp_entry.asset_id];
         e.total += emp_entry.amount;
       }
@@ -4353,7 +4353,7 @@ void wallet2::sign_transfer(const std::string& tx_sources_blob, std::string& sig
       }
     }
     VARIANT_CASE_CONST(tx_out_zarcanum, o);
-    //@#@
+    //@#@      
     VARIANT_SWITCH_END();
   }
 
@@ -4394,11 +4394,11 @@ bool wallet2::get_utxo_distribution(std::map<uint64_t, uint64_t>& distribution)
 void wallet2::submit_externally_signed_asset_tx(const finalized_tx& ft, const crypto::eth_signature& eth_sig, bool unlock_transfers_on_fail, currency::transaction& result_tx, bool& transfers_unlocked)
 {
   transaction tx = ft.tx;
-
+  
   currency::asset_operation_ownership_proof_eth aoop_eth{};
   aoop_eth.eth_sig = eth_sig;
   tx.proofs.push_back(std::move(aoop_eth));
-
+  
   // foolproof
   WLT_THROW_IF_FALSE_WALLET_CMN_ERR_EX(ft.ftp.spend_pub_key == m_account.get_keys().account_address.spend_public_key, "The given tx was created in a different wallet, keys missmatch, tx hash: " << ft.tx_id);
 
@@ -5022,7 +5022,7 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
   miner_tx_tgc.pseudo_outs_blinded_asset_ids.emplace_back(currency::native_coin_asset_id_pt); // for Zarcanum stake inputs pseudo outputs commitments has explicit native asset id
   miner_tx_tgc.pseudo_outs_plus_real_out_blinding_masks.emplace_back(0);
   miner_tx_tgc.real_zc_ins_asset_ids.emplace_back(td.m_zc_info_ptr->asset_id);
-  // TODO @#@# [architecture] the same value is calculated in zarcanum_generate_proof(), consider an impovement
+  // TODO @#@# [architecture] the same value is calculated in zarcanum_generate_proof(), consider an impovement 
   miner_tx_tgc.pseudo_out_amount_commitments_sum += cxt.stake_amount * stake_out_blinded_asset_id_pt + pseudo_out_amount_blinding_mask * crypto::c_point_G;
   miner_tx_tgc.real_in_asset_id_blinding_mask_x_amount_sum += td.m_zc_info_ptr->asset_id_blinding_mask * cxt.stake_amount;
 
@@ -5034,7 +5034,7 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
 
   //
   // The miner tx prefix should be sealed by now, and the tx hash should be defined.
-  // Any changes made below should only affect the signatures/proofs and should not impact the prefix hash calculation.
+  // Any changes made below should only affect the signatures/proofs and should not impact the prefix hash calculation.   
   //
   crypto::hash miner_tx_id = get_transaction_hash(b.miner_tx);
 
@@ -5042,7 +5042,7 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
 
   // asset surjection proof
   currency::zc_asset_surjection_proof asp{};
-  r = generate_asset_surjection_proof(miner_tx_id, false, miner_tx_tgc, asp);  // has_non_zc_inputs == false because after the HF4 PoS mining is only allowed for ZC stakes inputs
+  r = generate_asset_surjection_proof(miner_tx_id, false, miner_tx_tgc, asp);  // has_non_zc_inputs == false because after the HF4 PoS mining is only allowed for ZC stakes inputs 
   WLT_CHECK_AND_ASSERT_MES(r, false, "generete_asset_surjection_proof failed");
   b.miner_tx.proofs.emplace_back(std::move(asp));
 
@@ -5135,7 +5135,7 @@ bool wallet2::try_mint_pos(const currency::account_public_address& miner_address
 //------------------------------------------------------------------
 void wallet2::do_pos_mining_prepare_entry(mining_context& context, const transfer_details& td)
 {
-  //CHECK_AND_ASSERT_MES_NO_RET(transfer_index < m_transfers.size(), "transfer_index is out of bounds: " << transfer_index);
+  //CHECK_AND_ASSERT_MES_NO_RET(transfer_index < m_transfers.size(), "transfer_index is out of bounds: " << transfer_index); 
   //const transfer_details& td = m_transfers.at(transfer_index);
 
   crypto::scalar_t amount_blinding_mask{};
@@ -5323,7 +5323,7 @@ bool wallet2::is_transfer_unlocked(const transfer_details& td, bool for_pos_mini
   uint64_t unlock_time = get_tx_unlock_time(td.m_ptx_wallet_info->m_tx, td.m_internal_output_index);
   if (for_pos_mining && m_core_runtime_config.is_hardfork_active_for_height(1, get_blockchain_current_size()))
   {
-    //allowed of staking locked coins with
+    //allowed of staking locked coins with 
     stake_lock_time = unlock_time;
   }
   else
@@ -5684,7 +5684,7 @@ void wallet2::burn_asset(const crypto::public_key& asset_id, uint64_t amount_to_
     fill_adb_version_based_onhardfork(*asset_burn_info.opt_descriptor);
     CHECK_AND_ASSERT_THROW_MES(last_adb.current_supply >= amount_to_burn, "amount_to_burn is incorrect: " << print_money_brief(amount_to_burn, last_adb.decimal_point) << ", current_supply: " << print_money_brief(last_adb.current_supply, last_adb.decimal_point));
   }
-
+  
   currency::tx_destination_entry dst_to_burn{};
   dst_to_burn.amount = amount_to_burn;
   dst_to_burn.asset_id = asset_id;
@@ -5814,7 +5814,7 @@ std::string get_random_rext(size_t len)
 }
 //----------------------------------------------------------------------------------------------------
 
-// local_transfers_struct - structure to avoid copying the whole m_transfers
+// local_transfers_struct - structure to avoid copying the whole m_transfers 
 struct local_transfers_struct
 {
   local_transfers_struct(transfer_container& tf) :l_transfers_ref(tf)
@@ -5926,7 +5926,7 @@ void wallet2::build_escrow_release_templates(crypto::hash multisig_id,
     finalize_transaction(ftp, tx_release_template, sk, false);
   }
 
-  //generate burn escrow
+  //generate burn escrow 
   construct_params.dsts.resize(1);
   construct_params.dsts[0].addr.clear();
   construct_params.dsts[0].addr.push_back(null_pub_addr);
@@ -6362,7 +6362,7 @@ bool wallet2::build_ionic_swap_template(const wallet_public::ionic_swap_proposal
 
   //add_transfers_to_expiration_list(selected_transfers, for_expiration_list, this->get_core_runtime_config().get_core_time() + proposal_detais.expiration_time, currency::null_hash);
 
-  //wrap it all
+  //wrap it all 
   proposal.tx_template = finalize_result.tx;
   wallet_public::ionic_swap_proposal_context ispc = AUTO_VAL_INIT(ispc);
   ispc.gen_context = finalize_result.ftp.gen_context;
@@ -6505,7 +6505,7 @@ bool wallet2::get_ionic_swap_proposal_info(const wallet_public::ionic_swap_propo
   //need to see what Alice actually expect in return
   for (const auto& a : ammounts_to_a)
   {
-    //now amount provided by A should be less or equal to what we have in a.second
+    //now amount provided by A should be less or equal to what we have in a.second 
     if (amounts_provided_by_a[a.first] > a.second)
     {
       //could be fee
@@ -6542,7 +6542,7 @@ bool wallet2::accept_ionic_swap_proposal(const wallet_public::ionic_swap_proposa
   std::unordered_map<crypto::public_key, wallet_public::asset_balance_entry_base> balances;
   uint64_t mined = 0;
   this->balance(balances, mined);
-  //validate balances needed
+  //validate balances needed 
   uint64_t native_amount_required = 0;
   for (const auto& item : msc.proposal_info.to_initiator)
   {
@@ -6723,7 +6723,7 @@ bool wallet2::prepare_tx_sources(size_t fake_outputs_count_, bool use_all_decoys
 
   COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::response daemon_resp = AUTO_VAL_INIT(daemon_resp);
   //we should request even of fake_outputs_count == 0, since for for postzarcanum this era this param is redefined
-  //todo: remove if(true) block later if this code will be settled
+  //todo: remove if(true) block later if this code will be settled 
   if (true)
   {
     size_t fake_outputs_count = fake_outputs_count_;
@@ -6838,7 +6838,7 @@ bool wallet2::prepare_tx_sources(size_t fake_outputs_count_, bool use_all_decoys
     {
       if (td.is_zc())
       {
-        //get rid of unneeded
+        //get rid of unneeded 
         select_decoys(daemon_resp.outs[i], td.m_global_output_index);
       }
       else
@@ -7144,7 +7144,7 @@ void wallet2::send_transaction_to_network(const transaction& tx)
         break;
       }
       this->notify_state_change(WALLET_LIB_SEND_FAILED);
-      //checking if transaction got relayed to other nodes and
+      //checking if transaction got relayed to other nodes and 
       //return;
     }
     if (!succeseful_sent)
