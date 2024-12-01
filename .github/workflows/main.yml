@@ -407,7 +407,7 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Zano-Gui-${{ github.sha }}
@@ -506,7 +506,7 @@ jobs:
           
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Zano-Gui-${{ github.sha }}
@@ -610,7 +610,7 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Release/Zano-Gui-${{ github.sha }}  
@@ -633,7 +633,7 @@ jobs:
       
       # Upload to GH Actions Artifacts EXE
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
           path: ./build/src/Release/Zano-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
