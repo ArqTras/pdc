@@ -59,6 +59,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
+          echo export BOOST_ROOT=/home/runner/Zano/Zano/boost_1_70_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
@@ -175,6 +176,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
+          echo export BOOST_ROOT=/home/runner/Zano/Zano/boost_1_76_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
