@@ -59,7 +59,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/Zano/Zano/boost_1_70_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/zano/zano/boost_1_70_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
@@ -91,7 +91,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
@@ -176,7 +176,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/Zano/Zano/boost_1_76_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/zano/zano/boost_1_76_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
@@ -208,7 +208,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_76_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_76_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
