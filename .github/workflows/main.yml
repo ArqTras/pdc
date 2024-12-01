@@ -109,7 +109,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/arqtras/zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/arqtras/zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/zano/zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
       
       # Build for linux
       - name: Build
