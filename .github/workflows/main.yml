@@ -4,20 +4,20 @@ on:
   pull_request:
   release:
     types: [published]
- 
+
 env:
   TAG: ${{ github.ref }}
 
 jobs:
 
-# Common Build matrix for builds on Ubuntu Lasted VM       
+# Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
     name: ${{ matrix.build_name }}
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-      
+
         # Add more compilers here if you need them
         build_name: ['Ubuntu 20.04 - GCC 9', 'Ubuntu 20.04 - GCC 10', 'Ubuntu 20.04 - GCC 11']
         include:
@@ -56,9 +56,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt upgrade
-          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 ${{ matrix.package_name }}   
+          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 ${{ matrix.package_name }}
 
-      # Install Boost 
+      # Install Boost
       - name: Install Boost
         run: |
           curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2
@@ -72,14 +72,14 @@ jobs:
       - name: Install OpenSSH
         run: |
           curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz 
+          tar xaf openssl-1.1.1n.tar.gz
           cd openssl-1.1.1n/
           ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
           make
           make install
-          cd ..   
+          cd ..
 
-      # Setup Ccache    
+      # Setup Ccache
       - name: Setup ccache
         run: |
           sudo apt install ccache
@@ -94,14 +94,14 @@ jobs:
           target: 'desktop'
           arch: 'gcc_64'
           modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
-          
-      # Retrieve Ccache   
+
+      # Retrieve Ccache
       - name: Retrieve ccache
         uses: actions/cache@v1
         with:
           path: .ccache
-          key: ccache-${{ matrix.label }}     
-     
+          key: ccache-${{ matrix.label }}
+
      # Configure the project with cmake
       - name: Configure
         env:
@@ -109,14 +109,14 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/zano/zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
-      
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+
       # Build for linux
       - name: Build
         run: |
           cd build
-          make 
-      
+          make
+
       # Prepare for deploy
       - name: Prepare for Deploy
         id: before_deploy
@@ -125,9 +125,9 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           prj_root=$(pwd)
-          
+
           echo Pdc Gui Tar.Gz
-          
+
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
@@ -160,7 +160,7 @@ jobs:
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/  
+          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Zano-Gui-${TAG}/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Zano-Gui-${TAG}/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Zano-Gui-${TAG}/
@@ -174,7 +174,7 @@ jobs:
           tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
 
           echo Zano GUI AppImage
-          
+
           rm -rf Zano-GUI-${TAG}
           mkdir Zano-GUI-${TAG}
           mkdir -p Zano-GUI-${TAG}/usr/bin
@@ -183,7 +183,7 @@ jobs:
           mkdir -p Zano-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps
           mkdir -p Zano-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps
           cp -r ../../src/gui/qt-daemon/layout/html Zano-GUI-${TAG}/usr/bin/
-          cp ${TARGETS} Zano-GUI-${TAG}/usr/bin/       
+          cp ${TARGETS} Zano-GUI-${TAG}/usr/bin/
           cp ../../utils/buildings/linux/64bit/Zano.desktop Zano-GUI-${TAG}/usr/share/applications/Zano.desktop
           cp ../../resources/app_icon.svg Zano-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps/Zano.svg
           cp ../../resources/app_icon_256.png Zano-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps/Zano.png
@@ -191,7 +191,7 @@ jobs:
           rm -rf /home/runner/work/_temp/
           wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
           chmod 777 linuxdeployqt-continuous-x86_64.AppImage
-          /home/runner/work/Zano/Zano/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Zano-GUI-${TAG}/usr/share/applications/Zano.desktop -qmake=/home/runner/work/Zano/Qt/5.12.12/gcc_64/bin/qmake      
+          /home/runner/work/Zano/Zano/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Zano-GUI-${TAG}/usr/share/applications/Zano.desktop -qmake=/home/runner/work/Zano/Qt/5.12.12/gcc_64/bin/qmake
           wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod 777 appimagetool-x86_64.AppImage
           rm -rf Zano-GUI-${TAG}/AppRun
@@ -202,7 +202,7 @@ jobs:
           chmod 777 Zano-GUI-${TAG}/*/*/*/*
           chmod 777 Zano-GUI-${TAG}/*/*/*/*/*
           ARCH=x86_64 /home/runner/work/Zano/Zano/build/src/appimagetool-x86_64.AppImage ./Zano-GUI-${TAG} Zano-GUI-${TAG}-${LABEL}.AppImage
-      
+
       # Upload to GH Release
       - name: Upload to GH Release
         if: github.event_name == 'release' && matrix.deployable
@@ -225,14 +225,14 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./build/src/Zano-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
           asset_name: Zano-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
-          asset_content_type: application/octet-stream    
+          asset_content_type: application/octet-stream
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-Gui-${{ github.sha }}   
+          path: ./build/src/Zano-Gui-${{ github.sha }}
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
@@ -247,7 +247,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-      
+
         # Add more compilers here if you need them
         build_name: ['Ubuntu 22.04 - GCC 11', 'Ubuntu 22.04 - GCC 12']
         include:
@@ -268,12 +268,12 @@ jobs:
       LABEL: ${{ matrix.label }}
     steps:
       - uses: actions/checkout@v2
-      
+
       # Checkout repository and submodules
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
         with:
-          submodules: recursive   
+          submodules: recursive
 
       # Fetch Dependencies
       - name: Dependencies
@@ -281,7 +281,7 @@ jobs:
           sudo apt update
           sudo apt upgrade
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev ${{ matrix.package_name }}
-     
+
       # Install Boost
       - name: Install Boost
         run: |
@@ -291,12 +291,12 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          
+
       # Install OpenSSL
       - name: Install OpenSSL
         run: |
           curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz 
+          tar xaf openssl-1.1.1n.tar.gz
           cd openssl-1.1.1n/
           ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
           make
@@ -308,7 +308,7 @@ jobs:
         run: |
           sudo apt install ccache
 
-      # Install Qt   
+      # Install Qt
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
@@ -318,14 +318,14 @@ jobs:
           target: 'desktop'
           arch: 'gcc_64'
           modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
-        
-      # Retrieve Ccache     
+
+      # Retrieve Ccache
       - name: Retrieve ccache
         uses: actions/cache@v1
         with:
           path: .ccache
-          key: ccache-${{ matrix.label }}     
-     
+          key: ccache-${{ matrix.label }}
+
       # Configure the project with cmake
       - name: Configure
         env:
@@ -334,7 +334,7 @@ jobs:
         run: |
           mkdir build && cd build
           cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_76_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
-      
+
       # Build for linux
       - name: Build
         run: |
@@ -380,7 +380,7 @@ jobs:
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/  
+          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Zano-Gui-${TAG}/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Zano-Gui-${TAG}/
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Zano-Gui-${TAG}/
@@ -392,7 +392,7 @@ jobs:
           mkdir Zano-Gui-${TAG}/xcbglintegrations
           cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Zano-Gui-${TAG}/xcbglintegrations
           tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
-          
+
       # Upload to GH Release
       - name: Upload to GH Release
         if: github.event_name == 'release' && matrix.deployable
@@ -412,7 +412,7 @@ jobs:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Zano-Gui-${{ github.sha }}
 
-          
+
 
  # Mac builds on Catalina VM
   macos_build:
@@ -431,23 +431,23 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-     
+
       # Fetch Dependencies
       - name: Dependencies
         run: |
           brew install --force ccache llvm@15 cmake
-         
+
        # Install Boost
       - name: Install Boost
-        run: |    
+        run: |
           curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
           tar -xjf boost_1_80_0.tar.bz2
           cd boost_1_80_0
-          ./bootstrap.sh 
-          ./b2 
+          ./bootstrap.sh
+          ./b2
           cd ..
 
-      # Retrieve ccache    
+      # Retrieve ccache
       - name: Retrieve ccache
         uses: actions/cache@v1
         with:
@@ -463,20 +463,20 @@ jobs:
           host: 'mac'
           target: 'desktop'
           arch: 'clang_64'
-          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin' 
+          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
       # Configure project with cmake
       - name: Configure
         run: |
           mkdir build && cd build
           cmake -D BOOST_ROOT=/Users/runner/work/Zano/Zano/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Zano/Zano/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D CMAKE_PREFIX_PATH=/Users/runner/work/Zano/Qt/5.12.12/clang_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
-      
+
       # Build for macOS
       - name: Build
         run: |
           cd build
           make
-           
+
        # Prepare for deploy
       - name: Prepare for Deploy
         id: before_deploy
@@ -491,7 +491,7 @@ jobs:
           mkdir Zano-Gui-${TAG}
           cp ${TARGETS} Zano-Gui-${TAG}/
           tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
-          
+
       # Upload to GH Release
       - name: Upload to GH Release
         if: github.event_name == 'release'
@@ -502,8 +502,8 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./build/src/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_content_type: application/gzip  
-          
+          asset_content_type: application/gzip
+
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
@@ -512,8 +512,8 @@ jobs:
           path: ./build/src/Zano-Gui-${{ github.sha }}
 
 
-                              
-  # Windows 10        
+
+  # Windows 10
   windows_build:
     name: Windows
     runs-on: windows-latest
@@ -527,7 +527,7 @@ jobs:
       - name: Setup clcache
         run: pip install clcache
 
-      # Checkout repository and submodules  
+      # Checkout repository and submodules
       - name: Checkout repository and submodules
         uses: actions/checkout@v2
         with:
@@ -569,7 +569,7 @@ jobs:
           mkdir build
           cd build
           cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Zano\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
-     
+
       # Build for Windows
       - name: Build
         run: |
@@ -591,7 +591,7 @@ jobs:
           mkdir Zano-Gui-${TAG}
           cp Zano.exe Zano-Gui-${TAG}/
           D:/a/Zano/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Zano-Gui-${TAG}/Zano.exe
-          cp -r ../../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html       
+          cp -r ../../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
           7z a Zano-Gui-${TAG}-${LABEL}.zip Zano-Gui-${TAG}
           cp ../../../utils/buildings/windows/64bit/setup_64.iss Zano-Gui-${TAG}
           cp ../../../utils/buildings/windows/64bit/vc_redist.x64.exe Zano-Gui-${TAG}
@@ -613,8 +613,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Release/Zano-Gui-${{ github.sha }}  
-            
+          path: ./build/src/Release/Zano-Gui-${{ github.sha }}
+
       # Compile .ISS to .EXE Installer - No Release
       - name: Compile .ISS to .EXE Installer - No Release
         if: github.event_name != 'release' && !(startsWith(github.ref, 'refs/tags/'))
@@ -622,7 +622,7 @@ jobs:
         with:
           path: build/src/Release/Zano-Gui-${{ github.sha }}/setup_64.iss
           options: /O+ /DBinariesPath=..\Zano-Gui-${{ github.sha }} /O..\Zano\build\src\Release /FZano-Gui-${{ github.sha }}-${{ env.LABEL }}
-      
+
       # Compile .ISS to .EXE Installer - Release
       - name: Compile .ISS to .EXE Installer - Release
         if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags/')
@@ -630,7 +630,7 @@ jobs:
         with:
           path: build/src/Release/Zano-Gui-${{ github.event.release.tag_name }}/setup_64.iss
           options: /O+ /DBinariesPath=..\Zano-Gui-${{ github.event.release.tag_name }} /O..\Zano\build\src\Release /FZano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}
-      
+
       # Upload to GH Actions Artifacts EXE
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
