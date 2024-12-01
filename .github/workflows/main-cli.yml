@@ -48,7 +48,7 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_84_0.tar.bz2
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
@@ -267,7 +267,7 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_84_0.tar.bz2
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh
