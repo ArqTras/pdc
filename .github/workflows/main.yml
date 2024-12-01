@@ -229,14 +229,14 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Zano-Gui-${{ github.sha }}   
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
           path: ./build/src/Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
