@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         # Add more compilers here if you need them
-        build_name: ['Ubuntu 20.04 - GCC 9', 'Ubuntu 20.04 - GCC 10', 'Ubuntu 20.04 - GCC 11']
+        build_name: ['Ubuntu 20.04 - GCC 9', 'Ubuntu 20.04 - GCC 10']
         include:
           - build_name: 'Ubuntu 20.04 - GCC 9'
             package_name: 'gcc-9 g++-9'
@@ -31,12 +31,7 @@ jobs:
             cxx: g++-10
             label: ubuntu-20.04-linux-gcc-10
             deployable: false
-          - build_name: 'Ubuntu 20.04 - GCC 11'
-            package_name: 'gcc-11 g++-11'
-            cc: gcc-11
-            cxx: g++-11
-            label: ubuntu-20.04-linux-gcc-11
-            deployable: false
+
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
@@ -59,7 +54,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/zano/zano/boost_1_70_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
@@ -176,7 +171,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/zano/zano/boost_1_76_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_76_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
