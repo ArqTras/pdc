@@ -48,20 +48,20 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2
-          tar -xjf boost_1_70_0.tar.bz2
-          cd boost_1_70_0
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
         run: |
-          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz
-          cd openssl-1.1.1n/
+          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          tar xaf openssl-1.1.1w.tar.gz
+          cd openssl-1.1.1w/
           ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
           make
           make install
@@ -86,7 +86,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
@@ -165,20 +165,20 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
-          tar -xjf boost_1_76_0.tar.bz2
-          cd boost_1_76_0
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_76_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
         run: |
-          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz
-          cd openssl-1.1.1n/
+          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          tar xaf openssl-1.1.1w.tar.gz
+          cd openssl-1.1.1w/
           ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
           make
           make install
@@ -203,7 +203,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_76_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
@@ -267,9 +267,9 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
-          tar -xjf boost_1_80_0.tar.bz2
-          cd boost_1_80_0
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
           ./bootstrap.sh
           ./b2
           cd ..
@@ -285,7 +285,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=/Users/runner/work/Zano/Zano/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Zano/Zano/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=/Users/runner/work/Zano/Zano/boost_1_84_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Zano/Zano/boost_1_84_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
