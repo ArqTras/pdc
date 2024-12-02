@@ -45,15 +45,15 @@ jobs:
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 ${{ matrix.package_name }}
 
       # Install Boost
-        - name: Install Boost
-          run: |
-            curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
-            tar -xjf boost_1_84_0.tar.bz2
-            cd boost_1_84_0
-            ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-            ./b2
-            cd ..
-            echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
+      - name: Install Boost
+        run: |
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          ./b2
+          cd ..
+          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSH
       - name: Install OpenSSH
