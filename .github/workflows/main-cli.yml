@@ -241,20 +241,20 @@ jobs:
         run: choco install openssh
 
       # Install boost
-      - name: Install Boost 1.71.0
+      - name: Install Boost 1.82.0
         run: |
-          $link = "https://boost.teeks99.com/bin/1.71.0/boost_1_71_0-msvc-14.2-64.exe"
+          $link = "https://boost.teeks99.com/bin/1.82.0/boost_1_82_0-msvc-14.3-64.exe"
           $path = "C:\boost.exe"
           [Net.WebClient]::new().DownloadFile($link, $path)
-          Start-Process C:\boost.exe -ArgumentList "/DIR=C:\local\boost_1_71_0","/VERYSILENT" -Wait
-          Get-ChildItem C:\local\boost_1_71_0
+          Start-Process C:\boost.exe -ArgumentList "/DIR=C:\local\boost_1_82_0","/VERYSILENT" -Wait
+          Get-ChildItem C:\local\boost_1_82_0
 
       # Configure project with cmake
       - name: Configure
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_71_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_71_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
 
       # Build for Windows
       - name: Build
