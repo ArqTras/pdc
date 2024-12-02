@@ -48,12 +48,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
        # Fetch Dependencies
       - name: Dependencies
         run: |
@@ -271,13 +265,6 @@ jobs:
       LABEL: ${{ matrix.label }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
