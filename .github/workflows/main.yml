@@ -227,175 +227,6 @@ jobs:
           name: Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
           path: ./build/src/Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
-  ubuntu_now_build:
-    name: ${{ matrix.build_name }}
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-
-        # Add more compilers here if you need them
-        build_name: ['Ubuntu 22.04 - GCC 11', 'Ubuntu 22.04 - GCC 12']
-        include:
-          - build_name: 'Ubuntu 22.04 - GCC 11'
-            package_name: 'gcc-11 g++-11'
-            cc: gcc-11
-            cxx: g++-11
-            label: ubuntu-22.04
-            deployable: true
-          - build_name: 'Ubuntu 22.04 - GCC 12'
-            package_name: 'gcc-12 g++-12'
-            cc: gcc-12
-            cxx: g++-12
-            label: ubuntu-22.04-linux-gcc-12
-            deployable: false
-    env:
-      CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
-      LABEL: ${{ matrix.label }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      # Fetch Dependencies
-      - name: Dependencies
-        run: |
-          sudo apt update
-          sudo apt upgrade
-          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev ${{ matrix.package_name }}
-
-      # Install Boost
-      - name: Install Boost
-        run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
-          tar -xjf boost_1_76_0.tar.bz2
-          cd boost_1_76_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2
-          cd ..
-
-      # Install OpenSSL
-      - name: Install OpenSSL
-        run: |
-          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz
-          cd openssl-1.1.1n/
-          ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
-          make
-          make install
-          cd ..
-
-      # Install Ccache
-      - name: Setup ccache
-        run: |
-          sudo apt install ccache
-
-      # Install Qt
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          aqtversion: '==3.1.*'
-          version: '5.12.12'
-          host: 'linux'
-          target: 'desktop'
-          arch: 'gcc_64'
-          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
-
-      # Retrieve Ccache
-      - name: Retrieve ccache
-        uses: actions/cache@v1
-        with:
-          path: .ccache
-          key: ccache-${{ matrix.label }}
-
-      # Configure the project with cmake
-      - name: Configure
-        env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
-        run: |
-          mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_76_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
-
-      # Build for linux
-      - name: Build
-        run: |
-          cd build
-          make
-
-      # Prepare for deploy
-      - name: Prepare for Deploy
-        id: before_deploy
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-        run: |
-          if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
-          cd build/src
-          TARGETS="pdcd connectivity_tool simplewallet Zano"
-          if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-          rm -rf Zano-Gui-${TAG}
-          mkdir Zano-Gui-${TAG}
-          cp ${TARGETS} Zano-Gui-${TAG}/
-          cp -r ../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
-          cp ../../utils/buildings/linux/64bit/Zano.sh Zano-Gui-${TAG}/
-          cp ../../utils/buildings/linux/64bit/Zano.desktop Zano-Gui-${TAG}/
-          chmod 777 Zano-Gui-${TAG}/Zano.desktop
-          chmod 777 Zano-Gui-${TAG}/Zano.sh
-          mkdir Zano-Gui-${TAG}/lib
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/icudtl.dat Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Zano-Gui-${TAG}/
-          mkdir Zano-Gui-${TAG}/lib/platforms
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Zano-Gui-${TAG}/lib/platforms/
-          mkdir Zano-Gui-${TAG}/xcbglintegrations
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Zano-Gui-${TAG}/xcbglintegrations
-          tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
-
-      # Upload to GH Release
-      - name: Upload to GH Release
-        if: github.event_name == 'release' && matrix.deployable
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_content_type: application/gzip
-
-      # Upload to GH Actions Artifacts
-      - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-Gui-${{ github.sha }}
-
-
 
  # Mac builds on Catalina VM
   macos_build:
@@ -549,6 +380,7 @@ jobs:
           mkdir build
           cd build
           cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Zano\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          dir
 
       # Build for Windows
       - name: Build
@@ -556,6 +388,7 @@ jobs:
           $env:CLCACHE_DIR = "$env:GITHUB_WORKSPACE\clcache"
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
+          dir
           MSBuild Zano.sln /p:Configuration=Release /t:Build
 
       # Prepare for deploy
