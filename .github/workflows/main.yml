@@ -45,14 +45,15 @@ jobs:
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 ${{ matrix.package_name }}
 
       # Install Boost
-      - name: Install Boost
-        run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2
-          tar -xjf boost_1_70_0.tar.bz2
-          cd boost_1_70_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2
-          cd ..
+        - name: Install Boost
+          run: |
+            curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+            tar -xjf boost_1_84_0.tar.bz2
+            cd boost_1_84_0
+            ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+            ./b2
+            cd ..
+            echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSH
       - name: Install OpenSSH
@@ -95,7 +96,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/Zano/Zano/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
@@ -332,7 +333,10 @@ jobs:
       MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin"
       LABEL: windows
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       # Install Clcache
       - name: Setup clcache
@@ -340,8 +344,9 @@ jobs:
 
       # Checkout repository and submodules
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
 
       # Retrive Clcache
