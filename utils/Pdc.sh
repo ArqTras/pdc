@@ -12,7 +12,7 @@ out_file_name=~/.local/share/applications/Zano.desktop
 call_app()
 {
   pushd $script_dir
-  ./Zano "$@"
+  ./Pdc "$@"
   popd
   exit
 }

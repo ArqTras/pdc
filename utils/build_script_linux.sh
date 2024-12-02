@@ -13,8 +13,8 @@
 
 ARCHIVE_NAME_PREFIX=zano-linux-x64-
 
-: "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/user/boost_1_66_0}"
-: "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/user/Qt5.10.1/5.10.1/gcc_64}"
+: "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/arek/boost_1_84_0}"
+: "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/arek/Qt5.10.1/5.10.1/gcc_64}"
 : "${OPENSSL_ROOT_DIR:?OPENSSL_ROOT_DIR should be set to OpenSSL root folder, ex.: /home/user/openssl}"
 
 if [ -n "$build_prefix" ]; then
@@ -55,61 +55,61 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j1 Zano
+make -j1 Pdc
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
 fi
 
 
-read version_str <<< $(./src/zanod --version | awk '/^Zano/ { print $2 }')
+read version_str <<< $(./src/pdcd --version | awk '/^Pdc/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 
 rm -rf Zano;
 mkdir -p Zano;
 
-rsync -a ../../src/gui/qt-daemon/layout/html ./Zano --exclude less --exclude package.json --exclude gulpfile.js
-cp -Rv ../../utils/Zano.sh ./Zano
-chmod 777 ./Zano/Zano.sh
-mkdir ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libicudata.so.56 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libicui18n.so.56 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libicuuc.so.56 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Core.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5DBus.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Gui.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Network.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5OpenGL.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Positioning.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5PrintSupport.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Qml.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Quick.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Sensors.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Sql.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5Widgets.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5WebEngine.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5WebEngineCore.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5WebEngineWidgets.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5WebChannel.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5XcbQpa.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/lib/libQt5QuickWidgets.so.5 ./Zano/lib
-cp $QT_PREFIX_PATH/libexec/QtWebEngineProcess ./Zano
-cp $QT_PREFIX_PATH/resources/qtwebengine_resources.pak ./Zano
-cp $QT_PREFIX_PATH/resources/qtwebengine_resources_100p.pak ./Zano
-cp $QT_PREFIX_PATH/resources/qtwebengine_resources_200p.pak ./Zano
-cp $QT_PREFIX_PATH/resources/icudtl.dat ./Zano
+rsync -a ../../src/gui/qt-daemon/layout/html ./Pdc --exclude less --exclude package.json --exclude gulpfile.js
+cp -Rv ../../utils/Pdc.sh ./Pdc
+chmod 777 ./Pdc/pdc.sh
+mkdir ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libicudata.so.56 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libicui18n.so.56 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libicuuc.so.56 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Core.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5DBus.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Gui.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Network.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5OpenGL.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Positioning.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5PrintSupport.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Qml.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Quick.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Sensors.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Sql.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5Widgets.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5WebEngine.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5WebEngineCore.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5WebEngineWidgets.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5WebChannel.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5XcbQpa.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/lib/libQt5QuickWidgets.so.5 ./Pdc/lib
+cp $QT_PREFIX_PATH/libexec/QtWebEngineProcess ./Pdc
+cp $QT_PREFIX_PATH/resources/qtwebengine_resources.pak ./Pdc
+cp $QT_PREFIX_PATH/resources/qtwebengine_resources_100p.pak ./Pdc
+cp $QT_PREFIX_PATH/resources/qtwebengine_resources_200p.pak ./Pdc
+cp $QT_PREFIX_PATH/resources/icudtl.dat ./Pdc
 
 if [ "$copy_qt_dev_tools" = true ] ; then
-  cp $QT_PREFIX_PATH/resources/qtwebengine_devtools_resources.pak ./Zano
+  cp $QT_PREFIX_PATH/resources/qtwebengine_devtools_resources.pak ./Pdc
 fi
 
-mkdir ./Zano/lib/platforms
-cp $QT_PREFIX_PATH/plugins/platforms/libqxcb.so ./Zano/lib/platforms
-mkdir ./Zano/xcbglintegrations
-cp $QT_PREFIX_PATH/plugins/xcbglintegrations/libqxcb-glx-integration.so ./Zano/xcbglintegrations
+mkdir ./Pdc/lib/platforms
+cp $QT_PREFIX_PATH/plugins/platforms/libqxcb.so ./Pdc/lib/platforms
+mkdir ./Pdc/xcbglintegrations
+cp $QT_PREFIX_PATH/plugins/xcbglintegrations/libqxcb-glx-integration.so ./Pdc/xcbglintegrations
 
-cp -Rv src/zanod src/Zano src/simplewallet  src/connectivity_tool ./Zano
+cp -Rv src/pdcdd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc
 
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
 
@@ -128,20 +128,5 @@ fi
 
 echo "Uploading..."
 
-scp $package_filename zano_build_server:/var/www/html/builds
-if [ $? -ne 0 ]; then
-    echo "Failed to upload to remote server"
-    exit $?
-fi
-
-read checksum <<< $(sha256sum $package_filename | awk '/^/ { print $1 }' )
-
-mail_msg="New ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build for linux-x64:<br>
-<a href='https://build.zano.org/builds/$package_filename'>https://build.zano.org/builds/$package_filename</a><br>
-sha256: $checksum"
-
-echo "$mail_msg"
-
-python3 ../../utils/build_mail.py "Zano linux-x64 ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build $version_str" "${emails}" "$mail_msg"
 
 exit 0
