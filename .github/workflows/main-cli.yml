@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         # Add more compilers here if you need them
-        build_name: ['Ubuntu 24.04 - GCC 11']
+        build_name: ['Ubuntu 24.04']
         include:
           - build_name: 'Ubuntu 24.04 - GCC'
             package_name: 'gcc g++'
@@ -262,6 +262,7 @@ jobs:
           $env:CLCACHE_DIR = "$env:GITHUB_WORKSPACE\clcache"
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
+          dir
           MSBuild Zano.sln /p:Configuration=Release /t:Build
 
       # Prepare for deploy
