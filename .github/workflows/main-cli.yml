@@ -31,8 +31,11 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
     steps:
-      - uses: actions/checkout@v2
-      - run: git fetch --prune --unshallow
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
 
       # Fetch Dependencies
       - name: Dependencies
