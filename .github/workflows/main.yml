@@ -332,7 +332,7 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src
-          TARGETS="Zanod connectivity_tool simplewallet Zano"
+          TARGETS="pdcd connectivity_tool simplewallet Zano"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Zano-Gui-${TAG}
           mkdir Zano-Gui-${TAG}
@@ -465,7 +465,7 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src
-          TARGETS="Zanod connectivity_tool simplewallet"
+          TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Zano-Gui-${TAG}
           mkdir Zano-Gui-${TAG}
