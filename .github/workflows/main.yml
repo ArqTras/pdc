@@ -13,32 +13,21 @@ jobs:
 # Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
     name: ${{ matrix.build_name }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
 
         # Add more compilers here if you need them
-        build_name: ['Ubuntu 20.04 - GCC 9', 'Ubuntu 20.04 - GCC 10', 'Ubuntu 20.04 - GCC 11']
+        build_name: ['Ubuntu 24.04 - GCC']
         include:
-          - build_name: 'Ubuntu 20.04 - GCC 9'
-            package_name: 'gcc-9 g++-9'
-            cc: gcc-9
-            cxx: g++-9
-            label: ubuntu-20.04
+          - build_name: 'Ubuntu 20.04 - GCC'
+            package_name: 'gcc- g++-'
+            cc: gcc-
+            cxx: g++-
+            label: ubuntu-24.04
             deployable: true
-          - build_name: 'Ubuntu 20.04 - GCC 10'
-            package_name: 'gcc-10 g++-10'
-            cc: gcc-10
-            cxx: g++-10
-            label: ubuntu-20.04-linux-gcc-10
-            deployable: false
-          - build_name: 'Ubuntu 20.04 - GCC 11'
-            package_name: 'gcc-11 g++-11'
-            cc: gcc-11
-            cxx: g++-11
-            label: ubuntu-20.04-linux-gcc-11
-            deployable: false
+
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
