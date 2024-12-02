@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         # Add more compilers here if you need them
-        build_name: ['Ubuntu 24.04']
+        #build_name: ['Ubuntu 24.04']
         include:
-          - build_name: 'Ubuntu 24.04 - GCC'
+          - build_name: 'Ubuntu 24.04'
             package_name: 'gcc g++'
             cc: gcc
             cxx: g++
@@ -263,7 +263,7 @@ jobs:
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
           dir
-          MSBuild Zano.sln /p:Configuration=Release /t:Build
+          MSBuild Pdc.sln /p:Configuration=Release /t:Build
 
       # Prepare for deploy
       - name: Prepare for Deploy
