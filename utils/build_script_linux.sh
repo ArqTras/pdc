@@ -40,9 +40,9 @@ prj_root=$(pwd)
 echo "---------------- BUILDING PROJECT ----------------"
 echo "--------------------------------------------------"
 
-echo "Building...." 
+echo "Building...."
 
-rm -rf build; mkdir -p build/release; cd build/release; 
+rm -rf build; mkdir -p build/release; cd build/release;
 cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D BUILD_GUI=TRUE -D OPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR" -D CMAKE_PREFIX_PATH="$QT_PREFIX_PATH" -D CMAKE_BUILD_TYPE=Release ../..
 if [ $? -ne 0 ]; then
     echo "Failed to run cmake"
@@ -71,7 +71,7 @@ mkdir -p Zano;
 
 rsync -a ../../src/gui/qt-daemon/layout/html ./Pdc --exclude less --exclude package.json --exclude gulpfile.js
 cp -Rv ../../utils/Pdc.sh ./Pdc
-chmod 777 ./Pdc/pdc.sh
+chmod 777 ./Pdc/Pdc.sh
 mkdir ./Pdc/lib
 cp $QT_PREFIX_PATH/lib/libicudata.so.56 ./Pdc/lib
 cp $QT_PREFIX_PATH/lib/libicui18n.so.56 ./Pdc/lib
@@ -114,7 +114,7 @@ cp -Rv src/pdcdd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
 
 rm -f ./$package_filename
-tar -cjvf $package_filename Zano
+tar -cjvf $package_filename Pdc
 if [ $? -ne 0 ]; then
     echo "Failed to pack"
     exit 1
