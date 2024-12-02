@@ -32,6 +32,7 @@ jobs:
       LABEL: ${{ matrix.label }}
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
 
       # Fetch Dependencies
       - name: Dependencies
