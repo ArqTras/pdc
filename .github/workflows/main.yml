@@ -121,6 +121,7 @@ jobs:
           rm -rf Zano-Gui-${TAG}
           mkdir Zano-Gui-${TAG}
           cp ${TARGETS} Zano-Gui-${TAG}/
+          ls
           cp -r ../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
           cp ../../utils/buildings/linux/64bit/Zano.sh Zano-Gui-${TAG}/
           cp ../../utils/buildings/linux/64bit/Zano.desktop Zano-Gui-${TAG}/
@@ -407,8 +408,9 @@ jobs:
           cd build/src/Release
           rm -rf Zano-Gui-${TAG}
           mkdir Zano-Gui-${TAG}
-          cp Zano.exe Zano-Gui-${TAG}/
-          D:/a/Zano/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Zano-Gui-${TAG}/Zano.exe
+          dir
+          cp Pdc.exe Zano-Gui-${TAG}/
+          D:/a/Zano/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Zano-Gui-${TAG}/Pdc.exe
           cp -r ../../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
           7z a Zano-Gui-${TAG}-${LABEL}.zip Zano-Gui-${TAG}
           cp ../../../utils/buildings/windows/64bit/setup_64.iss Zano-Gui-${TAG}
