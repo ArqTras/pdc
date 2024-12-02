@@ -11,10 +11,10 @@
 # export QT_PREFIX_PATH=/home/user/Qt5.10.1/5.10.1/gcc_64
 # export OPENSSL_ROOT_DIR=/home/user/openssl
 
-ARCHIVE_NAME_PREFIX=zano-linux-x64-
+ARCHIVE_NAME_PREFIX=pdc-linux-x64-
 
-: "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/arek/boost_1_84_0}"
-: "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/arek/Qt5.10.1/5.10.1/gcc_64}"
+: "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/user/boost_1_84_0}"
+: "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/user/Qt5.10.1/5.10.1/gcc_64}"
 : "${OPENSSL_ROOT_DIR:?OPENSSL_ROOT_DIR should be set to OpenSSL root folder, ex.: /home/user/openssl}"
 
 if [ -n "$build_prefix" ]; then
@@ -66,8 +66,8 @@ read version_str <<< $(./src/pdcd --version | awk '/^Pdc/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 
-rm -rf Zano;
-mkdir -p Zano;
+rm -rf Pdc;
+mkdir -p Pdc;
 
 rsync -a ../../src/gui/qt-daemon/layout/html ./Pdc --exclude less --exclude package.json --exclude gulpfile.js
 cp -Rv ../../utils/Pdc.sh ./Pdc
@@ -109,7 +109,7 @@ cp $QT_PREFIX_PATH/plugins/platforms/libqxcb.so ./Pdc/lib/platforms
 mkdir ./Pdc/xcbglintegrations
 cp $QT_PREFIX_PATH/plugins/xcbglintegrations/libqxcb-glx-integration.so ./Pdc/xcbglintegrations
 
-cp -Rv src/pdcdd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc
+cp -Rv src/pdcd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc
 
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
 
