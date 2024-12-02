@@ -43,7 +43,10 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       # Checkout repository and submodules
       - name: Checkout repository and submodules
@@ -267,12 +270,16 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       # Checkout repository and submodules
       - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
 
       # Fetch Dependencies
@@ -424,12 +431,9 @@ jobs:
       CXX: /usr/local/opt/llvm@15/bin/clang++
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
     steps:
-      - uses: actions/checkout@v2
-
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
 
       # Fetch Dependencies

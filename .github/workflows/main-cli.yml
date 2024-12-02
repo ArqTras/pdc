@@ -138,7 +138,10 @@ jobs:
       CXX: /usr/local/opt/llvm@11/bin/clang++
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       # Fetch Dependencies
       - name: Dependencies
@@ -218,7 +221,10 @@ jobs:
       MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin"
       LABEL: windows
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       # Setup clcache
       - name: Setup clcache
