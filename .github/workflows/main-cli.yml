@@ -21,9 +21,9 @@ jobs:
         #build_name: ['Ubuntu 24.04']
         include:
           - build_name: 'Ubuntu 24.04 - GCC'
-            package_name: 'gcc- g++-'
-            cc: gcc-
-            cxx: g++-
+            package_name: 'gcc g++'
+            cc: gcc
+            cxx: g++
             label: ubuntu-24.04
             deployable: true
 
