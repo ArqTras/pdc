@@ -48,7 +48,7 @@ jobs:
           curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
           tar xaf openssl-1.1.1n.tar.gz
           cd openssl-1.1.1n/
-          ./config --prefix= ${{ github.workspace }}/Zano/Zano/openssl --openssldir= ${{ github.workspace }}/Zano/Zano/openssl shared zlib
+          ./config --prefix= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl --openssldir= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl shared zlib
           make
           make install
           cd ..
