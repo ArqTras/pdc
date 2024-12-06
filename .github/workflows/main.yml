@@ -28,7 +28,7 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt update
-          sudo apt upgrade
+          sudo apt upgrade -y
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc g++
 
       # Install Boost
@@ -40,15 +40,15 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
+          echo export BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSH
-      - name: Install OpenSSH
+      - name: Install OpenSSL
         run: |
           curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
           tar xaf openssl-1.1.1n.tar.gz
           cd openssl-1.1.1n/
-          ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
+          ./config --prefix= ${{ github.workspace }}/Zano/Zano/openssl --openssldir= ${{ github.workspace }}/Zano/Zano/openssl shared zlib
           make
           make install
           cd ..
@@ -83,7 +83,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D ARCH=x86-64 -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D ARCH=x86-64 -D BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR= ${{ github.workspace }}/Zano/Zano/openssl -D CMAKE_PREFIX_PATH= ${{ github.workspace }}/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
