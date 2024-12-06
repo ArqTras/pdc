@@ -13,8 +13,8 @@ jobs:
 # Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
     name: Ubuntu-2204
-    runs-on: selfhosted
-  
+    runs-on: self-hosted
+
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
