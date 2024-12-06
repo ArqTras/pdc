@@ -18,6 +18,7 @@ jobs:
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +31,9 @@ jobs:
           sudo apt update
           sudo apt upgrade -y
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc g++
-
+          export BOOST_ROOT=/home/arek/boost_1_84_0
+          export OPENSSL_ROOT_DIR=/home/arek/openssl
+          export QT_PREFIX_PATH=/home/are/Qt/5.12.12/gcc_64
       # Install Boost
 #      - name: Install Boost
 #        run: |
@@ -59,15 +62,15 @@ jobs:
           sudo apt install ccache
 
       # Install Qt
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          aqtversion: '==3.1.*'
-          version: '5.12.12'
-          host: 'linux'
-          target: 'desktop'
-          arch: 'gcc_64'
-          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
+#      - name: Install Qt
+#        uses: jurplel/install-qt-action@v3
+#        with:
+#          aqtversion: '==3.1.*'
+#          version: '5.12.12'
+#          host: 'linux'
+#          target: 'desktop'
+#          arch: 'gcc_64'
+#          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
       # Retrieve Ccache
       - name: Retrieve ccache
