@@ -77,19 +77,18 @@ jobs:
           key: ccache-${{ matrix.label }}
 
      # Configure the project with cmake
-      - name: Configure
-        env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
-        run: |
-          mkdir build && cd build
-          cmake -D STATIC=TRUE -D ARCH=x86-64 -D CMAKE_PREFIX_PATH= ${{ github.workspace }}/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+    #  - name: Configure
+    #    env:
+    #      CC: ${{ matrix.cc }}
+    #      CXX: ${{ matrix.cxx }}
+    #    run: |
+    #      mkdir build && cd build
+    #      cmake -D STATIC=TRUE -D ARCH=x86-64 -D CMAKE_PREFIX_PATH= ${{ github.workspace }}/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
         run: |
-          cd build
-          make
+          utils/build_script_linux.sh
 
       # Prepare for deploy
       - name: Prepare for Deploy
