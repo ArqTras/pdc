@@ -32,26 +32,26 @@ jobs:
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc g++
 
       # Install Boost
-      - name: Install Boost
-        run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
-          tar -xjf boost_1_84_0.tar.bz2
-          cd boost_1_84_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2
-          cd ..
-          echo export BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 .bashrc
+#      - name: Install Boost
+#        run: |
+#          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+#          tar -xjf boost_1_84_0.tar.bz2
+#          cd boost_1_84_0
+#          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+#          ./b2
+#          cd ..
+#          echo export BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 .bashrc
 
       # Install OpenSSH
-      - name: Install OpenSSL
-        run: |
-          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-          tar xaf openssl-1.1.1n.tar.gz
-          cd openssl-1.1.1n/
-          ./config --prefix= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl --openssldir= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl shared zlib
-          make
-          make install
-          cd ..
+#      - name: Install OpenSSL
+#        run: |
+#          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
+#          tar xaf openssl-1.1.1n.tar.gz
+#          cd openssl-1.1.1n/
+#          ./config --prefix= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl --openssldir= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl shared zlib
+#          make
+#          make install
+#          cd ..
 
       # Setup Ccache
       - name: Setup ccache
@@ -83,7 +83,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D ARCH=x86-64 -D BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR= ${{ github.workspace }}/Zano/Zano/openssl -D CMAKE_PREFIX_PATH= ${{ github.workspace }}/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D ARCH=x86-64 -D CMAKE_PREFIX_PATH= ${{ github.workspace }}/Zano/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
