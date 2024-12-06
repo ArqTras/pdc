@@ -13,7 +13,7 @@ jobs:
 # Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
     name: ${{ matrix.build_name }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu2204-pdc
     strategy:
       fail-fast: false
       matrix:
@@ -21,11 +21,11 @@ jobs:
         # Add more compilers here if you need them
         #build_name: ['Ubuntu 24.04 - GCC']
         include:
-          - build_name: 'Ubuntu 24.04 - GCC'
+          - build_name: 'ubuntu2204-pdc'
             package_name: 'gcc g++'
             cc: gcc
             cxx: g++
-            label: ubuntu-24.04
+            label: ubuntu2204-pdc
             deployable: true
 
     env:
