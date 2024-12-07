@@ -73,50 +73,50 @@ fi
 
 
 
-read version_str <<< $(./src/zanod --version | awk '/^Zano/ { print $2 }')
+read version_str <<< $(./src/pdcd --version | awk '/^Pdc/ { print $2 }')
 version_str=${version_str}
 
-read commit_str <<< $(./src/zanod  --version | grep -m 1 -P -o "(?<=\[)[0-9a-f]{7}")
+read commit_str <<< $(./src/pdcd  --version | grep -m 1 -P -o "(?<=\[)[0-9a-f]{7}")
 commit_str=${commit_str}
 
 echo $version_str
 echo $commit_str
 
 
-rm -rf Zano;
-mkdir -p Zano/usr/bin;
-mkdir -p Zano/usr/lib;
-mkdir -p Zano/usr/share/applications;
-mkdir -p Zano/usr/share/icons/hicolor/scalable/apps;
-mkdir -p Zano/usr/share/icons/hicolor/256x256/apps;
+rm -rf Pdc;
+mkdir -p Pdc/usr/bin;
+mkdir -p Pdc/usr/lib;
+mkdir -p Pdc/usr/share/applications;
+mkdir -p Pdc/usr/share/icons/hicolor/scalable/apps;
+mkdir -p Pdc/usr/share/icons/hicolor/256x256/apps;
 
 
-rsync -a ../../src/gui/qt-daemon/layout/html ./Zano/usr/bin --exclude less --exclude package.json --exclude gulpfile.js
+rsync -a ../../src/gui/qt-daemon/layout/html ./Pdc/usr/bin --exclude less --exclude package.json --exclude gulpfile.js
 
-cp -Rv src/zanod src/Zano src/simplewallet  src/connectivity_tool ./Zano/usr/bin
-cp -Rv ../../utils/Zano.desktop ./Zano/usr/share/applications/Zano.desktop
-cp -Rv ../../resources/app_icon.svg ./Zano/usr/share/icons/hicolor/scalable/apps/Zano.svg
+cp -Rv src/pdcd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc/usr/bin
+cp -Rv ../../utils/Zano.desktop ./Pdc/usr/share/applications/Zano.desktop
+cp -Rv ../../resources/app_icon.svg ./Pdc/usr/share/icons/hicolor/scalable/apps/Zano.svg
 cp -Rv ../../resources/app_icon_256.png ./Zano/usr/share/icons/hicolor/256x256/apps/Zano.png
 
 
-echo "Exec=$prj_root/build/release/Zano/usr/bin/Zano" >> ./Zano/usr/share/applications/Zano.desktop
+echo "Exec=$prj_root/build/release/Pdc/usr/bin/pdc" >> ./Pdc/usr/share/applications/Zano.desktop
 if [ $? -ne 0 ]; then
-    echo "Failed to append deskyop file"
+    echo "Failed to append desktop file"
     exit 1
 fi
 
-$LINUX_DEPLOY_QT ./Zano/usr/share/applications/Zano.desktop -qmake=$QT_PREFIX_PATH/bin/qmake
+$LINUX_DEPLOY_QT ./Pdc/usr/share/applications/Zano.desktop -qmake=$QT_PREFIX_PATH/bin/qmake
 if [ $? -ne 0 ]; then
     echo "Failed to run linuxqtdeployment"
     exit 1
 fi
 
-rm -f $prj_root/build/release/Zano/AppRun
-cp -Rv ../../utils/Zano_appimage_wrapper.sh $prj_root/build/release/Zano/AppRun
+rm -f $prj_root/build/release/Pdc/AppRun
+cp -Rv ../../utils/Zano_appimage_wrapper.sh $prj_root/build/release/Pdc/AppRun
 
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.AppImage
 
-$LINUX_APPIMAGE_TOOL ./Zano ./$package_filename
+$LINUX_APPIMAGE_TOOL ./Pdc ./$package_filename
 if [ $? -ne 0 ]; then
     echo "Failed to run appimagetool"
     exit 1
@@ -140,7 +140,7 @@ fi
 
 echo "Uploading..."
 
-scp $package_filename zano_build_server:/var/www/html/builds
+scp $package_filename Pdc_build_server:/var/www/html/builds
 if [ $? -ne 0 ]; then
     echo "Failed to upload to remote server"
     exit $?
