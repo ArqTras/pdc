@@ -91,7 +91,7 @@ jobs:
       # Build for linux
       - name: Build
         run: |
-          utils/build_script_linux.sh
+          utils/build_script_linux_appimage.sh
 
       # Prepare for deploy
       - name: Prepare for Deploy
