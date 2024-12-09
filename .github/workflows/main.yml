@@ -403,8 +403,8 @@ jobs:
           D:/a/Pdc/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Pdc-Gui-${TAG}/Pdc.exe
           cp -r ../../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
           7z a Pdc-Gui-${TAG}-${LABEL}.zip Pdc-Gui-${TAG}
-        #  cp ../../../utils/buildings/windows/64bit/setup_64.iss Pdc-Gui-${TAG}
-        #  cp ../../../utils/buildings/windows/64bit/vc_redist.x64.exe Pdc-Gui-${TAG}
+          cp ../../../utils/buildings/windows/64bit/setup_64.iss Pdc-Gui-${TAG}
+          cp ../../../utils/buildings/windows/64bit/vc_redist.x64.exe Pdc-Gui-${TAG}
 
       # Upload to GH Release
       - name: Upload to GH Release
