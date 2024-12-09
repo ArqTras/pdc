@@ -104,7 +104,7 @@ jobs:
           echo Pdc Gui Tar.Gz
 
           cd build/src
-          TARGETS="pdcd connectivity_tool simplewallet pdc"
+          TARGETS="pdcd connectivity_tool simplewallet Pdc"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Pdc-Gui-${TAG}
           mkdir Pdc-Gui-${TAG}
