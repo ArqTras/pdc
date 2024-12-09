@@ -107,79 +107,79 @@ jobs:
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-          rm -rf Zano-Gui-${TAG}
-          mkdir Zano-Gui-${TAG}
-          cp ${TARGETS} Zano-Gui-${TAG}/
+          rm -rf Pdc-Gui-${TAG}
+          mkdir Pdc-Gui-${TAG}
+          cp ${TARGETS} Pdc-Gui-${TAG}/
           ls
-          cp -r ../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
-          cp ../../utils/buildings/linux/64bit/Zano.sh Zano-Gui-${TAG}/
-          cp ../../utils/buildings/linux/64bit/Zano.desktop Zano-Gui-${TAG}/
-          chmod 777 Zano-Gui-${TAG}/Zano.desktop
-          chmod 777 Zano-Gui-${TAG}/Zano.sh
-          mkdir Zano-Gui-${TAG}/lib
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Zano-Gui-${TAG}/lib/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/icudtl.dat Zano-Gui-${TAG}/
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Zano-Gui-${TAG}/
-          mkdir Zano-Gui-${TAG}/lib/platforms
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Zano-Gui-${TAG}/lib/platforms/
-          mkdir Zano-Gui-${TAG}/xcbglintegrations
-          cp /home/runner/work/Zano/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Zano-Gui-${TAG}/xcbglintegrations
-          tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
+          cp -r ../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
+          cp ../../utils/buildings/linux/64bit/Pdc.sh Pdc-Gui-${TAG}/
+          cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-Gui-${TAG}/
+          chmod 777 Pdc-Gui-${TAG}/Pdc.desktop
+          chmod 777 Pdc-Gui-${TAG}/Pdc.sh
+          mkdir Pdc-Gui-${TAG}/lib
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Pdc-Gui-${TAG}/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/icudtl.dat Pdc-Gui-${TAG}/
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Pdc-Gui-${TAG}/
+          mkdir Pdc-Gui-${TAG}/lib/platforms
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Pdc-Gui-${TAG}/lib/platforms/
+          mkdir Pdc-Gui-${TAG}/xcbglintegrations
+          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
+          tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
 
-          echo Zano GUI AppImage
+          echo Pdc GUI AppImage
 
-          rm -rf Zano-GUI-${TAG}
-          mkdir Zano-GUI-${TAG}
-          mkdir -p Zano-GUI-${TAG}/usr/bin
-          mkdir -p Zano-GUI-${TAG}/usr/lib
-          mkdir -p Zano-GUI-${TAG}/usr/share/applications
-          mkdir -p Zano-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps
-          mkdir -p Zano-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps
-          cp -r ../../src/gui/qt-daemon/layout/html Zano-GUI-${TAG}/usr/bin/
-          cp ${TARGETS} Zano-GUI-${TAG}/usr/bin/
+          rm -rf Pdc-GUI-${TAG}
+          mkdir Pdc-GUI-${TAG}
+          mkdir -p Pdc-GUI-${TAG}/usr/bin
+          mkdir -p Pdc-GUI-${TAG}/usr/lib
+          mkdir -p Pdc-GUI-${TAG}/usr/share/applications
+          mkdir -p Pdc-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps
+          mkdir -p Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps
+          cp -r ../../src/gui/qt-daemon/layout/html Pdc-GUI-${TAG}/usr/bin/
+          cp ${TARGETS} Pdc-GUI-${TAG}/usr/bin/
           ls
-          cp ../../utils/buildings/linux/64bit/Zano.desktop Zano-GUI-${TAG}/usr/share/applications/Zano.desktop
-          cp ../../resources/app_icon.svg Zano-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps/Zano.svg
-          cp ../../resources/app_icon_256.png Zano-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps/Zano.png
-          echo "Exec=$prj_root/build/src/Zano-GUI-${TAG}/usr/bin/Zano" >> Zano-GUI-${TAG}/usr/share/applications/Zano.desktop
+          cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop
+          cp ../../resources/app_icon.svg Pdc-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps/Pdc.svg
+          cp ../../resources/app_icon_256.png Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps/Pdc.png
+          echo "Exec=$prj_root/build/src/Pdc-GUI-${TAG}/usr/bin/Pdc" >> Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop
           rm -rf /home/runner/work/_temp/
           wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
           chmod 777 linuxdeployqt-continuous-x86_64.AppImage
-          /home/runner/work/Zano/Zano/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Zano-GUI-${TAG}/usr/share/applications/Zano.desktop -qmake=/home/runner/work/Zano/Qt/5.12.12/gcc_64/bin/qmake
+          /home/runner/work/Pdc/Pdc/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop -qmake=/home/runner/work/Pdc/Qt/5.12.12/gcc_64/bin/qmake
           wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod 777 appimagetool-x86_64.AppImage
-          rm -rf Zano-GUI-${TAG}/AppRun
-          cp ../../utils/buildings/linux/64bit/Zano_appimage_wrapper.sh Zano-GUI-${TAG}/AppRun
-          chmod 777 Zano-GUI-${TAG}/*
-          chmod 777 Zano-GUI-${TAG}/*/*
-          chmod 777 Zano-GUI-${TAG}/*/*/*
-          chmod 777 Zano-GUI-${TAG}/*/*/*/*
-          chmod 777 Zano-GUI-${TAG}/*/*/*/*/*
-          ARCH=x86_64 /home/runner/work/Zano/Zano/build/src/appimagetool-x86_64.AppImage ./Zano-GUI-${TAG} Zano-GUI-${TAG}-${LABEL}.AppImage
+          rm -rf Pdc-GUI-${TAG}/AppRun
+          cp ../../utils/buildings/linux/64bit/Pdc_appimage_wrapper.sh Pdc-GUI-${TAG}/AppRun
+          chmod 777 Pdc-GUI-${TAG}/*
+          chmod 777 Pdc-GUI-${TAG}/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
+          ARCH=x86_64 /home/runner/work/Pdc/Pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -189,8 +189,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_path: ./build/src/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_content_type: application/gzip
 
       # Upload to GH Release
@@ -201,23 +201,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
-          asset_name: Zano-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
+          asset_path: ./build/src/Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
+          asset_name: Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
           asset_content_type: application/octet-stream
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-Gui-${{ github.sha }}
+          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Pdc-Gui-${{ github.sha }}
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
-          path: ./build/src/Zano-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
+          name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
+          path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
 
  # Mac builds on Catalina VM
@@ -272,7 +272,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=/Users/runner/work/Zano/Zano/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Zano/Zano/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D CMAKE_PREFIX_PATH=/Users/runner/work/Zano/Qt/5.12.12/clang_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=/Users/runner/work/Pdc/Pdc/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Pdc/Pdc/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D CMAKE_PREFIX_PATH=/Users/runner/work/Pdc/Qt/5.12.12/clang_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -290,10 +290,10 @@ jobs:
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-          rm -rf Zano-Gui-${TAG}
-          mkdir Zano-Gui-${TAG}
-          cp ${TARGETS} Zano-Gui-${TAG}/
-          tar cvfz Zano-Gui-${TAG}-${LABEL}.tar.gz Zano-Gui-${TAG}/
+          rm -rf Pdc-Gui-${TAG}
+          mkdir Pdc-Gui-${TAG}
+          cp ${TARGETS} Pdc-Gui-${TAG}/
+          tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -303,16 +303,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_path: ./build/src/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_content_type: application/gzip
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-Gui-${{ github.sha }}
+          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Pdc-Gui-${{ github.sha }}
 
 
 
@@ -375,7 +375,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Zano\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D CMAKE_PREFIX_PATH=D:\a\Pdc\Qt\5.12.12\msvc2017_64 -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
           dir
 
       # Build for Windows
@@ -396,15 +396,15 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src/Release
-          rm -rf Zano-Gui-${TAG}
-          mkdir Zano-Gui-${TAG}
+          rm -rf Pdc-Gui-${TAG}
+          mkdir Pdc-Gui-${TAG}
           dir
-          cp Pdc.exe Zano-Gui-${TAG}/
-          D:/a/Zano/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Zano-Gui-${TAG}/Pdc.exe
-          cp -r ../../../src/gui/qt-daemon/layout/html Zano-Gui-${TAG}/html
-          7z a Zano-Gui-${TAG}-${LABEL}.zip Zano-Gui-${TAG}
-        #  cp ../../../utils/buildings/windows/64bit/setup_64.iss Zano-Gui-${TAG}
-        #  cp ../../../utils/buildings/windows/64bit/vc_redist.x64.exe Zano-Gui-${TAG}
+          cp Pdc.exe Pdc-Gui-${TAG}/
+          D:/a/Pdc/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Pdc-Gui-${TAG}/Pdc.exe
+          cp -r ../../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
+          7z a Pdc-Gui-${TAG}-${LABEL}.zip Pdc-Gui-${TAG}
+        #  cp ../../../utils/buildings/windows/64bit/setup_64.iss Pdc-Gui-${TAG}
+        #  cp ../../../utils/buildings/windows/64bit/vc_redist.x64.exe Pdc-Gui-${TAG}
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -414,39 +414,39 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Release/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
-          asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
+          asset_path: ./build/src/Release/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
           asset_content_type: application/zip
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Release/Zano-Gui-${{ github.sha }}
+          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Release/Pdc-Gui-${{ github.sha }}
 
       # Compile .ISS to .EXE Installer - No Release
       - name: Compile .ISS to .EXE Installer - No Release
         if: github.event_name != 'release' && !(startsWith(github.ref, 'refs/tags/'))
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: build/src/Release/Zano-Gui-${{ github.sha }}/setup_64.iss
-          options: /O+ /DBinariesPath=..\Zano-Gui-${{ github.sha }} /O..\Zano\build\src\Release /FZano-Gui-${{ github.sha }}-${{ env.LABEL }}
+          path: build/src/Release/Pdc-Gui-${{ github.sha }}/setup_64.iss
+          options: /O+ /DBinariesPath=..\Pdc-Gui-${{ github.sha }} /O..\Pdc\build\src\Release /FPdc-Gui-${{ github.sha }}-${{ env.LABEL }}
 
       # Compile .ISS to .EXE Installer - Release
       - name: Compile .ISS to .EXE Installer - Release
         if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags/')
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: build/src/Release/Zano-Gui-${{ github.event.release.tag_name }}/setup_64.iss
-          options: /O+ /DBinariesPath=..\Zano-Gui-${{ github.event.release.tag_name }} /O..\Zano\build\src\Release /FZano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}
+          path: build/src/Release/Pdc-Gui-${{ github.event.release.tag_name }}/setup_64.iss
+          options: /O+ /DBinariesPath=..\Pdc-Gui-${{ github.event.release.tag_name }} /O..\Pdc\build\src\Release /FPdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}
 
       # Upload to GH Actions Artifacts EXE
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
-          path: ./build/src/Release/Zano-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
+          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
+          path: ./build/src/Release/Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}.exe
 
       # Upload to GH Release EXE
       - name: Upload to GH Release
@@ -456,6 +456,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Release/Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.exe
-          asset_name: Zano-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.exe
+          asset_path: ./build/src/Release/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.exe
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.exe
           asset_content_type: application/octet-stream
