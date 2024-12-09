@@ -2,19 +2,16 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Pdc"
-;#define MyAppVersion "0.2.0.31"
+;#define MyAppVersion "1.0.0.1"
 #define MyAppPublisher "Pdc Team"
 #define MyAppURL "http://privacydatacoin.com"
 #define MyAppExeName "Pdc.exe"
 
 [Setup]
-; NOTE: The value of AppId uniquely identifies this application.
-; Do not use the same AppId value in installers for other applications.
-; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{65FD6D06-3A1D-47FF-AA45-2B302C1C9D8E}
+AppId={{65FD6D06-3A2D-47FB-AA45-2B302C1C9D9E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -26,11 +23,11 @@ Compression=lzma
 SolidCompression=yes
 ChangesAssociations=yes
 ArchitecturesInstallIn64BitMode=x64
-WizardImageFile=../resources/installer_bg_164x313.bmp
-;WizardSmallImageFile=../resources/icon.bmp
+WizardImageFile=../../../../resources/installer_bg_164x313.bmp
+;WizardSmallImageFile=../../../../resources/icon.bmp
 PrivilegesRequired=poweruser
 ArchitecturesAllowed=x64
-;SetupIconFile=../resources/app.ico
+;SetupIconFile=../../../../resources/app.ico
 AppMutex=Pdc_instance
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
@@ -59,9 +56,9 @@ Root: HKCR; Subkey: "Pdc\shell\open\command"; ValueType: string; ValueName: ""; 
 [Files]
 
 Source: "{#BinariesPath}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
-Source: "..\src\gui\qt-daemon\layout\html\*"; DestDir: "{app}\html"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
+Source: "../../../../src/gui/qt-daemon/layout/html/*"; DestDir: "{app}\html"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
 Source: "{#BinariesPath}\vc_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
-Source: "../resources/installer_bg_*.bmp"; Excludes: "*313.bmp"; Flags: dontcopy
+Source: "..\..\..\..\resources\installer_bg_*.bmp"; Excludes: "*313.bmp"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -73,7 +70,7 @@ Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 
 [Run]
-Filename: {tmp}\vc_redist.x64.exe; Parameters: "/install /quiet /norestart";  StatusMsg: Installing VC++ 2017 Redistributables...
+Filename: {app}\vc_redist.x64.exe; Parameters: "/install /quiet /norestart";  StatusMsg: Installing VC++ 2017 Redistributables...
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent shellexec
 
 [UninstallDelete]
