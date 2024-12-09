@@ -31,7 +31,7 @@ WizardImageFile=../resources/installer_bg_164x313.bmp
 PrivilegesRequired=poweruser
 ArchitecturesAllowed=x64
 ;SetupIconFile=../resources/app.ico
-AppMutex=Zano_instance
+AppMutex=Pdc_instance
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 
@@ -45,15 +45,15 @@ Name: "desktopicon\user"; Description: "For the current user only"; GroupDescrip
 
 
 [Registry]
-Root: HKCR; Subkey: ".dbl"; ValueType: string; ValueName: ""; ValueData: "ZanoWalletDataFile"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "ZanoWalletDataFile"; ValueType: string; ValueName: ""; ValueData: "Zano Wallet's Data File"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "ZanoWalletDataKyesFile"; ValueType: string; ValueName: ""; ValueData: "Zano Wallet's Keys File"; Flags: uninsdeletekey
+Root: HKCR; Subkey: ".dbl"; ValueType: string; ValueName: ""; ValueData: "PdcWalletDataFile"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "PdcWalletDataFile"; ValueType: string; ValueName: ""; ValueData: "Pdc Wallet's Data File"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "PdcWalletDataKyesFile"; ValueType: string; ValueName: ""; ValueData: "Pdc Wallet's Keys File"; Flags: uninsdeletekey
 
-Root: HKCR; Subkey: "ZanoWalletDataFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\Zano.exe,0"
-Root: HKCR; Subkey: "ZanoWalletDataKyesFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\Zano.exe,0"
+Root: HKCR; Subkey: "PdcWalletDataFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\Pdc.exe,0"
+Root: HKCR; Subkey: "PdcWalletDataKyesFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\Pdc.exe,0"
 
-Root: HKCR; Subkey: "Zano"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCR; Subkey: "Zano\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\Zano.exe --deeplink-params=%1"
+Root: HKCR; Subkey: "Pdc"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "Pdc\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\Pdc.exe --deeplink-params=%1"
 
 
 [Files]

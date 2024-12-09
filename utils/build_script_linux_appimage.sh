@@ -14,7 +14,7 @@
 # export LINUX_APPIMAGE_TOOL=/home/user/AppImageTool.appimage
 
 
-ARCHIVE_NAME_PREFIX=zano-linux-x64-
+ARCHIVE_NAME_PREFIX=pdc-linux-x64-
 
 : "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/user/boost_1_66_0}"
 : "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/user/Qt5.10.1/5.10.1/gcc_64}"
@@ -94,25 +94,25 @@ mkdir -p Pdc/usr/share/icons/hicolor/256x256/apps;
 rsync -a ../../src/gui/qt-daemon/layout/html ./Pdc/usr/bin --exclude less --exclude package.json --exclude gulpfile.js
 
 cp -Rv src/pdcd src/Pdc src/simplewallet  src/connectivity_tool ./Pdc/usr/bin
-cp -Rv ../../utils/Zano.desktop ./Pdc/usr/share/applications/Zano.desktop
-cp -Rv ../../resources/app_icon.svg ./Pdc/usr/share/icons/hicolor/scalable/apps/Zano.svg
-cp -Rv ../../resources/app_icon_256.png ./Zano/usr/share/icons/hicolor/256x256/apps/Zano.png
+cp -Rv ../../utils/Pdc.desktop ./Pdc/usr/share/applications/Pdc.desktop
+cp -Rv ../../resources/app_icon.svg ./Pdc/usr/share/icons/hicolor/scalable/apps/Pdc.svg
+cp -Rv ../../resources/app_icon_256.png ./Pdc/usr/share/icons/hicolor/256x256/apps/Pdc.png
 
 
-echo "Exec=$prj_root/build/release/Pdc/usr/bin/pdc" >> ./Pdc/usr/share/applications/Zano.desktop
+echo "Exec=$prj_root/build/release/Pdc/usr/bin/pdc" >> ./Pdc/usr/share/applications/Pdc.desktop
 if [ $? -ne 0 ]; then
     echo "Failed to append desktop file"
     exit 1
 fi
 
-$LINUX_DEPLOY_QT ./Pdc/usr/share/applications/Zano.desktop -qmake=$QT_PREFIX_PATH/bin/qmake
+$LINUX_DEPLOY_QT ./Pdc/usr/share/applications/Pdc.desktop -qmake=$QT_PREFIX_PATH/bin/qmake
 if [ $? -ne 0 ]; then
     echo "Failed to run linuxqtdeployment"
     exit 1
 fi
 
 rm -f $prj_root/build/release/Pdc/AppRun
-cp -Rv ../../utils/Zano_appimage_wrapper.sh $prj_root/build/release/Pdc/AppRun
+cp -Rv ../../utils/Pdc_appimage_wrapper.sh $prj_root/build/release/Pdc/AppRun
 
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.AppImage
 
@@ -154,6 +154,6 @@ sha256: $checksum"
 
 echo "$mail_msg"
 
-python3 ../../utils/build_mail.py "Zano linux-x64 ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build $version_str" "${emails}" "$mail_msg"
+python3 ../../utils/build_mail.py "Pdc linux-x64 ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build $version_str" "${emails}" "$mail_msg"
 
 exit 0
