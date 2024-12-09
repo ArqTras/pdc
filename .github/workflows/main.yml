@@ -168,7 +168,7 @@ jobs:
           rm -rf /home/runner/work/_temp/
           wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
           chmod 777 linuxdeployqt-continuous-x86_64.AppImage
-          /home/runner/work/Pdc/Pdc/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop -qmake=/home/runner/work/Pdc/Qt/5.12.12/gcc_64/bin/qmake
+          /home/runner/work/pdc/pdc/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop -qmake=/home/runner/work/pdc/Qt/5.12.12/gcc_64/bin/qmake
           wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod 777 appimagetool-x86_64.AppImage
           rm -rf Pdc-GUI-${TAG}/AppRun
