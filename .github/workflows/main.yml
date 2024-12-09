@@ -49,7 +49,7 @@ jobs:
           curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
           tar xaf openssl-1.1.1n.tar.gz
           cd openssl-1.1.1n/
-          ./config --prefix= /home/runner/work/pdc/pdc/openssl --openssldir= /home/runner/pdc/pdc/openssl shared zlib
+          ./config --prefix=/home/runner/work/pdc/pdc/openssl --openssldir=/home/runner/work/pdc/pdc/openssl shared zlib
           make
           make install
           cd ..
