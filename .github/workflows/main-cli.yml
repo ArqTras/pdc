@@ -20,11 +20,11 @@ jobs:
         # Add more compilers here if you need them
         #build_name: ['Ubuntu 24.04']
         include:
-          - build_name: 'Ubuntu 24.04 - GCC'
+          - build_name: 'Ubuntu 20.04 - GCC'
             package_name: 'gcc g++'
             cc: gcc
             cxx: g++
-            label: ubuntu-24.04
+            label: ubuntu-20.04
             deployable: true
 
     env:
@@ -53,7 +53,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
-          echo export BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 .bashrc
+          echo export BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_84_0 .bashrc
 
       # Install OpenSSL
       - name: Install OpenSSL
@@ -61,7 +61,7 @@ jobs:
           curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
           tar xaf openssl-1.1.1w.tar.gz
           cd openssl-1.1.1w/
-          ./config --prefix=/home/runner/work/Zano/Zano/openssl --openssldir=/home/runner/work/Zano/Zano/openssl shared zlib
+          ./config --prefix=/home/runner/work/pdc/pdc/openssl --openssldir=/home/runner/work/pdc/pdc/openssl shared zlib
           make
           make install
           cd ..
@@ -85,7 +85,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake  -D BOOST_ROOT=/home/runner/work/zano/zano/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/Zano/Zano/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake  -D BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_84_0 -D OPENSSL_ROOT_DIR=/home/runner/work/pdc/pdc/openssl -D BUILD_GUI=OFF -D STATIC=true -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for linux
       - name: Build
@@ -103,10 +103,10 @@ jobs:
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-          rm -rf Zano-${TAG}
-          mkdir Zano-${TAG}
-          cp ${TARGETS} Zano-${TAG}/
-          tar cvfz Zano-${TAG}-${LABEL}.tar.gz Zano-${TAG}/
+          rm -rf Pdc-${TAG}
+          mkdir Pdc-${TAG}
+          cp ${TARGETS} Pdc-${TAG}/
+          tar cvfz Pdc-${TAG}-${LABEL}.tar.gz Pdc-${TAG}/
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -116,16 +116,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_path: ./build/src/Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_name: Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_content_type: application/gzip
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-${{ github.sha }}
+          name: Pdc-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Pdc-${{ github.sha }}
 
 
   # Mac builds on Catalina VM
@@ -169,7 +169,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=/Users/runner/work/Zano/Zano/boost_1_84_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Zano/Zano/boost_1_84_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=/Users/runner/work/pdc/pdc/boost_1_84_0 -D BOOST_LIBRARYDIR=/Users/runner/work/pdc/pdc/boost_1_84_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -187,10 +187,10 @@ jobs:
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
-          rm -rf Zano-${TAG}
-          mkdir Zano-${TAG}
-          cp ${TARGETS} Zano-${TAG}/
-          tar cvfz Zano-${TAG}-${LABEL}.tar.gz Zano-${TAG}/
+          rm -rf Pdc-${TAG}
+          mkdir Pdc-${TAG}
+          cp ${TARGETS} Pdc-${TAG}/
+          tar cvfz Pdc-${TAG}-${LABEL}.tar.gz Pdc-${TAG}/
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -200,16 +200,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_path: ./build/src/Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_name: Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_content_type: application/gzip
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Zano-${{ github.sha }}
+          name: Pdc-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Pdc-${{ github.sha }}
 
 
   # Windows 10
@@ -274,10 +274,10 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src/Release
-          rm -rf Zano-${TAG}
-          mkdir Zano-${TAG}
-          cp *.exe Zano-${TAG}/
-          7z a Zano-${TAG}-${LABEL}.zip Zano-${TAG}/
+          rm -rf Pdc-${TAG}
+          mkdir Pdc-${TAG}
+          cp *.exe Pdc-${TAG}/
+          7z a Pdc-${TAG}-${LABEL}.zip Pdc-${TAG}/
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -287,13 +287,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Release/Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
-          asset_name: Zano-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
+          asset_path: ./build/src/Release/Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
+          asset_name: Pdc-${{ github.event.release.tag_name }}-${{ env.LABEL }}.zip
           asset_content_type: application/zip
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Zano-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Release/Zano-${{ github.sha }}
+          name: Pdc-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Release/Pdc-${{ github.sha }}
