@@ -178,7 +178,7 @@ jobs:
           chmod 777 Pdc-GUI-${TAG}/*/*/*
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
-          ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
+          ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}.AppImage
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -188,8 +188,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
-          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_path: ./build/src/Pdc-Gui-${{ github.event.release.tag_name }}.tar.gz
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}.tar.gz
           asset_content_type: application/gzip
 
       # Upload to GH Release
@@ -200,23 +200,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./build/src/Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
-          asset_name: Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
+          asset_path: ./build/src/Pdc-GUI-${{ github.event.release.tag_name }}.AppImage
+          asset_name: Pdc-GUI-${{ github.event.release.tag_name }}.AppImage
           asset_content_type: application/octet-stream
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
+          name: Pdc-Gui-${{ github.sha }}
           path: ./build/src/Pdc-Gui-${{ github.sha }}
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
-          path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
+          name: Pdc-GUI-${{ github.sha }}.AppImage
+          path: ./build/src/Pdc-GUI-${{ github.sha }}.AppImage
 
 
  # Mac builds on Catalina VM
