@@ -7,7 +7,7 @@ export QT_PLUGIN_PATH=$script_dir/lib
 echo $LD_LIBRARY_PATH
 echo $QT_PLUGIN_PATH
 
-out_file_name=~/.local/share/applications/Zano.desktop
+out_file_name=~/.local/share/applications/Pdc.desktop
 
 call_app()
 {
@@ -33,12 +33,12 @@ create_desktop_icon()
     echo Terminal=true | tee -a $target_file_name  > /dev/null
     echo Type=Application | tee -a $target_file_name  > /dev/null
     echo "Categories=Qt;Utility;" | tee -a $target_file_name  > /dev/null
-    echo "MimeType=x-scheme-handler/zano;" | tee -a $target_file_name  > /dev/null
+    echo "MimeType=x-scheme-handler/pdc;" | tee -a $target_file_name  > /dev/null
 }
 
 
 create_desktop_icon $out_file_name
 
-xdg-mime default Zano.desktop x-scheme-handler/zano
+xdg-mime default Pdc.desktop x-scheme-handler/pdc
 
 call_app "$@"

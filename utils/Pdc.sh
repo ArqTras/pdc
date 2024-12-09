@@ -26,19 +26,19 @@ create_desktop_icon()
     echo [Desktop Entry] | tee -a $target_file_name  > /dev/null
     echo Version=1.0 | tee -a $target_file_name  > /dev/null
     echo Name=Pdc | tee -a $target_file_name > /dev/null
-    echo GenericName=pdc | tee -a $target_file_name  > /dev/null
+    echo GenericName=Pdc | tee -a $target_file_name  > /dev/null
     echo Comment=Privacy blockchain | tee -a $target_file_name > /dev/null
     echo Icon=$script_dir/html/files/desktop_linux_icon.png | tee -a $target_file_name > /dev/null
     echo Exec=$script_dir/Pdc.sh --deeplink-params=%u | tee -a $target_file_name  > /dev/null
     echo Terminal=true | tee -a $target_file_name  > /dev/null
     echo Type=Application | tee -a $target_file_name  > /dev/null
     echo "Categories=Qt;Utility;" | tee -a $target_file_name  > /dev/null
-    echo "MimeType=x-scheme-handler/zano;" | tee -a $target_file_name  > /dev/null
+    echo "MimeType=x-scheme-handler/pdc;" | tee -a $target_file_name  > /dev/null
 }
 
 
 create_desktop_icon $out_file_name
 
-xdg-mime default Zano.desktop x-scheme-handler/zano
+xdg-mime default Pdc.desktop x-scheme-handler/pdc
 
 call_app "$@"
