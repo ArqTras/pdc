@@ -35,9 +35,9 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2
-          tar -xjf boost_1_70_0.tar.bz2
-          cd boost_1_70_0
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
+          tar -xjf boost_1_80_0.tar.bz2
+          cd boost_1_80_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2
           cd ..
@@ -83,7 +83,7 @@ jobs:
           CXX: ${{ matrix.cxx }}
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_70_0 -D OPENSSL_ROOT_DIR=/home/runner/work/pdc/pdc/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/pdc/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_80_0 -D OPENSSL_ROOT_DIR=/home/runner/work/pdc/pdc/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/pdc/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
 
       # Build for linux
