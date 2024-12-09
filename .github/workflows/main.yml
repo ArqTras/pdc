@@ -116,37 +116,37 @@ jobs:
           chmod 777 Pdc-Gui-${TAG}/Pdc.desktop
           chmod 777 Pdc-Gui-${TAG}/Pdc.sh
           mkdir Pdc-Gui-${TAG}/lib
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Pdc-Gui-${TAG}/lib/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Pdc-Gui-${TAG}/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Pdc-Gui-${TAG}/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Pdc-Gui-${TAG}/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Pdc-Gui-${TAG}/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/icudtl.dat Pdc-Gui-${TAG}/
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/icudtl.dat Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Pdc-Gui-${TAG}/
           mkdir Pdc-Gui-${TAG}/lib/platforms
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Pdc-Gui-${TAG}/lib/platforms/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Pdc-Gui-${TAG}/lib/platforms/
           mkdir Pdc-Gui-${TAG}/xcbglintegrations
-          cp /home/runner/work/Pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
           tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
 
           echo Pdc GUI AppImage
@@ -178,7 +178,7 @@ jobs:
           chmod 777 Pdc-GUI-${TAG}/*/*/*
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
-          ARCH=x86_64 /home/runner/work/Pdc/Pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
+          ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
 
       # Upload to GH Release
       - name: Upload to GH Release
