@@ -12,8 +12,8 @@ jobs:
 
 # Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
-    name: Ubuntu-2204
-    runs-on: self-hosted
+    name: Ubuntu-2004
+    runs-on: ubuntu-20.04
 
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
@@ -31,30 +31,28 @@ jobs:
           sudo apt update
           sudo apt upgrade -y
           sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc g++
-          export BOOST_ROOT=/home/arek/boost_1_84_0
-          export OPENSSL_ROOT_DIR=/home/arek/openssl
-          export QT_PREFIX_PATH=/home/are/Qt/5.12.12/gcc_64
+
       # Install Boost
-#      - name: Install Boost
-#        run: |
-#          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
-#          tar -xjf boost_1_84_0.tar.bz2
-#          cd boost_1_84_0
-#          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-#          ./b2
-#          cd ..
-#          echo export BOOST_ROOT= ${{ github.workspace }}/zano/zano/boost_1_84_0 .bashrc
+      - name: Install Boost
+        run: |
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          ./b2
+          cd ..
+          echo export BOOST_ROOT= ${{ github.workspace }}/pdc/pdc/boost_1_84_0 .bashrc
 
       # Install OpenSSH
-#      - name: Install OpenSSL
-#        run: |
-#          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
-#          tar xaf openssl-1.1.1n.tar.gz
-#          cd openssl-1.1.1n/
-#          ./config --prefix= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl --openssldir= /home/arek/actions-runner-pdc/_work/Zano/Zano/openssl shared zlib
-#          make
-#          make install
-#          cd ..
+      - name: Install OpenSSL
+        run: |
+          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
+          tar xaf openssl-1.1.1n.tar.gz
+          cd openssl-1.1.1n/
+          ./config --prefix= /home/runner/work/Pdc/Pdc/openssl --openssldir= /home/runner/Pdc/Pdc/openssl shared zlib
+          make
+          make install
+          cd ..
 
       # Setup Ccache
       - name: Setup ccache
@@ -62,15 +60,15 @@ jobs:
           sudo apt install ccache
 
       # Install Qt
-#      - name: Install Qt
-#        uses: jurplel/install-qt-action@v3
-#        with:
-#          aqtversion: '==3.1.*'
-#          version: '5.12.12'
-#          host: 'linux'
-#          target: 'desktop'
-#          arch: 'gcc_64'
-#          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '5.12.12'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
       # Retrieve Ccache
       - name: Retrieve ccache
