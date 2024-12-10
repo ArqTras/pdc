@@ -237,7 +237,7 @@ jobs:
           name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
           path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
-ubuntu_now_build:
+  ubuntu_now_build:
     name: ${{ matrix.build_name }}
     runs-on: ubuntu-22.04
     strategy:
