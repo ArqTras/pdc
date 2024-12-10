@@ -12,25 +12,45 @@ jobs:
 
 # Common Build matrix for builds on Ubuntu Lasted VM
   ubuntu_build:
-    name: Ubuntu-2004
+    name: ${{ matrix.build_name }}
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
 
+        # Add more compilers here if you need them
+        build_name: ['Ubuntu 20.04 - GCC 9', 'Ubuntu 20.04 - GCC 10']
+        include:
+          - build_name: 'Ubuntu 20.04 - GCC 9'
+            package_name: 'gcc-9 g++-9'
+            cc: gcc-9
+            cxx: g++-9
+            label: ubuntu-20.04
+            deployable: true
+          - build_name: 'Ubuntu 20.04 - GCC 10'
+            package_name: 'gcc-10 g++-10'
+            cc: gcc-10
+            cxx: g++-10
+            label: ubuntu-20.04-linux-gcc-10
+            deployable: false
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
       LABEL: ${{ matrix.label }}
-
     steps:
       - uses: actions/checkout@v4
+
+      # Checkout repository and submodules
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           submodules: recursive
 
        # Fetch Dependencies
       - name: Dependencies
         run: |
           sudo apt update
-          sudo apt upgrade -y
-          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc g++
+          sudo apt upgrade
+          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 ${{ matrix.package_name }}
 
       # Install Boost
       - name: Install Boost
@@ -160,7 +180,6 @@ jobs:
           mkdir -p Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps
           cp -r ../../src/gui/qt-daemon/layout/html Pdc-GUI-${TAG}/usr/bin/
           cp ${TARGETS} Pdc-GUI-${TAG}/usr/bin/
-          ls
           cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop
           cp ../../resources/app_icon.svg Pdc-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps/Pdc.svg
           cp ../../resources/app_icon_256.png Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps/Pdc.png
@@ -218,6 +237,176 @@ jobs:
           name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
           path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
+ubuntu_now_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+
+        # Add more compilers here if you need them
+        build_name: ['Ubuntu 22.04 - GCC 11', 'Ubuntu 22.04 - GCC 12']
+        include:
+          - build_name: 'Ubuntu 22.04 - GCC 11'
+            package_name: 'gcc-11 g++-11'
+            cc: gcc-11
+            cxx: g++-11
+            label: ubuntu-22.04
+            deployable: true
+          - build_name: 'Ubuntu 22.04 - GCC 12'
+            package_name: 'gcc-12 g++-12'
+            cc: gcc-12
+            cxx: g++-12
+            label: ubuntu-22.04-linux-gcc-12
+            deployable: false
+    env:
+      CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
+      LABEL: ${{ matrix.label }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Checkout repository and submodules
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Fetch Dependencies
+      - name: Dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade
+          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev ${{ matrix.package_name }}
+
+      # Install Boost
+      - name: Install Boost
+        run: |
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.bz2
+          tar -xjf boost_1_80_0.tar.bz2
+          cd boost_1_80_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          ./b2
+          cd ..
+
+      # Install OpenSSL
+      - name: Install OpenSSL
+        run: |
+          curl -OL https://www.openssl.org/source/openssl-1.1.1n.tar.gz
+          tar xaf openssl-1.1.1n.tar.gz
+          cd openssl-1.1.1n/
+          ./config --prefix=/home/runner/work/pdc/pdc/openssl --openssldir=/home/runner/work/pdc/pdc/openssl shared zlib
+          make
+          make install
+          cd ..
+
+      # Install Ccache
+      - name: Setup ccache
+        run: |
+          sudo apt install ccache
+
+      # Install Qt
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '5.12.12'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
+
+      # Retrieve Ccache
+      - name: Retrieve ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ matrix.label }}
+
+      # Configure the project with cmake
+      - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          mkdir build && cd build
+          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_80_0 -D OPENSSL_ROOT_DIR=/home/runner/work/pdc/pdc/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/pdc/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+
+      # Build for linux
+      - name: Build
+        run: |
+          cd build
+          make
+
+      # Prepare for deploy
+      - name: Prepare for Deploy
+        id: before_deploy
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
+          cd build/src
+          TARGETS="pdcd connectivity_tool simplewallet Pdc"
+          if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
+          rm -rf Pdc-Gui-${TAG}
+          mkdir Pdc-Gui-${TAG}
+          cp ${TARGETS} Pdc-Gui-${TAG}/
+          cp -r ../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
+          cp ../../utils/buildings/linux/64bit/Pdc.sh Pdc-Gui-${TAG}/
+          cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-Gui-${TAG}/
+          chmod 777 Pdc-Gui-${TAG}/Pdc.desktop
+          chmod 777 Pdc-Gui-${TAG}/Pdc.sh
+          mkdir Pdc-Gui-${TAG}/lib
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicuuc.so.56 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Core.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5DBus.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Gui.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Network.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5OpenGL.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Positioning.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5PrintSupport.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Qml.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Quick.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Sensors.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Sql.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5Widgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngine.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineCore.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebEngineWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5WebChannel.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5XcbQpa.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libQt5QuickWidgets.so.5 Pdc-Gui-${TAG}/lib/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/libexec/QtWebEngineProcess Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_100p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_resources_200p.pak Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/icudtl.dat Pdc-Gui-${TAG}/
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/resources/qtwebengine_devtools_resources.pak Pdc-Gui-${TAG}/
+          mkdir Pdc-Gui-${TAG}/lib/platforms
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Pdc-Gui-${TAG}/lib/platforms/
+          mkdir Pdc-Gui-${TAG}/xcbglintegrations
+          cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
+          tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
+
+      # Upload to GH Release
+      - name: Upload to GH Release
+        if: github.event_name == 'release' && matrix.deployable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/src/Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
+          asset_content_type: application/gzip
+
+      # Upload to GH Actions Artifacts
+      - name: Upload To GH Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
+          path: ./build/src/Pdc-Gui-${{ github.sha }}
 
  # Mac builds on Catalina VM
   macos_build:
