@@ -419,8 +419,11 @@ jobs:
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
     steps:
       - uses: actions/checkout@v4
+
+      # Checkout repository and submodules
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           submodules: recursive
 
       # Fetch Dependencies
@@ -440,7 +443,7 @@ jobs:
 
       # Retrieve ccache
       - name: Retrieve ccache
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ccache-osx
@@ -460,7 +463,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=/Users/runner/work/Pdc/Pdc/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/Pdc/Pdc/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D CMAKE_PREFIX_PATH=/Users/runner/work/Pdc/Qt/5.12.12/clang_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=/Users/runner/work/pdc/pdc/boost_1_80_0 -D BOOST_LIBRARYDIR=/Users/runner/work/pdc/pdc/boost_1_80_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D CMAKE_PREFIX_PATH=/Users/runner/work/pdc/Qt/5.12.12/clang_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -476,7 +479,7 @@ jobs:
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src
-          TARGETS="pdcd connectivity_tool simplewallet"
+          TARGETS="pdcd connectivity_tool simplewallet Pdc"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Pdc-Gui-${TAG}
           mkdir Pdc-Gui-${TAG}
@@ -501,7 +504,6 @@ jobs:
         with:
           name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Pdc-Gui-${{ github.sha }}
-
 
 
   # Windows 10
