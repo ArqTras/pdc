@@ -483,7 +483,7 @@ jobs:
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
           cd build/src
           ls
-          TARGETS="pdcd connectivity_tool simplewallet Pdc"
+          TARGETS="pdcd connectivity_tool simplewallet Pdc.app"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Pdc-Gui-${TAG}
           mkdir Pdc-Gui-${TAG}
