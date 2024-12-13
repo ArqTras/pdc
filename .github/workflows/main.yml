@@ -346,12 +346,17 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
+          prj_root=$(pwd)
+
+          echo Pdc Gui Tar.Gz
+
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet Pdc"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
           rm -rf Pdc-Gui-${TAG}
           mkdir Pdc-Gui-${TAG}
           cp ${TARGETS} Pdc-Gui-${TAG}/
+          ls
           cp -r ../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
           cp ../../utils/buildings/linux/64bit/Pdc.sh Pdc-Gui-${TAG}/
           cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-Gui-${TAG}/
@@ -391,6 +396,36 @@ jobs:
           cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
           tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
 
+          echo Pdc GUI AppImage
+
+          rm -rf Pdc-GUI-${TAG}
+          mkdir Pdc-GUI-${TAG}
+          mkdir -p Pdc-GUI-${TAG}/usr/bin
+          mkdir -p Pdc-GUI-${TAG}/usr/lib
+          mkdir -p Pdc-GUI-${TAG}/usr/share/applications
+          mkdir -p Pdc-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps
+          mkdir -p Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps
+          cp -r ../../src/gui/qt-daemon/layout/html Pdc-GUI-${TAG}/usr/bin/
+          cp ${TARGETS} Pdc-GUI-${TAG}/usr/bin/
+          cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop
+          cp ../../resources/app_icon.svg Pdc-GUI-${TAG}/usr/share/icons/hicolor/scalable/apps/Pdc.svg
+          cp ../../resources/app_icon_256.png Pdc-GUI-${TAG}/usr/share/icons/hicolor/256x256/apps/Pdc.png
+          echo "Exec=$prj_root/build/src/Pdc-GUI-${TAG}/usr/bin/Pdc" >> Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop
+          rm -rf /home/runner/work/_temp/
+          wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+          chmod 777 linuxdeployqt-continuous-x86_64.AppImage
+          /home/runner/work/pdc/pdc/build/src/linuxdeployqt-continuous-x86_64.AppImage ./Pdc-GUI-${TAG}/usr/share/applications/Pdc.desktop -qmake=/home/runner/work/pdc/Qt/5.12.12/gcc_64/bin/qmake
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod 777 appimagetool-x86_64.AppImage
+          rm -rf Pdc-GUI-${TAG}/AppRun
+          cp ../../utils/buildings/linux/64bit/pdc_appimage_wrapper.sh Pdc-GUI-${TAG}/AppRun
+          chmod 777 Pdc-GUI-${TAG}/*
+          chmod 777 Pdc-GUI-${TAG}/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*/*
+          chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
+          ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
+
       # Upload to GH Release
       - name: Upload to GH Release
         if: github.event_name == 'release' && matrix.deployable
@@ -403,12 +438,31 @@ jobs:
           asset_name: Pdc-Gui-${{ github.event.release.tag_name }}-${{ env.LABEL }}.tar.gz
           asset_content_type: application/gzip
 
+      # Upload to GH Release
+      - name: Upload to GH Release
+        if: github.event_name == 'release' && matrix.deployable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/src/Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
+          asset_name: Pdc-GUI-${{ github.event.release.tag_name }}-${{ env.LABEL }}.AppImage
+          asset_content_type: application/octet-stream
+
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Pdc-Gui-${{ github.sha }}
+
+      # Upload to GH Actions Artifacts AppData
+      - name: Upload To GH Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
+          path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
  # Mac builds on Catalina VM
   macos_build:
