@@ -13,18 +13,18 @@ jobs:
 
   ubuntu_now_build:
     name: ${{ matrix.build_name }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         # Add more compilers here if you need them
         #build_name: ['Ubuntu 24.04']
         include:
-          - build_name: 'Ubuntu 20.04 - GCC'
+          - build_name: 'Ubuntu 22.04 - GCC'
             package_name: 'gcc g++'
             cc: gcc
             cxx: g++
-            label: ubuntu-20.04
+            label: ubuntu-22.04
             deployable: true
 
     env:
@@ -47,7 +47,7 @@ jobs:
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+          curl -fL -o boost_1_84_0.tar.bz2 https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
@@ -58,7 +58,7 @@ jobs:
       # Install OpenSSL
       - name: Install OpenSSL
         run: |
-          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          curl -fL -o openssl-1.1.1w.tar.gz https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz
           tar xaf openssl-1.1.1w.tar.gz
           cd openssl-1.1.1w/
           ./config --prefix=/home/runner/work/pdc/pdc/openssl --openssldir=/home/runner/work/pdc/pdc/openssl shared zlib
@@ -73,7 +73,7 @@ jobs:
 
       # Retrieve ccache
       - name: Retrieve ccache
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ccache-${{ matrix.label }}
@@ -122,7 +122,7 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Pdc-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Pdc-${{ github.sha }}
@@ -131,11 +131,9 @@ jobs:
   # Mac builds on Catalina VM
   macos_build:
     name: macOS
-    runs-on: macos-13
+    runs-on: macos-14
     env:
       LABEL: osx
-      CC: /usr/local/opt/llvm@15/bin/clang
-      CXX: /usr/local/opt/llvm@15/bin/clang++
       CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
     steps:
       - uses: actions/checkout@v4
@@ -146,12 +144,12 @@ jobs:
       # Fetch Dependencies
       - name: Dependencies
         run: |
-          brew install --force ccache llvm@15 cmake
+          brew install --force ccache cmake openssl@3
 
       # Install Boost
       - name: Install Boost
         run: |
-          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
+          curl -fL -o boost_1_84_0.tar.bz2 https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh
@@ -160,7 +158,7 @@ jobs:
 
       # Retrieve ccache
       - name: Retrieve ccache
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ccache-osx
@@ -169,7 +167,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=/Users/runner/work/pdc/pdc/boost_1_84_0 -D BOOST_LIBRARYDIR=/Users/runner/work/pdc/pdc/boost_1_84_0/stage/lib  -D OPENSSL_ROOT_DIR=/usr/local/opt/openssl -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release  -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_84_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_84_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -206,7 +204,7 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Pdc-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Pdc-${{ github.sha }}
@@ -231,14 +229,14 @@ jobs:
 
       # Retrieve clcache
       - name: Retrieve clcache
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: clcache
           key: clcache-windows
 
       # Install OpenSSH
-      - name: Install OpenSSH
-        run: choco install openssh
+      - name: Install OpenSSL
+        run: choco install openssl -y
 
       # Install boost
       - name: Install Boost 1.82.0
@@ -254,7 +252,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.1"  -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL" -D STATIC=OFF
+          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=OFF -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.3" -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -D STATIC=OFF
 
       # Build for Windows
       - name: Build
@@ -293,7 +291,7 @@ jobs:
 
       # Upload to GH Actions Artifacts
       - name: Upload To GH Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Pdc-${{ github.sha }}-${{ env.LABEL }}
           path: ./build/src/Release/Pdc-${{ github.sha }}
