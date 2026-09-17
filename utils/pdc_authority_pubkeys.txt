@@ -1,0 +1,7 @@
+PDC authority public keys (safe to commit).
+Private counterparts are in utils/pdc_authority_keys.SECRET.txt (gitignored).
+
+P2P_MAINTAINERS_MAINNET               21dcfd0163de6e177b6215da3daa459348e30b1e359b0884a20ae609a07b592d
+P2P_MAINTAINERS_TESTNET               e99f91c7019d417058934be4d2170cb50f4cecfe52ceb49417f75656895efe53
+ALIAS_SHORT_NAMES_VALIDATION          dacf709201ca0848eaa2bf8add193aa8f28ee2ff9b24b71b8714754d60109bed
+WALLET_ASSETS_WHITELIST_VALIDATION    1bfd31dc840c0f205d9b72df18d298cbdef716e4389684c7da19f3db2a77c65f

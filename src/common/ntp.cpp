@@ -186,8 +186,8 @@ namespace tools
     {
       boost::asio::io_service io_service;
       boost::asio::ip::udp::resolver resolver(io_service);
-      boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), host_name, "ntp");
-      boost::asio::ip::udp::endpoint receiver_endpoint = *resolver.resolve(query);
+      auto ntp_results = resolver.resolve(boost::asio::ip::udp::v4(), host_name, "ntp");
+      boost::asio::ip::udp::endpoint receiver_endpoint = *ntp_results.begin();
       boost::asio::ip::udp::socket socket(io_service);
       socket.open(boost::asio::ip::udp::v4());
 

@@ -242,10 +242,8 @@ namespace epee
           //////////////////////////////////////////////////////////////////////////
 
           boost::asio::ip::tcp::resolver resolver(m_io_service);
-          boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), addr, port);
-          boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-          boost::asio::ip::tcp::resolver::iterator end;
-          if (iterator == end)
+          auto results = resolver.resolve(boost::asio::ip::tcp::v4(), addr, port);
+          if (results.empty())
           {
             LOG_ERROR("Failed to resolve " << addr);
             return false;
@@ -254,14 +252,13 @@ namespace epee
           //////////////////////////////////////////////////////////////////////////
           m_sct_back.set_domain(addr);
 
-          //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
-          boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+          boost::asio::ip::tcp::endpoint remote_endpoint = *results.begin();
 
 
           m_sct_back.get_socket().open(remote_endpoint.protocol());
           if (bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "")
           {
-            boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(addr.c_str()), 0);
+            boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::make_address(addr.c_str()), 0);
             m_sct_back.get_socket().bind(local_endpoint);
           }
 

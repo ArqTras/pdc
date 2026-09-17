@@ -8,8 +8,6 @@
 #include "epee/include/misc_language.h"
 #include "epee/include/storages/parserse_base_utils.h"
 #include "epee/include/storages/portable_storage.h"
-#include "ethereum/libethash/ethash/ethash.h"
-#include "ethereum/libethash/ethash/keccak.h"
 #include "currency_core/currency_format_utils.h"
 
 namespace stratum
@@ -188,18 +186,6 @@ namespace stratum
     return true;
   }
 
-  uint64_t epoch_by_seedhash(const ethash_hash256& seed_hash)
-  {
-    ethash_hash256 epoch_seed = {};
-	  for (uint32_t i = 0; i < 2016; ++i) // 2016 epoches will be enough until 2038
-    {
-      if (memcmp(&seed_hash, &epoch_seed, sizeof seed_hash) == 0)
-        return i;
-      epoch_seed = ethash_keccak256_32(epoch_seed.bytes);
-    }
-	  return UINT64_MAX;
-  }
-
   //------------------------------------------------------------------------------------------------------------------------------
   
   // http://www.jsonrpc.org/specification  
@@ -243,6 +229,4 @@ namespace stratum
     return true;
   }
 
-} // namespace stratum 
-
-inline std::ostream &operator <<(std::ostream &o, const ethash_hash256 &v) { return print_t(o, v); }
+} // namespace stratum

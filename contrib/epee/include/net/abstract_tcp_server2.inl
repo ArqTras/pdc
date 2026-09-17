@@ -121,7 +121,7 @@ bool connection<t_protocol_handler>::start(bool is_income, bool is_multithreaded
   CHECK_AND_NO_ASSERT_MES(!ec, false, "Failed to get local endpoint: " << ec.message() << ':' << ec.value());
 
   context  = boost::value_initialized<t_connection_context>();
-  long ip_ = boost::asio::detail::socket_ops::host_to_network_long(remote_ep.address().to_v4().to_ulong());
+  long ip_ = boost::asio::detail::socket_ops::host_to_network_long(remote_ep.address().to_v4().to_uint());
 
   context.set_details(boost::uuids::random_generator()(), ip_, remote_ep.port(), is_income);
   context.m_last_send = context.m_last_recv = time(NULL);
@@ -157,7 +157,7 @@ bool connection<t_protocol_handler>::request_callback()
   if(!self)
     return false;
 
-  strand_.post(boost::bind(&connection<t_protocol_handler>::call_back_starter, self));
+  boost::asio::post(strand_, boost::bind(&connection<t_protocol_handler>::call_back_starter, self));
   CATCH_ENTRY_L0("connection<t_protocol_handler>::request_callback()", false);
   return true;
 }
@@ -458,8 +458,7 @@ bool boosted_tcp_server<t_protocol_handler>::init_server(uint32_t port, const st
   m_address          = address;
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(address, boost::lexical_cast<std::string>(port));
-  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, boost::lexical_cast<std::string>(port)).begin();
   acceptor_.open(endpoint.protocol());
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   acceptor_.bind(endpoint);
@@ -652,21 +651,19 @@ bool boosted_tcp_server<t_protocol_handler>::connect(const std::string& adr, con
 
   //////////////////////////////////////////////////////////////////////////
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), adr, port);
-  boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-  boost::asio::ip::tcp::resolver::iterator end;
-  if(iterator == end) {
+  auto connect_results = resolver.resolve(boost::asio::ip::tcp::v4(), adr, port);
+  if(connect_results.empty()) {
     LOG_ERROR("Failed to resolve " << adr);
     return false;
   }
   //////////////////////////////////////////////////////////////////////////
 
   //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
-  boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+  boost::asio::ip::tcp::endpoint remote_endpoint = *connect_results.begin();
 
   sock_.open(remote_endpoint.protocol());
   if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "") {
-    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::make_address(adr.c_str()), 0);
     sock_.bind(local_endpoint);
   }
 
@@ -742,19 +739,17 @@ bool boosted_tcp_server<t_protocol_handler>::connect_async(const std::string& ad
 
   //////////////////////////////////////////////////////////////////////////
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), adr, port);
-  boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-  boost::asio::ip::tcp::resolver::iterator end;
-  if(iterator == end) {
+  auto async_results = resolver.resolve(boost::asio::ip::tcp::v4(), adr, port);
+  if(async_results.empty()) {
     LOG_ERROR("Failed to resolve " << adr);
     return false;
   }
   //////////////////////////////////////////////////////////////////////////
-  boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+  boost::asio::ip::tcp::endpoint remote_endpoint = *async_results.begin();
 
   sock_.open(remote_endpoint.protocol());
   if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "") {
-    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+    boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::make_address(adr.c_str()), 0);
     sock_.bind(local_endpoint);
   }
 

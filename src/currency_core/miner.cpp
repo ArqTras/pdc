@@ -248,6 +248,8 @@ namespace currency
     boost::interprocess::ipcdetail::atomic_write32(&m_stop, 0);
     boost::interprocess::ipcdetail::atomic_write32(&m_thread_index, 0);
 
+    randomx_set_mining_mode(true);
+
     for(size_t i = 0; i != threads_count; i++)
       m_threads.push_back(boost::thread(boost::bind(&miner::worker_thread, this)));
 

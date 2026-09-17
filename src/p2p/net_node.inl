@@ -277,26 +277,24 @@ namespace nodetool
 
       io_service io_srv;
       ip::tcp::resolver resolver(io_srv);
-      ip::tcp::resolver::query query(host, portstr);
       boost::system::error_code ec;
-      ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
+      auto results = resolver.resolve(host, portstr, ec);
       CHECK_AND_NO_ASSERT_MES(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
 
-      ip::tcp::resolver::iterator iend;
-      for (; i != iend; ++i)
+      for (const auto& entry : results)
       {
-        ip::tcp::endpoint endpoint = *i;
+        ip::tcp::endpoint endpoint = entry;
         if (endpoint.address().is_v4())
         {
           nodetool::net_address na;
-          na.ip = boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong());
+          na.ip = boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_uint());
           na.port = endpoint.port();
           nodes.push_back(na);
-          LOG_PRINT_L4("Added seed node: " << endpoint.address().to_v4().to_string(ec) << ':' << na.port);
+          LOG_PRINT_L4("Added seed node: " << endpoint.address().to_v4().to_string() << ':' << na.port);
         }
         else
         {
-          LOG_PRINT_L2("IPv6 doesn't supported, skip '" << host << "' -> " << endpoint.address().to_v6().to_string(ec));
+          LOG_PRINT_L2("IPv6 doesn't supported, skip '" << host << "' -> " << endpoint.address().to_v6().to_string());
         }
       }
 
@@ -310,18 +308,9 @@ namespace nodetool
   bool node_server<t_payload_net_handler>::init(const boost::program_options::variables_map& vm)
   {
 #ifndef TESTNET
-    //TODO:
-    //ADD_HARDCODED_SEED_NODE(std::string("0.0.0.0:") + std::to_string(P2P_DEFAULT_PORT));
-    ADD_HARDCODED_SEED_NODE("38.242.135.157", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("154.38.165.93", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("154.38.161.92", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("213.155.160.222", P2P_DEFAULT_PORT);
+    ADD_HARDCODED_SEED_NODE("169.58.142.131", P2P_DEFAULT_PORT);
 #else
-    // TESTNET
-    ADD_HARDCODED_SEED_NODE("38.242.135.157", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("154.38.165.93", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("154.38.161.92", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("213.155.160.222", P2P_DEFAULT_PORT);
+    ADD_HARDCODED_SEED_NODE("169.58.142.131", P2P_DEFAULT_PORT);
 #endif
 
     bool res = handle_command_line(vm);
