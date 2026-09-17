@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "currency_config.h"
 #include "account.h"
 #include "include_base_utils.h"
 
@@ -29,6 +30,7 @@ namespace currency
   int pow_height_to_epoch(uint64_t height);
   crypto::hash pow_epoch_to_seed(int epoch);
   void randomx_set_mining_mode(bool enable_full_dataset);
+  void fill_pow_blob(uint8_t blob[POW_BLOB_SIZE], const crypto::hash& block_header_hash, uint64_t nonce);
 
   crypto::hash get_block_header_mining_hash(const block& b);
   crypto::hash get_block_longhash(uint64_t h, const crypto::hash& block_header_hash, uint64_t nonce);
