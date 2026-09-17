@@ -3819,7 +3819,10 @@ namespace currency
     bl.minor_version = BLOCK_MINOR_VERSION_GENESIS;
     bl.timestamp = 0;
     bl.nonce = CURRENCY_GENESIS_NONCE;
-    LOG_PRINT_GREEN("Generated genesis: " << get_block_hash(bl), LOG_LEVEL_0);
+    const crypto::hash genesis_id = get_block_hash(bl);
+    CHECK_AND_ASSERT_MES(genesis_id == gdefault_genesis, false,
+      "Genesis hash mismatch: computed " << genesis_id << ", expected " << gdefault_genesis);
+    LOG_PRINT_GREEN("Generated genesis: " << genesis_id, LOG_LEVEL_0);
     return true;
   }
   //----------------------------------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 #define CURRENCY_FORMATION_VERSION                      100
 
 #define CURRENCY_GENESIS_NONCE                          (CURRENCY_FORMATION_VERSION + 101011010121) //bender's nightmare
+#define CURRENCY_GENESIS_HASH                           "df35cba557c857756f20612ce3c9d2aa315d0ae8fc2aaffe6c5c59d37e00b10a"
 
 
                                                         
