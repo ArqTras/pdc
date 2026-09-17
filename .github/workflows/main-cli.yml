@@ -213,7 +213,7 @@ jobs:
   # Windows 10
   windows_build:
     name: Windows
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       MSBUILD_PATH: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin"
       LABEL: windows
@@ -223,18 +223,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      # Setup clcache
-      - name: Setup clcache
-        run: pip install clcache
-
-      # Retrieve clcache
-      - name: Retrieve clcache
-        uses: actions/cache@v4
-        with:
-          path: clcache
-          key: clcache-windows
-
-      # Install OpenSSH
+      # Install OpenSSL
       - name: Install OpenSSL
         run: choco install openssl -y
 
@@ -257,7 +246,6 @@ jobs:
       # Build for Windows
       - name: Build
         run: |
-          $env:CLCACHE_DIR = "$env:GITHUB_WORKSPACE\clcache"
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
           dir
