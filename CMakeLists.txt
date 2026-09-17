@@ -77,7 +77,7 @@ endif()
 if(APPLE)
   set(OPENSSL_USE_STATIC_LIBS TRUE)
   # Static OpenSSL on macOS needs system frameworks; Boost is also linked statically below.
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework CoreFoundation -framework Security")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -liconv -framework CoreFoundation -framework Security")
 endif()
 find_package(OpenSSL REQUIRED)
 
@@ -271,6 +271,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fPIC")
 elseif(APPLE)
   find_package(Boost 1.71 REQUIRED COMPONENTS filesystem thread timer date_time chrono regex serialization atomic program_options locale)
+  # Static Boost.Locale needs the system iconv that used to come in via the dylib.
+  list(APPEND Boost_LIBRARIES iconv)
 else()
   find_package(Boost 1.70 REQUIRED COMPONENTS system filesystem thread timer date_time chrono regex serialization atomic program_options locale log)
 endif()
