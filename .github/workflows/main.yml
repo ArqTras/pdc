@@ -325,18 +325,33 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      # Install OpenSSL
-      - name: Install OpenSSL
+      # Boost.Asio 1.84 still uses OpenSSL 1.1 ASN.1 internals; Chocolatey OpenSSL 4.x breaks the Windows build.
+      - name: Cache OpenSSL 1.1.1w
+        id: cache-openssl
+        uses: actions/cache@v4
+        with:
+          path: C:/OpenSSL-Win64
+          key: openssl-1.1.1w-win64-msvc2022-nasm-off
+
+      - name: Install OpenSSL 1.1.1w
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          choco install openssl -y --no-progress
-          $header = Get-ChildItem -Path 'C:\Program Files','C:\Program Files (x86)' -Recurse -Filter ssl.h -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -match '\\include\\openssl\\ssl\.h$' } |
-            Select-Object -First 1
-          if (-not $header) { throw 'OpenSSL ssl.h not found after install' }
-          $root = (Resolve-Path (Join-Path $header.DirectoryName '..\..')).Path
-          echo "OPENSSL_ROOT_DIR=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "OpenSSL root: $root"
+          curl.exe -fL -o openssl-1.1.1w.tar.gz https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz
+          tar -xzf openssl-1.1.1w.tar.gz
+          $vcvars = 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat'
+          $prefix = 'C:\OpenSSL-Win64'
+          cmd /c "`"$vcvars`" && cd openssl-1.1.1w && perl Configure VC-WIN64A no-asm --prefix=$prefix --openssldir=$prefix && nmake && nmake install_sw"
+          if ($LASTEXITCODE -ne 0) { throw 'OpenSSL 1.1.1w build failed' }
+          if (-not (Test-Path "$prefix\include\openssl\ssl.h")) { throw 'OpenSSL ssl.h missing after install' }
+
+      - name: Export OpenSSL 1.1.1w
+        shell: pwsh
+        run: |
+          $prefix = 'C:\OpenSSL-Win64'
+          echo "OPENSSL_ROOT_DIR=$prefix" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "$prefix\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Write-Host "OpenSSL root: $prefix"
 
       # Install QT
       - name: Install Qt
@@ -362,7 +377,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D BOOST_ROOT=C:/local/boost_1_84_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_84_0/lib64-msvc-14.3" -D OPENSSL_ROOT_DIR="$env:OPENSSL_ROOT_DIR" -D STATIC=OFF
+          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D BOOST_ROOT=C:/local/boost_1_84_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_84_0/lib64-msvc-14.3" -D OPENSSL_ROOT_DIR=C:/OpenSSL-Win64 -D STATIC=OFF
           dir
 
       # Build for Windows
@@ -386,6 +401,8 @@ jobs:
           mkdir Pdc-Gui-${TAG}
           dir
           cp Pdc.exe Pdc-Gui-${TAG}/
+          cp /c/OpenSSL-Win64/bin/libssl-1_1-x64.dll Pdc-Gui-${TAG}/ || true
+          cp /c/OpenSSL-Win64/bin/libcrypto-1_1-x64.dll Pdc-Gui-${TAG}/ || true
           D:/a/Pdc/Qt/5.12.12/msvc2017_64/bin/windeployqt.exe Pdc-Gui-${TAG}/Pdc.exe
           cp -r ../../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
           7z a Pdc-Gui-${TAG}-${LABEL}.zip Pdc-Gui-${TAG}
