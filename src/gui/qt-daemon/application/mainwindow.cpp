@@ -6,9 +6,11 @@
 
 #include <QtWidgets>
 #include <QtWebEngineWidgets>
+#include <QWebEnginePage>
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QScreen>
+#include <QTimer>
 
 #include "string_coding.h"
 #include "gui_utils.h"
@@ -97,6 +99,21 @@ std::wstring convert_to_lower_via_qt(const std::wstring& w)
 	return QString().fromStdWString(w).toLower().toStdWString();
 }
 
+namespace
+{
+class LoggingWebEnginePage : public QWebEnginePage
+{
+public:
+  using QWebEnginePage::QWebEnginePage;
+
+protected:
+  void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel /*level*/, const QString& message, int lineNumber, const QString& sourceID) override
+  {
+    LOG_PRINT_L0("[JS] " << message.toStdString() << " (" << sourceID.toStdString() << ":" << lineNumber << ")");
+  }
+};
+}
+
 MainWindow::MainWindow()
   : m_gui_deinitialize_done_1(false)
   , m_backend_stopped_2(false)
@@ -135,18 +152,31 @@ void MainWindow::on_load_finished(bool ok)
 {
   TRY_ENTRY();
   LOG_PRINT("MainWindow::on_load_finished(ok = " << (ok ? "true" : "false") << ")", LOG_LEVEL_0);
+  if (ok && m_view && m_view->page())
+  {
+    m_view->setZoomFactor(1.0);
+    QTimer::singleShot(1500, this, [this]() {
+      if (!m_view || !m_view->page())
+        return;
+      m_view->page()->runJavaScript(
+        QStringLiteral("(function(){var b=document.body;return JSON.stringify({cls:document.documentElement.className,text:(b&&b.innerText||'').slice(0,800),child:(b&&b.firstElementChild&&b.firstElementChild.tagName)||''});})()"),
+        [](const QVariant& v) {
+          LOG_PRINT_L0("[GUI] DOM: " << v.toString().toStdString());
+        });
+    });
+  }
   CATCH_ENTRY2(void());
 }
 
 bool MainWindow::init_window()
 {
   m_view = new QWebEngineView(this);
+  m_view->setPage(new LoggingWebEnginePage(m_view));
   m_channel = new QWebChannel(m_view->page());
   m_view->page()->setWebChannel(m_channel);
 
   QWidget* central_widget_to_be_set = m_view;
-  double zoom_factor_test = 0.75;
-  m_view->setZoomFactor(zoom_factor_test);
+  m_view->setZoomFactor(1.0);
 
   std::string qt_dev_tools_option = m_backend.get_qt_dev_tools_option();
   if (!qt_dev_tools_option.empty())
