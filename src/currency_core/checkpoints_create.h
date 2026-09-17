@@ -7,6 +7,7 @@
 #pragma once
 
 #include "checkpoints.h"
+#include "currency_config.h"
 #include "misc_log_ex.h"
 
 #define ADD_CHECKPOINT(h, hash)  CHECK_AND_ASSERT(checkpoints.add_checkpoint(h,  hash), false)
@@ -20,6 +21,7 @@ namespace currency
 
 #else
     // MAINNET
+    ADD_CHECKPOINT(0, CURRENCY_GENESIS_HASH);
     // ADD_CHECKPOINT(425000,   "46a6c36d5dec2d484d5e4845a8525ca322aafc06915ed9c8da2a241b51b7d1e8");
     // ADD_CHECKPOINT(525000,   "8c1ac57e67448130207a224b2d6e33ccdc64d6dd1c59dbcf9ad2361dc0d07d51");
     // ADD_CHECKPOINT(600000,   "d9fe316086e1aaea07d94082973ec764eff5fc5a05ed6e1eca273cee59daeeb4");

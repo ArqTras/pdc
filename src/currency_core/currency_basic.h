@@ -56,7 +56,7 @@ namespace currency
   const static crypto::signature null_sig = AUTO_VAL_INIT(null_sig);
   const static crypto::key_derivation null_derivation = AUTO_VAL_INIT(null_derivation);
 
-  const static crypto::hash gdefault_genesis = epee::string_tools::hex_to_pod<crypto::hash>("CC608F59F8080E2FBFE3C8C80EB6E6A953D47CF2D6AEBD345BADA3A1CAB99852");
+  const static crypto::hash gdefault_genesis = epee::string_tools::hex_to_pod<crypto::hash>(CURRENCY_GENESIS_HASH);
 
   // Using C++17 extended aggregate initialization (P0017R1). C++17, finally! -- sowle
   const static crypto::public_key native_coin_asset_id       = {{'\xd6', '\x32', '\x9b', '\x5b', '\x1f', '\x7c', '\x08', '\x05', '\xb5', '\xc3', '\x45', '\xf4', '\x95', '\x75', '\x54', '\x00', '\x2a', '\x2f', '\x55', '\x78', '\x45', '\xf6', '\x4d', '\x76', '\x45', '\xda', '\xe0', '\xe0', '\x51', '\xa6', '\x49', '\x8a'}}; // == crypto::c_point_H, checked in crypto_constants
