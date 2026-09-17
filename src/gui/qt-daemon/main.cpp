@@ -66,6 +66,13 @@ int main(int argc, char *argv[])
   log_space::get_set_need_thread_id(true, true);
   log_space::log_singletone::enable_channels("core,currency_protocol,tx_pool,p2p,wallet");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
+#ifdef Q_OS_DARWIN
+  qputenv("QT_MAC_WANTS_LAYER", "1");
+  qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu");
+#endif
 
   QApplication app(argc, argv);
 
