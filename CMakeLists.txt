@@ -72,6 +72,13 @@ set(STATIC ${MSVC} CACHE BOOL "Link libraries statically")
 if(STATIC)
   set(OPENSSL_USE_STATIC_LIBS TRUE)
 endif()
+# macOS cannot use STATIC=TRUE (-static-libgcc), but shipped binaries must still
+# avoid @rpath into the CI Boost/OpenSSL trees.
+if(APPLE)
+  set(OPENSSL_USE_STATIC_LIBS TRUE)
+  # Static OpenSSL on macOS needs system frameworks; Boost is also linked statically below.
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework CoreFoundation -framework Security")
+endif()
 find_package(OpenSSL REQUIRED)
 
 
@@ -231,6 +238,10 @@ endif()
 if(STATIC)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_STATIC_RUNTIME ON)
+endif()
+
+if(APPLE)
+  set(Boost_USE_STATIC_LIBS ON)
 endif()
 
 message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
