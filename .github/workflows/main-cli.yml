@@ -153,7 +153,7 @@ jobs:
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh
-          ./b2
+          ./b2 -j3 link=static variant=release threading=multi boost.locale.icu=off
           cd ..
 
       # Retrieve ccache
@@ -167,7 +167,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_84_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_84_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_84_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_84_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D OPENSSL_USE_STATIC_LIBS=TRUE -D BUILD_GUI=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -185,6 +185,14 @@ jobs:
           cd build/src
           TARGETS="pdcd connectivity_tool simplewallet"
           if [[ "${LABEL}" != "aarch64" ]]; then strip ${TARGETS}; fi
+          for b in ${TARGETS}; do
+            echo "==== otool $b ===="
+            otool -L "$b"
+            if otool -L "$b" | grep -E '@rpath/libboost_|/Users/runner/|libboost_[^ ]*\.dylib|/opt/homebrew/.*/libssl|/opt/homebrew/.*/libcrypto|/usr/local/opt/openssl'; then
+              echo "ERROR: $b still depends on a non-portable Boost/OpenSSL path"
+              exit 1
+            fi
+          done
           rm -rf Pdc-${TAG}
           mkdir Pdc-${TAG}
           cp ${TARGETS} Pdc-${TAG}/
