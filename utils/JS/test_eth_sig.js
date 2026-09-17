@@ -56,7 +56,7 @@ async function deploy_asset()
           asset_descriptor: {
             //current_supply: 1000000000000000,
             decimal_point: 12,
-            full_name: "Zano wrapped ABC",
+            full_name: "PDC wrapped ABC",
             hidden_supply: false,
             meta_info: "Stable and private",
             owner: "",

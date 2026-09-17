@@ -107,7 +107,7 @@ bool multiassets_basic_test::c1(currency::core& c, size_t ev_index, const std::v
 
       miner_wlt->transfer(AMOUNT_ASSETS_TO_TRANSFER_MULTIASSETS_BASIC / 2, alice_wlt->get_account().get_public_address(), asset_id);
       //pass over hardfork
-      CHECK_AND_ASSERT_MES(false, false, "Transfer with 0 Zano worked(fail)");
+      CHECK_AND_ASSERT_MES(false, false, "Transfer with 0 PDC worked(fail)");
     }
     catch (...)
     {

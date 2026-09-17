@@ -1,21 +1,21 @@
 ###########################################################################################
-## zanod Dockerfile
+## pdcd Dockerfile
 ###########################################################################################
 
 #
 # Usage:
-# (make sure you have correct permission for /var/data/zano-data prior to run!)
+# (make sure you have correct permission for /var/data/pdc-data prior to run!)
 #
-#   docker run --restart=always -v /var/data/zano-data:/home/zano/.Zano -p 11121:11121 -p 11211:11211 --name=zanod -dit sowle/zano-full-node
+#   docker run --restart=always -v /var/data/pdc-data:/home/pdc/.PDC -p 19121:19121 -p 19211:19211 --name=pdcd -dit arqtras/pdc-full-node
 #
 # To get into container and interact with the daemon:
-#   docker attach zanod
+#   docker attach pdcd
 #
 # To detach from container and left it running:
 #   Ctrl+P, Ctrl+Q
 #
 # To stop container:
-#   docker stop zanod
+#   docker stop pdcd
 #
 # To build with different lib versions, pass through --build-arg's
 #   docker build --build-arg OPENSSL_VERSION_DOT=1.1.1n --build-arg OPENSSL_HASH=40dceb51a4f6a5275bde0e6bf20ef4b91bfc32ed57c0552e2e8e15463372b17a -f utils/docker/Dockerfile .
@@ -26,7 +26,7 @@
 #   - OpenSSL Version:  OPENSSL_VERSION_DOT, OPENSSL_HASH
 
 #
-# Build Zano
+# Build PDC
 #
 
 FROM ubuntu:18.04 as build-prep
@@ -113,39 +113,39 @@ RUN set -ex \
 
 FROM build-prep as build
 
-# Zano
+# PDC
 
 RUN pwd && mem_avail_gb=$(( $(getconf _AVPHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024 * 1024) )) &&\
     make_job_slots=$(( $mem_avail_gb < 4 ? 1 : $mem_avail_gb / 4)) &&\
     echo make_job_slots=$make_job_slots &&\
     set -x &&\
-    git clone --single-branch --recursive https://github.com/hyle-team/zano.git &&\
-    cd zano &&\
+    git clone --single-branch --recursive https://github.com/ArqTras/pdc.git &&\
+    cd pdc &&\
     mkdir build && cd build &&\
     cmake -D STATIC=TRUE .. &&\
     make -j $make_job_slots daemon simplewallet
 
 
 #
-# Run Zano
+# Run PDC
 #
 
 FROM ubuntu:18.04
 
-RUN useradd -ms /bin/bash zano &&\
-    mkdir -p /home/zano/.Zano &&\
-    chown -R zano:zano /home/zano/.Zano
+RUN useradd -ms /bin/bash pdc &&\
+    mkdir -p /home/pdc/.PDC &&\
+    chown -R pdc:pdc /home/pdc/.PDC
 
-USER zano:zano
+USER pdc:pdc
 
-WORKDIR /home/zano
-COPY --chown=zano:zano --from=build /root/zano/build/src/zanod .
-COPY --chown=zano:zano --from=build /root/zano/build/src/simplewallet .
+WORKDIR /home/pdc
+COPY --chown=pdc:pdc --from=build /root/pdc/build/src/pdcd .
+COPY --chown=pdc:pdc --from=build /root/pdc/build/src/simplewallet .
 
 # blockchain loaction
-VOLUME /home/zano/.Zano
+VOLUME /home/pdc/.PDC
 
-EXPOSE 11121 11211
+EXPOSE 19121 19211
 
-ENTRYPOINT ["./zanod"]
+ENTRYPOINT ["./pdcd"]
 CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0"]

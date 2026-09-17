@@ -3,18 +3,19 @@ import os
 import smtplib
 from email.message import EmailMessage
 
-def getenv(e):
-    t = os.getenv(e)
-    if t == None:
-        print("Error: environment variable " + e + " was not set")
-        exit(1)
-    return t
+def getenv_any(*names):
+    for e in names:
+        t = os.getenv(e)
+        if t is not None:
+            return t
+    print("Error: environment variable " + names[0] + " was not set")
+    exit(1)
 
-zs_from = getenv("ZANO_SMTP_FROM")
-zs_addr = getenv("ZANO_SMTP_ADDR")
-zs_port = getenv("ZANO_SMTP_PORT")
-zs_user = getenv("ZANO_SMTP_USER")
-zs_pass = getenv("ZANO_SMTP_PASS")
+zs_from = getenv_any("PDC_SMTP_FROM", "ZANO_SMTP_FROM")
+zs_addr = getenv_any("PDC_SMTP_ADDR", "ZANO_SMTP_ADDR")
+zs_port = getenv_any("PDC_SMTP_PORT", "ZANO_SMTP_PORT")
+zs_user = getenv_any("PDC_SMTP_USER", "ZANO_SMTP_USER")
+zs_pass = getenv_any("PDC_SMTP_PASS", "ZANO_SMTP_PASS")
 
 if len(sys.argv) != 4:
     print("Usage: " + sys.argv[0] + " <subject> <recipient(s)> <body>")

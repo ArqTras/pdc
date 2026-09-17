@@ -219,8 +219,8 @@ else()
 endif()
 
 
-# always use local Boost installation rather than the system-wide (unless ZANO_USE_SYSTEM_BOOST is defined for some reason, which is not recommended)
-if(NOT DEFINED ENV{ZANO_USE_SYSTEM_BOOST})
+# always use local Boost installation rather than the system-wide (unless PDC_USE_SYSTEM_BOOST is defined)
+if(NOT DEFINED ENV{PDC_USE_SYSTEM_BOOST} AND NOT DEFINED ENV{ZANO_USE_SYSTEM_BOOST})
   set(Boost_NO_SYSTEM_PATHS ON)
 endif()
 

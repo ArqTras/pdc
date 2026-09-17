@@ -1550,11 +1550,11 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
     return false;
   }
   //check if amount is bigger then erc20 fee
-  uint64_t zano_needed_for_wrap = std::stoll(res.tx_cost.pdc_needed_for_erc20);
-  if (amount <= zano_needed_for_wrap)
+  uint64_t pdc_needed_for_wrap = std::stoll(res.tx_cost.pdc_needed_for_erc20);
+  if (amount <= pdc_needed_for_wrap)
   {
     fail_msg_writer() << "Too small amount to cover ERC20 fee. ERC20 cost is: " 
-      << print_money(zano_needed_for_wrap) << " Pdc" <<
+      << print_money(pdc_needed_for_wrap) << " Pdc" <<
       "($" << res.tx_cost.usd_needed_for_erc20 << ")";
     return false;
   }
@@ -1566,7 +1566,7 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
     return false;
   }
   
-  success_msg_writer(false) << "You'll receive estimate " << print_money(amount - zano_needed_for_wrap) << " wPdc (" << print_money(zano_needed_for_wrap)<< " Pdc will be used to cover ERC20 fee)";
+  success_msg_writer(false) << "You'll receive estimate " << print_money(amount - pdc_needed_for_wrap) << " wPdc (" << print_money(pdc_needed_for_wrap)<< " Pdc will be used to cover ERC20 fee)";
   success_msg_writer(false) << "Proceed? (yes/no)";
   while (true)
   {

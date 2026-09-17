@@ -7,7 +7,7 @@ export QT_PLUGIN_PATH=$script_dir/lib
 echo $LD_LIBRARY_PATH
 echo $QT_PLUGIN_PATH
 
-out_file_name=~/.local/share/applications/Zano.desktop
+out_file_name=~/.local/share/applications/Pdc.desktop
 
 call_app()
 {
