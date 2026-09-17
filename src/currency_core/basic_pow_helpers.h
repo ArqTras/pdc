@@ -17,7 +17,6 @@
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
 #include "difficulty.h"
-//#include "offers_services_helpers.h"
 #include "rpc/core_rpc_server_commands_defs.h"
 #include "bc_payments_id_service.h"
 #include "bc_attachments_helpers_basic.h"
@@ -27,12 +26,17 @@
 
 namespace currency
 {
-  int ethash_height_to_epoch(uint64_t height);
-  crypto::hash ethash_epoch_to_seed(int epoch);
+  int pow_height_to_epoch(uint64_t height);
+  crypto::hash pow_epoch_to_seed(int epoch);
+  void randomx_set_mining_mode(bool enable_full_dataset);
+
   crypto::hash get_block_header_mining_hash(const block& b);
   crypto::hash get_block_longhash(uint64_t h, const crypto::hash& block_header_hash, uint64_t nonce);
   void get_block_longhash(const block& b, crypto::hash& res);
   crypto::hash get_block_longhash(const block& b);
+
+  inline int ethash_height_to_epoch(uint64_t height) { return pow_height_to_epoch(height); }
+  inline crypto::hash ethash_epoch_to_seed(int epoch) { return pow_epoch_to_seed(epoch); }
 
   inline uint64_t& access_nonce_in_block_blob(blobdata& bd)
   {

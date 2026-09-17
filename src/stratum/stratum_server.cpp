@@ -8,10 +8,13 @@
 #include "net/abstract_tcp_server2.h"
 #include "currency_core/currency_config.h"
 #include "currency_core/currency_core.h"
+#include "currency_core/basic_pow_helpers.h"
 #include "common/command_line.h"
 #include "common/int-util.h"
 #include "version.h"
 #include "currency_protocol/currency_protocol_handler.h"
+
+#include <cstring>
 
 #undef LOG_DEFAULT_CHANNEL 
 #define LOG_DEFAULT_CHANNEL "stratum"
@@ -32,8 +35,8 @@ namespace
 #define STRATUM_THREADS_COUNT_DEFAULT 2
 #define STRATUM_BLOCK_TEMPLATE_UPD_PERIOD_DEFAULT 30 // sec
 #define STRATUM_TOTAL_HR_PRINT_INTERVAL_S_DEFAULT 60 // sec
-#define VDIFF_TARGET_MIN_DEFAULT 100000000ull // = 100 Mh
-#define VDIFF_TARGET_MAX_DEFAULT 100000000000ull // = 100 Gh
+#define VDIFF_TARGET_MIN_DEFAULT 10000ull
+#define VDIFF_TARGET_MAX_DEFAULT 50000000ull
 #define VDIFF_TARGET_TIME_DEFAULT 30 // sec
 #define VDIFF_RETARGET_TIME_DEFAULT 240 // sec
 #define VDIFF_RETARGET_SHARES_COUNT 12 // enforce retargeting if this many shares are received (high performace in terms of current difficulty)
@@ -76,8 +79,8 @@ namespace
 #define LP_CC_WORKER_CYAN(    ct, message, log_level)  LOG_PRINT_CC_CYAN(     ct, "WORKER " << ct.m_worker_name << ": " << message, log_level)
 #define LP_CC_WORKER_MAGENTA( ct, message, log_level)  LOG_PRINT_CC_MAGENTA(  ct, "WORKER " << ct.m_worker_name << ": " << message, log_level)
 
-#define HR_TO_STREAM_IN_MHS_1P(hr) std::fixed << std::setprecision(1) << hr / 1000000.0
-#define HR_TO_STREAM_IN_MHS_3P(hr) std::fixed << std::setprecision(3) << hr / 1000000.0
+#define HR_TO_STREAM_IN_KHS_1P(hr) std::fixed << std::setprecision(1) << hr / 1000.0
+#define HR_TO_STREAM_IN_KHS_3P(hr) std::fixed << std::setprecision(3) << hr / 1000.0
 
 // debug stuff
 #define DBG_NETWORK_DIFFICULTY 0 // if non-zero: use this value as net difficulty when checking shares (useful for debugging on testnet, recommended value is 3000000000ull)
@@ -127,6 +130,7 @@ namespace
       , m_wrong_shares_count(0)
       , m_hashes_calculated(0)
       , m_blocks_count(0)
+      , m_xmrig_protocol(false)
     {}
 
     void set_worker_name(const std::string& worker_name)
@@ -288,6 +292,7 @@ namespace
     size_t m_blocks_count;
     wide_difficulty_type m_hashes_calculated;
     vdiff_params_t m_vd_params;
+    bool m_xmrig_protocol;
   }; // struct stratum_connection_context
 
 //==============================================================================================================================
@@ -305,7 +310,7 @@ namespace
       , m_p_core(nullptr)
       , m_network_difficulty(0)
       , m_miner_addr(null_pub_addr)
-      , m_block_template_ethash(null_hash)
+      , m_block_template_header_hash(null_hash)
       , m_blockchain_last_block_id(null_hash)
       , m_block_template_height(0)
       , m_block_template_update_ts(0)
@@ -408,8 +413,8 @@ namespace
         LOG_PRINT_RED("non-zero nonce in generated block template", LOG_LEVEL_0);
         access_nonce_in_block_blob(m_block_template_hash_blob) = 0;
       }
-      m_prev_block_template_ethash = m_block_template_ethash;
-      m_block_template_ethash = crypto::cn_fast_hash(m_block_template_hash_blob.data(), m_block_template_hash_blob.size());
+      m_prev_block_template_header_hash = m_block_template_header_hash;
+      m_block_template_header_hash = crypto::cn_fast_hash(m_block_template_hash_blob.data(), m_block_template_hash_blob.size());
       m_block_template_update_ts = epee::misc_utils::get_tick_count();
 
       set_work_for_all_workers(); // notify all workers of updated work
@@ -426,10 +431,25 @@ namespace
         if (ph.second == ph_to_skip)
           continue;
         ph.second->get_context().adjust_worker_difficulty_if_needed(); // some miners seem to not give a f*ck about updated job taget if the block hash wasn't changed, so change difficulty only on work update
-        std::string new_work_json = get_work_json(ph.second->get_context().get_worker_difficulty());
-        ph.second->set_work(new_work_json);
-        ph.second->send_notification(new_work_json);
+        if (ph.second->get_context().m_xmrig_protocol)
+        {
+          std::string job = get_xmrig_job_params_json(ph.second->get_context().get_worker_difficulty());
+          ph.second->set_work(job);
+          ph.second->send_notification(std::string(R"("method":"job","params":)") + job);
+        }
+        else
+        {
+          std::string new_work_json = get_work_json(ph.second->get_context().get_worker_difficulty());
+          ph.second->set_work(new_work_json);
+          ph.second->send_notification(new_work_json);
+        }
       }
+    }
+
+    crypto::hash current_header_hash() const
+    {
+      CRITICAL_REGION_LOCAL(m_work_change_lock);
+      return m_block_template_header_hash;
     }
 
     std::string get_work_json(const wide_difficulty_type& worker_difficulty)
@@ -441,8 +461,26 @@ namespace
       crypto::hash target_boundary = null_hash;
       difficulty_to_boundary_long(worker_difficulty, target_boundary);
 
-      ethash_hash256 seed_hash = ethash_calculate_epoch_seed(ethash_height_to_epoch(m_block_template_height));
-      return R"("result":[")" + pod_to_net_format(m_block_template_ethash) + R"(",")" + pod_to_net_format(seed_hash) + R"(",")" + pod_to_net_format_reverse(target_boundary) + R"(",")" + pod_to_net_format_reverse(m_block_template_height) + R"("])";
+      crypto::hash seed_hash = pow_epoch_to_seed(pow_height_to_epoch(m_block_template_height));
+      return R"("result":[")" + pod_to_net_format(m_block_template_header_hash) + R"(",")" + pod_to_net_format(seed_hash) + R"(",")" + pod_to_net_format_reverse(target_boundary) + R"(",")" + pod_to_net_format_reverse(m_block_template_height) + R"("])";
+    }
+
+    std::string get_xmrig_job_params_json(const wide_difficulty_type& worker_difficulty)
+    {
+      CRITICAL_REGION_LOCAL(m_work_change_lock);
+      if (!is_core_syncronized())
+        return R"({})";
+
+      crypto::hash target_boundary = null_hash;
+      difficulty_to_boundary_long(worker_difficulty, target_boundary);
+      crypto::hash seed_hash = pow_epoch_to_seed(pow_height_to_epoch(m_block_template_height));
+      uint8_t blob[40] = {};
+      memcpy(blob, &m_block_template_header_hash, sizeof(m_block_template_header_hash));
+      return std::string(R"({"blob":")") + epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(blob), sizeof(blob))) +
+        R"(","job_id":")" + pod_to_net_format(m_block_template_header_hash) +
+        R"(","target":")" + pod_to_net_format_reverse(target_boundary) +
+        R"(","seed_hash":")" + pod_to_net_format(seed_hash) +
+        R"(","algo":"rx/0","height":)" + std::to_string(m_block_template_height) + "}";
     }
 
     void update_work(protocol_handler_t* p_ph)
@@ -459,10 +497,15 @@ namespace
       }
       
       if (!updated)
-        p_ph->set_work(get_work_json(p_ph->get_context().get_worker_difficulty()));
+      {
+        if (p_ph->get_context().m_xmrig_protocol)
+          p_ph->set_work(get_xmrig_job_params_json(p_ph->get_context().get_worker_difficulty()));
+        else
+          p_ph->set_work(get_work_json(p_ph->get_context().get_worker_difficulty()));
+      }
     }
 
-    bool handle_work(protocol_handler_t* p_ph, const jsonrpc_id_t& id, const std::string& worker, uint64_t nonce, const crypto::hash& block_ethash)
+    bool handle_work(protocol_handler_t* p_ph, const jsonrpc_id_t& id, const std::string& worker, uint64_t nonce, const crypto::hash& block_header_hash)
     {
       CRITICAL_REGION_LOCAL(m_work_change_lock);
       bool r = false;
@@ -477,10 +520,10 @@ namespace
   
       const uint64_t height = get_block_height(m_block_template);
 
-      // make sure worker sent work with correct block ethash
-      if (block_ethash != m_block_template_ethash)
+      // make sure worker sent work with correct block header hash
+      if (block_header_hash != m_block_template_header_hash)
       {
-        if (block_ethash == m_prev_block_template_ethash)
+        if (block_header_hash == m_prev_block_template_header_hash)
         {
           // Got stale share, do nothing. In future it can be used for more aggressive mining strategies
           LP_CC_WORKER_BLUE(p_ph->get_context(), "got stale share, skip it", LOG_LEVEL_1);
@@ -489,13 +532,13 @@ namespace
           return true;
         }
 
-        LP_CC_WORKER_RED(p_ph->get_context(), "wrong work submitted, ethhash " << block_ethash << ", expected: " << m_block_template_ethash, LOG_LEVEL_0);
+        LP_CC_WORKER_RED(p_ph->get_context(), "wrong work submitted, header " << block_header_hash << ", expected: " << m_block_template_header_hash, LOG_LEVEL_0);
         p_ph->send_response_error(id, JSONRPC_ERROR_CODE_DEFAULT, "wrong work");
         p_ph->get_context().increment_wrong_shares_count();
         return false;
       }
 
-      crypto::hash block_pow_hash = get_block_longhash(height, m_block_template_ethash, nonce);
+      crypto::hash block_pow_hash = get_block_longhash(height, m_block_template_header_hash, nonce);
       wide_difficulty_type worker_difficulty = p_ph->get_context().get_worker_difficulty();
 
       if (!check_hash(block_pow_hash, worker_difficulty))
@@ -558,7 +601,7 @@ namespace
       return true;
     }
 
-    bool handle_login(protocol_handler_t* p_ph, const jsonrpc_id_t& id, const std::string& user_str, const std::string& pass_str, const std::string& worker_str, uint64_t start_difficulty)
+    bool handle_login(protocol_handler_t* p_ph, const jsonrpc_id_t& id, const std::string& user_str, const std::string& pass_str, const std::string& worker_str, uint64_t start_difficulty, bool xmrig)
     {
       CRITICAL_REGION_LOCAL(m_work_change_lock);
       bool r = false, error = false;
@@ -602,22 +645,31 @@ namespace
       }
 
       p_ph->get_context().set_worker_name(worker_str);
+      p_ph->get_context().m_xmrig_protocol = xmrig;
       if (start_difficulty != 0)
         p_ph->get_context().set_worker_difficulty(start_difficulty);
 
-      LP_CC_WORKER_GREEN(p_ph->get_context(), "logged in with username " << user_str << ", start difficulty: " << (start_difficulty != 0 ? std::to_string(start_difficulty) : "default"), LOG_LEVEL_0);
-      p_ph->send_response_default(id);
-      
-      // send initial work
-      update_work(p_ph);
+      LP_CC_WORKER_GREEN(p_ph->get_context(), "logged in with username " << user_str << ", start difficulty: " << (start_difficulty != 0 ? std::to_string(start_difficulty) : "default") << (xmrig ? " (xmrig)" : " (eth)"), LOG_LEVEL_0);
+      if (xmrig)
+      {
+        update_block_template();
+        std::string job = get_xmrig_job_params_json(p_ph->get_context().get_worker_difficulty());
+        p_ph->set_work(job);
+        p_ph->send_response(id, std::string(R"("result":{"id":"1","job":)") + job + R"(,"status":"OK"})");
+      }
+      else
+      {
+        p_ph->send_response_default(id);
+        update_work(p_ph);
+      }
 
       return true;
     }
 
     bool handle_submit_hashrate(protocol_handler_t* p_ph, uint64_t rate, const crypto::hash& rate_submit_id)
     {
-      LP_CC_WORKER_CYAN(p_ph->get_context(), "reported hashrate: " << HR_TO_STREAM_IN_MHS_3P(rate) << " Mh/s" << 
-        ", estimated hashrate: " << HR_TO_STREAM_IN_MHS_3P(p_ph->get_context().estimate_worker_hashrate()) << " Mh/s, run time: " <<
+      LP_CC_WORKER_CYAN(p_ph->get_context(), "reported hashrate: " << HR_TO_STREAM_IN_KHS_3P(rate) << " KH/s" << 
+        ", estimated hashrate: " << HR_TO_STREAM_IN_KHS_3P(p_ph->get_context().estimate_worker_hashrate()) << " KH/s, run time: " <<
         epee::misc_utils::get_time_interval_string(p_ph->get_context().get_hr_estimate_duration()), LOG_LEVEL_3);
       return true;
     }
@@ -711,10 +763,10 @@ namespace
           ph.second->get_hashrate(reported_hr, estimated_hr);
           total_reported_hr += reported_hr;
           total_estimated_hr += estimated_hr;
-          ss << ph.second->get_context().m_worker_name << ": [" << ph.second->get_context().get_blocks_count() << "] " << HR_TO_STREAM_IN_MHS_1P(reported_hr) << " (" << HR_TO_STREAM_IN_MHS_1P(estimated_hr) << "), ";
+          ss << ph.second->get_context().m_worker_name << ": [" << ph.second->get_context().get_blocks_count() << "] " << HR_TO_STREAM_IN_KHS_1P(reported_hr) << " (" << HR_TO_STREAM_IN_KHS_1P(estimated_hr) << "), ";
         }
         auto s = ss.str();
-        LOG_PRINT_CYAN("Blocks found: [" << m_total_blocks_found << "], total speed: " << HR_TO_STREAM_IN_MHS_3P(total_reported_hr) << " Mh/s as reported by miners (" << HR_TO_STREAM_IN_MHS_3P(total_estimated_hr) << " Mh/s estimated by the server), current shares/min: " << m_shares_per_minute.get_speed() << ENDL <<
+        LOG_PRINT_CYAN("Blocks found: [" << m_total_blocks_found << "], total speed: " << HR_TO_STREAM_IN_KHS_3P(total_reported_hr) << " KH/s as reported by miners (" << HR_TO_STREAM_IN_KHS_3P(total_estimated_hr) << " KH/s estimated by the server), current shares/min: " << m_shares_per_minute.get_speed() << ENDL <<
           m_protocol_handlers.size() << " worker(s): " << s.substr(0, s.length() > 2 ? s.length() - 2 : 0), LOG_LEVEL_0);
       }
 
@@ -752,13 +804,13 @@ namespace
     // job data
     block m_block_template;
     std::string m_block_template_hash_blob;
-    crypto::hash m_block_template_ethash;
+    crypto::hash m_block_template_header_hash;
     crypto::hash m_blockchain_last_block_id;
     uint64_t m_block_template_height;
     std::atomic<uint64_t> m_block_template_update_ts;
 
     // previous job (for handling stale shares)
-    crypto::hash m_prev_block_template_ethash;
+    crypto::hash m_prev_block_template_header_hash;
 
     vdiff_params_t m_vdiff_params;
     wide_difficulty_type m_network_difficulty;
@@ -903,6 +955,9 @@ namespace
         m_methods_handlers.insert(std::make_pair("eth_getWork",                 &this_t::handle_method_eth_getWork));
         m_methods_handlers.insert(std::make_pair("eth_submitHashrate",          &this_t::handle_method_eth_submitHashrate));
         m_methods_handlers.insert(std::make_pair("eth_submitWork",              &this_t::handle_method_eth_submitWork));
+        m_methods_handlers.insert(std::make_pair("login",                       &this_t::handle_method_xmrig_login));
+        m_methods_handlers.insert(std::make_pair("submit",                      &this_t::handle_method_xmrig_submit));
+        m_methods_handlers.insert(std::make_pair("keepalived",                  &this_t::handle_method_xmrig_keepalived));
       }
     }
 
@@ -931,7 +986,7 @@ namespace
       }
 
       LOG_PRINT_CC(m_context, "Stratum [submitLogin] USER: " << user_str << ", pass: " << pass_str << ", worker: " << worker_str << ", start diff.: " << (start_difficulty == 0 ? std::string("default") : std::to_string(start_difficulty)), LOG_LEVEL_3);
-      return m_config.handle_login(this, id, user_str, pass_str, worker_str, start_difficulty);
+      return m_config.handle_login(this, id, user_str, pass_str, worker_str, start_difficulty, false);
     }
 
     bool handle_method_eth_getWork(const jsonrpc_id_t& id, epee::serialization::portable_storage& ps, epee::serialization::portable_storage::hsection params_section)
@@ -980,6 +1035,64 @@ namespace
       CHECK_AND_ASSERT_MES(pod_from_net_format(header_str, header_hash), false, "Can't parse header hash from " << header_str);
 
       return m_config.handle_work(this, id, worker, nonce, header_hash);
+    }
+
+    bool handle_method_xmrig_login(const jsonrpc_id_t& id, epee::serialization::portable_storage& ps, epee::serialization::portable_storage::hsection params_section)
+    {
+      std::string user_str, pass_str, worker_str;
+      ps_get_value_noexcept(ps, "login", user_str, params_section);
+      ps_get_value_noexcept(ps, "pass", pass_str, params_section);
+      ps_get_value_noexcept(ps, "agent", worker_str, params_section);
+      if (user_str.empty())
+      {
+        // fallback to array-style params
+        epee::serialization::harray params_array = ps.get_first_value("params", user_str, nullptr);
+        if (params_array != nullptr)
+          ps.get_next_value(params_array, pass_str);
+      }
+      if (worker_str.empty())
+        worker_str = std::to_string(m_config.get_number_id_for_nameless_worker());
+
+      uint64_t start_difficulty = 0;
+      size_t start_diff_delim_pos = user_str.find('.');
+      if (start_diff_delim_pos == std::string::npos)
+        start_diff_delim_pos = user_str.find('+');
+      if (start_diff_delim_pos != std::string::npos)
+      {
+        std::string start_difficulty_str = user_str.substr(start_diff_delim_pos + 1);
+        TRY_ENTRY()
+          start_difficulty = std::stoull(start_difficulty_str);
+        CATCH_ENTRY_CUSTOM("login", { LOG_PRINT_L0(worker_str << ": Can't parse start difficulty from " << start_difficulty_str); }, false);
+        user_str = user_str.substr(0, start_diff_delim_pos);
+      }
+
+      return m_config.handle_login(this, id, user_str, pass_str, worker_str, start_difficulty, true);
+    }
+
+    bool handle_method_xmrig_submit(const jsonrpc_id_t& id, epee::serialization::portable_storage& ps, epee::serialization::portable_storage::hsection params_section)
+    {
+      std::string nonce_str, job_id, result_str;
+      ps_get_value_noexcept(ps, "nonce", nonce_str, params_section);
+      ps_get_value_noexcept(ps, "job_id", job_id, params_section);
+      ps_get_value_noexcept(ps, "result", result_str, params_section);
+      CHECK_AND_ASSERT_MES(!nonce_str.empty(), false, "xmrig submit: missing nonce");
+
+      uint64_t nonce = 0;
+      CHECK_AND_ASSERT_MES(pod_from_net_format_reverse(nonce_str, nonce, true), false, "Can't parse nonce from " << nonce_str);
+
+      crypto::hash header_hash = null_hash;
+      if (!job_id.empty())
+        pod_from_net_format(job_id, header_hash);
+      if (header_hash == null_hash)
+        header_hash = m_config.current_header_hash();
+
+      return m_config.handle_work(this, id, m_context.m_worker_name, nonce, header_hash);
+    }
+
+    bool handle_method_xmrig_keepalived(const jsonrpc_id_t& id, epee::serialization::portable_storage& ps, epee::serialization::portable_storage::hsection params_section)
+    {
+      send_response(id, R"("result":{"status":"KEEPALIVED"})");
+      return true;
     }
 
     void send(const std::string& data)

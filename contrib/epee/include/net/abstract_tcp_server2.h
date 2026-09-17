@@ -273,7 +273,7 @@ class boosted_tcp_server
   template<class t_handler>
   bool async_call(t_handler t_callback)
   {
-    io_service_.post(t_callback);
+    boost::asio::post(io_service_, t_callback);
     return true;
   }
 

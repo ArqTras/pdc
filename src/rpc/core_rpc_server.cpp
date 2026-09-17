@@ -1060,8 +1060,8 @@ namespace currency
     res.block_reward_without_fee = resp.block_reward_without_fee;
     res.block_reward = resp.block_reward;
     res.txs_fee = resp.txs_fee;
-    //calculate epoch seed
-    res.seed = currency::ethash_epoch_to_seed(currency::ethash_height_to_epoch(res.height));
+    //calculate RandomX epoch seed
+    res.seed = currency::pow_epoch_to_seed(currency::pow_height_to_epoch(res.height));
 
     res.status = API_RETURN_CODE_OK;
     LOG_PRINT_L1("COMMAND_RPC_GETBLOCKTEMPLATE OK, response block: " << ENDL << currency::obj_to_json_str(resp.b));

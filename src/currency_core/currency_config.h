@@ -71,6 +71,9 @@
 #define CURRENCY_MINER_TX_MAX_OUTS                      CURRENCY_TX_MAX_ALLOWED_OUTS
 #define CURRENCY_TX_OUTS_RND_SPLIT_DIGITS_TO_KEEP       3
 
+#define POW_ALGORITHM_NAME                              "RandomX"
+#define RANDOMX_EPOCH_LENGTH                            2048
+
 #define DIFFICULTY_POW_STARTER                          1
 #define DIFFICULTY_POS_TARGET                           120 // seconds
 #define DIFFICULTY_POW_TARGET                           120 // seconds
@@ -115,7 +118,7 @@
 #define RPC_DEFAULT_PORT                                19211
 #define STRATUM_DEFAULT_PORT                            19777
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
-#define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
+#define P2P_MAINTAINERS_PUB_KEY                         "21dcfd0163de6e177b6215da3daa459348e30b1e359b0884a20ae609a07b592d"
 #define DIFFICULTY_POS_STARTER                          1
 #else 
 #define P2P_DEFAULT_PORT                                (19211 + CURRENCY_FORMATION_VERSION)
@@ -123,7 +126,7 @@
 #define STRATUM_DEFAULT_PORT                            19888
 #define STRARUM_DEFAULT_PORT                            59113
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
-#define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
+#define P2P_MAINTAINERS_PUB_KEY                         "e99f91c7019d417058934be4d2170cb50f4cecfe52ceb49417f75656895efe53"
 #define DIFFICULTY_POS_STARTER                          1
 #endif
 
@@ -213,7 +216,7 @@
 #define ALIAS_REWARDS_ACCOUNT_VIEW_SEC_KEY              "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
 
 #define ALIAS_MINIMUM_PUBLIC_SHORT_NAME_ALLOWED         6
-#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "37947f7b6a5268c5d0a48bde73d7a426f0b5f24648f74024279540207dc70031" 
+#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "dacf709201ca0848eaa2bf8add193aa8f28ee2ff9b24b71b8714754d60109bed" 
 
 
 #define ALIAS_NAME_MAX_LEN                              255
@@ -307,4 +310,4 @@ static_assert(PREMINE_AMOUNT / WALLET_MAX_ALLOWED_OUTPUT_AMOUNT < CURRENCY_MINER
 #endif
 
 
-#define WALLET_ASSETS_WHITELIST_VALIDATION_PUBLIC_KEY   "" //TODO@#@
+#define WALLET_ASSETS_WHITELIST_VALIDATION_PUBLIC_KEY   "1bfd31dc840c0f205d9b72df18d298cbdef716e4389684c7da19f3db2a77c65f"

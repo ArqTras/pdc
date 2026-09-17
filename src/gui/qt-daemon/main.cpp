@@ -52,7 +52,9 @@ int main(int argc, char *argv[])
 
   TRY_ENTRY();
   epee::string_tools::set_module_name_and_folder(path_to_process_utf8);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 #ifdef _MSC_VER
 #if _MSC_VER >= 1910
   QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); //HiDPI pixmaps

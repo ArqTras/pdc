@@ -7,3 +7,4 @@ Thumbs.db
 ._*
 .idea
 .vs/*
+utils/*.SECRET.txt

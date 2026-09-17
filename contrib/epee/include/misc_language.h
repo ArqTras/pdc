@@ -39,15 +39,7 @@
 #include "auto_val_init.h"
 
 
-#define MARK_AS_POD_C11(type)   \
-namespace std  \
-{  \
-  template<> \
-struct is_pod< type > \
-  { \
-  static const bool value = true; \
-  }; \
-}
+#define MARK_AS_POD_C11(type)
 
 
 namespace epee

@@ -8,6 +8,7 @@
 #include <QtWebEngineWidgets>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QScreen>
 
 #include "string_coding.h"
 #include "gui_utils.h"
@@ -616,7 +617,12 @@ void MainWindow::restore_pos(bool consider_showed)
   }
   else
   {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QPoint point = screen ? screen->geometry().bottomRight() : QPoint();
+#else
     QPoint point = QApplication::desktop()->screenGeometry().bottomRight();
+#endif
     if (m_config.m_window_position.first + m_config.m_window_size.second > point.x() ||
       m_config.m_window_position.second + m_config.m_window_size.first > point.y()
       )
@@ -1094,7 +1100,11 @@ bool MainWindow::update_tor_status(const view::current_action_status& opt)
   CATCH_ENTRY2(false);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
+#else
 bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+#endif
 {
   TRY_ENTRY();
 #ifdef WIN32

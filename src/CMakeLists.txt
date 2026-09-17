@@ -165,23 +165,23 @@ add_dependencies(stratum version ${PCH_LIB_NAME})
 ENABLE_SHARED_PCH(stratum STRATUM)
 
 
-target_link_libraries(currency_core lmdb mdbx)
+target_link_libraries(currency_core lmdb mdbx randomx)
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)
-target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic randomx ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
                      
 add_executable(connectivity_tool ${CONN_TOOL})
 add_dependencies(connectivity_tool version)
-target_link_libraries(connectivity_tool currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(connectivity_tool currency_core crypto common zlibstatic randomx ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
 ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 
 add_executable(simplewallet ${SIMPLEWALLET})
 add_dependencies(simplewallet version) 
-target_link_libraries(simplewallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(simplewallet wallet rpc currency_core crypto common zlibstatic randomx ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 
 ENABLE_SHARED_PCH(simplewallet SIMPLEWALLET)
 ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
@@ -203,10 +203,9 @@ if(BUILD_GUI)
   ENABLE_SHARED_PCH(Pdc QTDAEMON)
   ENABLE_SHARED_PCH_EXECUTABLE(Pdc)
 	  
-  #QT5_USE_MODULES(Pdc WebEngineWidgets WebChannel)
-  find_package(Qt5PrintSupport REQUIRED)
-
-  target_link_libraries(Pdc wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebChannel Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+  target_link_libraries(Pdc wallet rpc currency_core crypto common zlibstatic randomx ethash
+    ${PDC_QT_WIDGETS} ${PDC_QT_WEBCHANNEL} ${PDC_QT_WEBENGINE} ${PDC_QT_PRINTSUPPORT}
+    ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
   if (UNIX AND NOT APPLE)
 	target_link_libraries(Pdc rt)
   endif()
