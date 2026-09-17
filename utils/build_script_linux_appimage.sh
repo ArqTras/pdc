@@ -73,7 +73,7 @@ fi
 
 
 
-read version_str <<< $(./src/pdcd --version | awk '/^Pdc/ { print $2 }')
+read version_str <<< $(./src/pdcd --version | awk '/^PDC/ { print $2 }')
 version_str=${version_str}
 
 read commit_str <<< $(./src/pdcd  --version | grep -m 1 -P -o "(?<=\[)[0-9a-f]{7}")
@@ -149,7 +149,7 @@ fi
 read checksum <<< $(sha256sum $package_filename | awk '/^/ { print $1 }' )
 
 mail_msg="New ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build for linux-x64:<br>
-<a href='https://build.zano.org/builds/$package_filename'>https://build.zano.org/builds/$package_filename</a><br>
+<a href='https://github.com/ArqTras/pdc/releases'>$package_filename</a><br>
 sha256: $checksum"
 
 echo "$mail_msg"

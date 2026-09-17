@@ -62,7 +62,7 @@ if [ $? -ne 0 ]; then
 fi
 
 
-read version_str <<< $(./src/pdcd --version | awk '/^Pdc/ { print $2 }')
+read version_str <<< $(./src/pdcd --version | awk '/^PDC/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 

@@ -1,10 +1,7 @@
-[![Coverity Scan](https://scan.coverity.com/projects/18767/badge.svg)](https://scan.coverity.com/projects/zanoproject)
-[![Discord](https://img.shields.io/discord/538361472691077130?label=discord&logo=discord)](https://discord.gg/wE3rmYY)
-
 ## Cloning
 
 Be sure to clone the repository properly:\
-`$ git clone --recursive https://github.com/hyle-team/zano.git`
+`$ git clone --recursive https://github.com/ArqTras/pdc.git`
 
 # Building
 --------
@@ -24,7 +21,7 @@ Be sure to clone the repository properly:\
 
 Note:\
 [*server version*] denotes steps required for building command-line tools (daemon, simplewallet, etc.).\
-[*GUI version*] denotes steps required for building Zano executable with GUI.
+[*GUI version*] denotes steps required for building Pdc executable with GUI.
 
 <br />
 
@@ -42,15 +39,15 @@ Recommended OS versions: Ubuntu 20.04, 22.04 LTS.
 
        sudo apt-get install -y build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev mesa-common-dev libglu1-mesa-dev
 
-2. Clone Zano into a local folder\
-   (If for some reason you need to use alternative Zano branch, change 'master' to the required branch name.)
+2. Clone PDC into a local folder\
+   (If for some reason you need to use alternative PDC branch, change 'pdc' to the required branch name.)
    
-       git clone --recursive https://github.com/hyle-team/zano.git -b master
+       git clone --recursive https://github.com/ArqTras/pdc.git -b pdc
 
-   In the following steps we assume that you cloned Zano into '~/zano' folder in your home directory. 
+   In the following steps we assume that you cloned PDC into '~/pdc' folder in your home directory. 
 
 3. Download and build Boost\
-    (Assuming you have cloned Zano into the 'zano' folder. If you used a different location for Zano, **edit line 4** accordingly.)
+    (Assuming you have cloned PDC into the 'pdc' folder. If you used a different location for PDC, **edit line 4** accordingly.)
 
        curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.bz2
        echo "cc4b893acf645c9d4b698e9a0f08ca8846aa5d6c68275c14c3e7949c24109454  boost_1_84_0.tar.bz2" | shasum -c && tar -xjf boost_1_84_0.tar.bz2
@@ -104,19 +101,19 @@ For instance, by adding the following lines to `~/.bashrc`
 8. Build the binaries
    1. If you skipped step 6 and did not set the environment variables:
 
-          cd zano && mkdir build && cd build
+          cd pdc && mkdir build && cd build
           BOOST_ROOT=$HOME/boost_1_70_0 OPENSSL_ROOT_DIR=$HOME/openssl cmake ..
           make -j1 daemon simplewallet
 
    2. If you set the variables in step 6:
 
-          cd zano && mkdir build && cd build
+          cd pdc && mkdir build && cd build
           cmake ..
           make -j1 daemon simplewallet
 
       or simply:
 
-          cd zano && make -j1
+          cd pdc && make -j1
    
       **NOTICE**: If you are building on a machine with a relatively high amount of RAM or with the proper setting of virtual memory, then you can use `-j2` or `-j` option to speed up the building process. Use with caution.
       
@@ -124,7 +121,7 @@ For instance, by adding the following lines to `~/.bashrc`
    
    1. Build GUI:
 
-          cd zano
+          cd pdc
           utils/build_script_linux.sh
 
     Look for the binaries in `build` folder
@@ -136,15 +133,15 @@ Recommended OS version: Windows 7 x64, Windows 11 x64.
 1. Install required prerequisites (Boost, Qt, CMake, OpenSSL).
 2. Edit paths in `utils/configure_local_paths.cmd`.
 3. Run one of `utils/configure_win64_msvsNNNN_gui.cmd` according to your MSVC version.
-4. Go to the build folder and open generated Zano.sln in MSVC.
+4. Go to the build folder and open generated Pdc.sln in MSVC.
 5. Build.
 
 In order to correctly deploy Qt GUI application, you also need to do the following:
 
-6. Copy Zano.exe to a folder (e.g. `depoy`). 
-7. Run  `PATH_TO_QT\bin\windeployqt.exe deploy\Zano.exe`.
+6. Copy Pdc.exe to a folder (e.g. `depoy`). 
+7. Run  `PATH_TO_QT\bin\windeployqt.exe deploy\Pdc.exe`.
 8. Copy folder `\src\gui\qt-daemon\html` to `deploy\html`.
-9. Now you can run `Zano.exe`
+9. Now you can run `Pdc.exe`
 
 <br />
 
@@ -159,12 +156,12 @@ To build GUI application:
 1. Create self-signing certificate via Keychain Access:\
     a. Run Keychain Access.\
     b. Choose Keychain Access > Certificate Assistant > Create a Certificate.\
-    c. Use “Zano” (without quotes) as certificate name.\
+    c. Use “Pdc” (without quotes) as certificate name.\
     d. Choose “Code Signing” in “Certificate Type” field.\
     e. Press “Create”, then “Done”.\
     f. Make sure the certificate was added to keychain "System". If not—move it to "System".\
     g. Double click the certificate you've just added, enter the trust section and under "When using this certificate" select "Always trust".\
-    h. Unfold the certificate in Keychain Access window and double click the underlying private key "Zano". Select "Access Control" tab, then select "Allow all applications to access this item". Click "Save Changes".
+    h. Unfold the certificate in Keychain Access window and double click the underlying private key "Pdc". Select "Access Control" tab, then select "Allow all applications to access this item". Click "Save Changes".
 2. Revise building script, comment out unwanted steps and run it:  `utils/build_script_mac_osx.sh`
 3. The application should be here: `/buid_mac_osx_64/release/src`
 
@@ -173,7 +170,7 @@ To build GUI application:
 
 ## Supporting project/donations
 
-ZANO @dev<br />
+PDC @dev<br />
 BTC bc1qpa8w8eaehlplfepmnzpd7v9j046899nktxnkxp<br />
 BCH qqgq078vww5exd9kt3frx6krdyznmp80hcygzlgqzd<br />
 ETH 0x206c52b78141498e74FF074301ea90888C40c178<br />

@@ -3,14 +3,18 @@ set +e # switch off exit on error
 curr_path=${BASH_SOURCE%/*}
 
 # check that all the required environment vars are set
-: "${ZANO_QT_PATH:?variable not set, see also macosx_build_config.command}"
-: "${ZANO_BOOST_ROOT:?variable not set, see also macosx_build_config.command}"
-: "${ZANO_BOOST_LIBS_PATH:?variable not set, see also macosx_build_config.command}"
-: "${ZANO_BUILD_DIR:?variable not set, see also macosx_build_config.command}"
+: "${PDC_QT_PATH:=${ZANO_QT_PATH-}}"
+: "${PDC_BOOST_ROOT:=${ZANO_BOOST_ROOT-}}"
+: "${PDC_BOOST_LIBS_PATH:=${ZANO_BOOST_LIBS_PATH-}}"
+: "${PDC_BUILD_DIR:=${ZANO_BUILD_DIR-}}"
+: "${PDC_QT_PATH:?variable not set, see also macosx_build_config.command}"
+: "${PDC_BOOST_ROOT:?variable not set, see also macosx_build_config.command}"
+: "${PDC_BOOST_LIBS_PATH:?variable not set, see also macosx_build_config.command}"
+: "${PDC_BUILD_DIR:?variable not set, see also macosx_build_config.command}"
 : "${CMAKE_OSX_SYSROOT:?CMAKE_OSX_SYSROOT should be set to macOS SDK path, e.g.: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk}"
 : "${OPENSSL_ROOT_DIR:?variable not set, see also macosx_build_config.command}"
 
-ARCHIVE_NAME_PREFIX=zano-macos-x64-
+ARCHIVE_NAME_PREFIX=pdc-macos-x64-
 
 if [ -n "$build_prefix" ]; then
   ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}${build_prefix}-
@@ -24,14 +28,14 @@ if [ "$testnet" == true ]; then
 fi
 
 ######### DEBUG ##########
-#cd "$ZANO_BUILD_DIR/release/src"
+#cd "$PDC_BUILD_DIR/release/src"
 #rm *.dmg
 #if false; then
 ##### end of DEBUG ######
 
-rm -rf $ZANO_BUILD_DIR; mkdir -p "$ZANO_BUILD_DIR/release"; cd "$ZANO_BUILD_DIR/release"
+rm -rf $PDC_BUILD_DIR; mkdir -p "$PDC_BUILD_DIR/release"; cd "$PDC_BUILD_DIR/release"
 
-cmake $testnet_def -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D BUILD_GUI=TRUE -D CMAKE_PREFIX_PATH="$ZANO_QT_PATH/clang_64" -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$ZANO_BOOST_ROOT" -D BOOST_LIBRARYDIR="$ZANO_BOOST_LIBS_PATH" ../..
+cmake $testnet_def -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D BUILD_GUI=TRUE -D CMAKE_PREFIX_PATH="$PDC_QT_PATH/clang_64" -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$PDC_BOOST_ROOT" -D BOOST_LIBRARYDIR="$PDC_BOOST_LIBS_PATH" ../..
 if [ $? -ne 0 ]; then
     echo "Failed to cmake"
     exit 1
@@ -39,9 +43,9 @@ fi
 
 
 
-make -j Zano
+make -j Pdc
 if [ $? -ne 0 ]; then
-    echo "Failed to make Zano"
+    echo "Failed to make Pdc"
     exit 1
 fi
 
@@ -59,64 +63,57 @@ if [ $? -ne 0 ]; then
 fi
 
 # copy all necessary libs into the bundle in order to workaround El Capitan's SIP restrictions
-mkdir -p Zano.app/Contents/Frameworks/boost_libs
-cp -R $ZANO_BOOST_LIBS_PATH/*.dylib Zano.app/Contents/Frameworks/boost_libs/
+mkdir -p Pdc.app/Contents/Frameworks/boost_libs
+cp -R $PDC_BOOST_LIBS_PATH/*.dylib Pdc.app/Contents/Frameworks/boost_libs/
 if [ $? -ne 0 ]; then
     echo "Failed to cp workaround to MacOS"
     exit 1
 fi
 
-# rename process name to big letter 
-mv Zano.app/Contents/MacOS/zano Zano.app/Contents/MacOS/Zano
+cp pdcd simplewallet Pdc.app/Contents/MacOS/
 if [ $? -ne 0 ]; then
-    echo "Failed to rename process"
-    exit 1
-fi
-
-cp zanod simplewallet Zano.app/Contents/MacOS/
-if [ $? -ne 0 ]; then
-    echo "Failed to copy binaries to Zano.app folder"
+    echo "Failed to copy binaries to Pdc.app folder"
     exit 1
 fi
 
 # fix boost libs paths in main executable and libs to workaround El Capitan's SIP restrictions
 source ../../../utils/macosx_fix_boost_libs_path.sh
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/Zano
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/simplewallet
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/zanod
-#fix_boost_libs_in_libs @executable_path/../Frameworks/boost_libs Zano.app/Contents/Frameworks/boost_libs
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Pdc.app/Contents/MacOS/Pdc
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Pdc.app/Contents/MacOS/simplewallet
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Pdc.app/Contents/MacOS/pdcd
+#fix_boost_libs_in_libs @executable_path/../Frameworks/boost_libs Pdc.app/Contents/Frameworks/boost_libs
 
 
-"$ZANO_QT_PATH/clang_64/bin/macdeployqt" Zano.app
+"$PDC_QT_PATH/clang_64/bin/macdeployqt" Pdc.app
 if [ $? -ne 0 ]; then
-    echo "Failed to macdeployqt Zano.app"
+    echo "Failed to macdeployqt Pdc.app"
     exit 1
 fi
 
 
-rm -rf Zano.app/Contents/Frameworks/libboost*.dylib
+rm -rf Pdc.app/Contents/Frameworks/libboost*.dylib
 
 
-rsync -a ../../../src/gui/qt-daemon/layout/html Zano.app/Contents/MacOS --exclude less --exclude package.json --exclude gulpfile.js
+rsync -a ../../../src/gui/qt-daemon/layout/html Pdc.app/Contents/MacOS --exclude less --exclude package.json --exclude gulpfile.js
 if [ $? -ne 0 ]; then
     echo "Failed to cp html to MacOS"
     exit 1
 fi
 
-cp ../../../src/gui/qt-daemon/app.icns Zano.app/Contents/Resources
+cp ../../../src/gui/qt-daemon/app.icns Pdc.app/Contents/Resources
 if [ $? -ne 0 ]; then
     echo "Failed to cp app.icns to resources"
     exit 1
 fi
 
-codesign -s "Developer ID Application: Zano Limited" --timestamp --options runtime -f --entitlements ../../../utils/macos_entitlements.plist --deep ./Zano.app
+codesign -s "Pdc" --timestamp --options runtime -f --entitlements ../../../utils/macos_entitlements.plist --deep ./Pdc.app
 if [ $? -ne 0 ]; then
-    echo "Failed to sign Zano.app"
+    echo "Failed to sign Pdc.app"
     exit 1
 fi
 
 
-read version_str <<< $(DYLD_LIBRARY_PATH=$ZANO_BOOST_LIBS_PATH ./connectivity_tool --version | awk '/^Zano/ { print $2 }')
+read version_str <<< $(DYLD_LIBRARY_PATH=$PDC_BOOST_LIBS_PATH ./connectivity_tool --version | awk '/^PDC/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 
@@ -128,7 +125,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-mv Zano.app package_folder 
+mv Pdc.app package_folder 
 if [ $? -ne 0 ]; then
     echo "Failed to top app package"
     exit 1
@@ -151,7 +148,7 @@ echo "############### Uploading... ################"
 
 package_filepath="$(pwd)/$package_filename"
 
-#scp $package_filepath zano_build_server:/var/www/html/builds/
+#scp $package_filepath pdc_build_server:/var/www/html/builds/
 source ../../../utils/macosx_build_uploader.sh
 pushd .
 upload_build $package_filepath
@@ -165,12 +162,12 @@ popd
 read checksum <<< $( shasum -a 256 $package_filepath | awk '/^/ { print $1 }' )
 
 mail_msg="New ${build_prefix_label}${testnet_label}build for macOS-x64:<br>
-<a href='https://build.zano.org/builds/$package_filename'>https://build.zano.org/builds/$package_filename</a><br>
+<a href='https://github.com/ArqTras/pdc/releases'>$package_filename</a><br>
 sha256: $checksum"
 
 echo "$mail_msg"
 
-python3 ../../../utils/build_mail.py "Zano macOS-x64 ${build_prefix_label}${testnet_label}build $version_str" "${emails}" "$mail_msg"
+python3 ../../../utils/build_mail.py "Pdc macOS-x64 ${build_prefix_label}${testnet_label}build $version_str" "${emails}" "$mail_msg"
 
 ######################
 # notarization
@@ -182,12 +179,12 @@ echo "Notarizing..."
 
 # creating archive for notarizing
 echo "Creating archive for notarizing"
-rm -f Zano.zip
-/usr/bin/ditto -c -k --keepParent ./Zano.app ./Zano.zip
+rm -f Pdc.zip
+/usr/bin/ditto -c -k --keepParent ./Pdc.app ./Pdc.zip
 
 tmpfile="tmptmptmp"
-#xcrun altool --notarize-app --primary-bundle-id "org.zano.desktop" -u "andrey@zano.org" -p "@keychain:Developer-altool" --file ./Zano.zip > $tmpfile 2>&1
-xcrun notarytool submit --wait --keychain-profile "notarytool-password" ./Zano.zip
+#xcrun altool --notarize-app --primary-bundle-id "org.pdc.wallet" --file ./Pdc.zip
+xcrun notarytool submit --wait --keychain-profile "notarytool-password" ./Pdc.zip
 RETURN=$?
 if [ $RETURN -ne 0 ]; then
     echo "Failed to submit for notarization or notarization failed, error code $RETURN"

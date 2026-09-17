@@ -187,7 +187,7 @@ namespace wallet_public
       KV_SERIALIZE(contract)                      DOC_DSCR("Escrow contract if it's part of transaction")  DOC_EXMP_AUTO(1)   DOC_END
       KV_SERIALIZE(service_entries)               DOC_DSCR("Additional entries that might be stored in transaction but not part of it's consensus")  DOC_EXMP_AUTO(1)   DOC_END
       KV_SERIALIZE(transfer_internal_index)       DOC_DSCR("Index of this entry in the wallet's array of transaction's history")  DOC_EXMP(12)   DOC_END
-      KV_SERIALIZE(remote_addresses)              DOC_DSCR("Remote addresses of this transfer(destination if it's outgoing transfer or sender if it's incoming transaction)")  DOC_EXMP_AUTO(1, "ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp")   DOC_END
+      KV_SERIALIZE(remote_addresses)              DOC_DSCR("Remote addresses of this transfer(destination if it's outgoing transfer or sender if it's incoming transaction)")  DOC_EXMP_AUTO(1, "Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64")   DOC_END
       KV_SERIALIZE(remote_aliases)                DOC_DSCR("Aliases for remot addresses, of discovered")  DOC_EXMP_AUTO(1, "roger")    DOC_END
       KV_SERIALIZE(subtransfers)                  DOC_DSCR("Essential part of transfer entry: amounts that been transfered in this transaction grouped by asset id")  DOC_EXMP_AUTO(1)   DOC_END
       
@@ -398,7 +398,7 @@ namespace wallet_public
       KV_SERIALIZE(require_password)    DOC_DSCR("Indicates whether a password is required.") DOC_EXMP(true)  DOC_END
       KV_SERIALIZE(hash_sum_matched)    DOC_DSCR("Indicates whether the hash sum matches.")   DOC_EXMP(true)  DOC_END
       KV_SERIALIZE(tracking)            DOC_DSCR("Indicates whether tracking is enabled.")    DOC_EXMP(false) DOC_END
-      KV_SERIALIZE(address)             DOC_DSCR("Return address of the seed phrase.")        DOC_EXMP("ZxDNaMeZjwCjnHuU5gUNyrP1pM3U5vckbakzzV6dEHyDYeCpW8XGLBFTshcaY8LkG9RQn7FsQx8w2JeJzJwPwuDm2NfixPAXf") DOC_END
+      KV_SERIALIZE(address)             DOC_DSCR("Return address of the seed phrase.")        DOC_EXMP("Px1Gvm3biCu8ZY587oVuL1HxwJop8qVUyTNLYVWUB5dwcmjnBCoWfiV3BswJaUARXTCbHAzGoW1gRMzgQfy8qbqP2ZW1hXe2j") DOC_END
     END_KV_SERIALIZE_MAP()
   };
 
@@ -441,7 +441,7 @@ namespace wallet_public
       std::string   address;
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(address)  DOC_DSCR("string; standard public address of the wallet.")  DOC_EXMP("ZxDNaMeZjwCjnHuU5gUNyrP1pM3U5vckbakzzV6dEHyDYeCpW8XGLBFTshcaY8LkG9RQn7FsQx8w2JeJzJwPwuDm2NfixPAXf") DOC_END
+        KV_SERIALIZE(address)  DOC_DSCR("string; standard public address of the wallet.")  DOC_EXMP("Px1Gvm3biCu8ZY587oVuL1HxwJop8qVUyTNLYVWUB5dwcmjnBCoWfiV3BswJaUARXTCbHAzGoW1gRMzgQfy8qbqP2ZW1hXe2j") DOC_END
       END_KV_SERIALIZE_MAP()
     };
   };
@@ -470,7 +470,7 @@ namespace wallet_public
       uint64_t                  current_height;
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(address)                  DOC_DSCR("string; standard public address of the wallet.")  DOC_EXMP("ZxDNaMeZjwCjnHuU5gUNyrP1pM3U5vckbakzzV6dEHyDYeCpW8XGLBFTshcaY8LkG9RQn7FsQx8w2JeJzJwPwuDm2NfixPAXf") DOC_END
+        KV_SERIALIZE(address)                  DOC_DSCR("string; standard public address of the wallet.")  DOC_EXMP("Px1Gvm3biCu8ZY587oVuL1HxwJop8qVUyTNLYVWUB5dwcmjnBCoWfiV3BswJaUARXTCbHAzGoW1gRMzgQfy8qbqP2ZW1hXe2j") DOC_END
         KV_SERIALIZE(path)                     DOC_DSCR("Path to wallet file location")   DOC_EXMP("/some/path/to/wallet/file.zan") DOC_END
         KV_SERIALIZE(transfers_count)          DOC_DSCR("Represent number of transactions that happened to this wallet(basically tx history)")  DOC_EXMP(11) DOC_END
         KV_SERIALIZE(transfer_entries_count)   DOC_DSCR("Represent number of internal entries count(each entry represent tx output that have been addressed to this wallet)")  DOC_EXMP(24) DOC_END
@@ -674,7 +674,7 @@ namespace wallet_public
     crypto::public_key asset_id = currency::native_coin_asset_id;
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(amount)                      DOC_DSCR("Amount to transfer to destination") DOC_EXMP(10000000000000)     DOC_END
-      KV_SERIALIZE(address)                     DOC_DSCR("Destination address") DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp")     DOC_END
+      KV_SERIALIZE(address)                     DOC_DSCR("Destination address") DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64")     DOC_END
       KV_SERIALIZE_POD_AS_HEX_STRING(asset_id)  DOC_DSCR("Asset id to transfer") DOC_EXMP("cc608f59f8080e2fbfe3c8c80eb6e6a953d47cf2d6aebd345bada3a1cab99852")     DOC_END
     END_KV_SERIALIZE_MAP()
   };
@@ -851,7 +851,7 @@ namespace wallet_public
       std::string payment_id; // hex-encoded
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(standard_address) DOC_DSCR("Standart address.")  DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+        KV_SERIALIZE(standard_address) DOC_DSCR("Standart address.")  DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
         KV_SERIALIZE(payment_id)       DOC_DSCR("Hex-encoded payment id")  DOC_EXMP("1dfe5a88ff9effb3") DOC_END
       END_KV_SERIALIZE_MAP()
     };
@@ -871,7 +871,7 @@ namespace wallet_public
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(mixin)              DOC_DSCR("Number of outputs from the blockchain to mix with when sending a transaction to improve privacy.") DOC_EXMP(15) DOC_END
-        KV_SERIALIZE(address)            DOC_DSCR("Public address for sending or receiving native coins.") DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+        KV_SERIALIZE(address)            DOC_DSCR("Public address for sending or receiving native coins.") DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
         KV_SERIALIZE(amount)             DOC_DSCR("Threshold amount of native coins to sweep.") DOC_EXMP(1000000000000) DOC_END
         KV_SERIALIZE(payment_id_hex)     DOC_DSCR("Payment ID associated with the transaction in hexadecimal format.") DOC_EXMP("1dfe5a88ff9effb3") DOC_END
         KV_SERIALIZE(fee)                DOC_DSCR("Transaction fee required for processing the transaction.") DOC_EXMP(10000000000) DOC_END
@@ -1523,7 +1523,7 @@ namespace wallet_public
       
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(proposal)            DOC_DSCR("Proposal details") DOC_END
-        KV_SERIALIZE(destination_address) DOC_DSCR("Destination address") DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+        KV_SERIALIZE(destination_address) DOC_DSCR("Destination address") DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
       END_KV_SERIALIZE_MAP()
     };
 
@@ -1603,7 +1603,7 @@ namespace wallet_public
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(balances)                    DOC_DSCR("Balances hold by this wallet") DOC_EXMP_AUTO(1) DOC_END
       KV_SERIALIZE(mined_total)                 DOC_DSCR("Total amount mined")           DOC_EXMP(1000000000000) DOC_END
-      KV_SERIALIZE(address)                     DOC_DSCR("Address")                      DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+      KV_SERIALIZE(address)                     DOC_DSCR("Address")                      DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
       KV_SERIALIZE(view_sec_key)                DOC_DSCR("View secret key")              DOC_EXMP("97d91442f8f3c22683585eaa60b53757d49bf046a96269cef45c1bc9ff7300cc") DOC_END
       KV_SERIALIZE(path)                        DOC_DSCR("Path to wallet file")          DOC_EXMP("/some/path/to/wallet/file.zan") DOC_END
       KV_SERIALIZE(is_auditable)                DOC_DSCR("Flag indicating whether the wallet is auditable")             DOC_EXMP(false) DOC_END
@@ -1944,7 +1944,7 @@ namespace wallet_public
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE_BLOB_AS_BASE64_STRING(unsigned_tx) DOC_DSCR("Base64-encoded unsigned transaction blob.") DOC_EXMP("ewogICJ2ZXJzaW9uIjogMSwgC....iAgInZpbiI6IFsgewogICAgIC") DOC_END
       KV_SERIALIZE_POD_AS_HEX_STRING(tx_secret_key)   DOC_DSCR("Hex-encoded transaction secret key.") DOC_EXMP("2e0b840e70dba386effd64c5d988622dea8c064040566e6bf035034cbb54a5c08") DOC_END
-      KV_SERIALIZE(outputs_addresses)                 DOC_DSCR("Target address for each of the transaction zoutput.") DOC_EXMP_AGGR("ZxDNaMeZjwCjnHuU5gUNyrP1pM3U5vckbakzzV6dEHyDYeCpW8XGLBFTshcaY8LkG9RQn7FsQx8w2JeJzJwPwuDm2NfixPAXf", "ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+      KV_SERIALIZE(outputs_addresses)                 DOC_DSCR("Target address for each of the transaction zoutput.") DOC_EXMP_AGGR("Px1Gvm3biCu8ZY587oVuL1HxwJop8qVUyTNLYVWUB5dwcmjnBCoWfiV3BswJaUARXTCbHAzGoW1gRMzgQfy8qbqP2ZW1hXe2j", "Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
       KV_SERIALIZE_BLOB_AS_BASE64_STRING(finalized_tx)DOC_DSCR("Base64-encoded finalized_tx data structure, which should be passed along with submitting the transaction.") DOC_EXMP("ewogICJ2ZXJzaW9uIjogMSwgC....iAgInZpbiI6IFsgewogICAgIC") DOC_END
     END_KV_SERIALIZE_MAP()
   };
@@ -2021,7 +2021,7 @@ namespace wallet_public
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_POD_AS_HEX_STRING(asset_id)  DOC_DSCR("Id of the asset to burn") DOC_EXMP("40fa6db923728b38962718c61b4dc3af1acaa1967479c73703e260dc3609c58d") DOC_END
         KV_SERIALIZE(burn_amount) DOC_DSCR("Amount to burn") DOC_EXMP(10000000) DOC_END
-        KV_SERIALIZE(point_tx_to_address) DOC_DSCR("Optional, if we need this transaction to be seen by particular wallet") DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+        KV_SERIALIZE(point_tx_to_address) DOC_DSCR("Optional, if we need this transaction to be seen by particular wallet") DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
         KV_SERIALIZE(native_amount) DOC_DSCR("Optional, if we need this transaction to be seen by particular wallet") DOC_EXMP(0) DOC_END
         KV_SERIALIZE(service_entries) DOC_DSCR("Optional, if we need to include service entries for burn transaction") DOC_EXMP_AUTO(1) DOC_END
       END_KV_SERIALIZE_MAP()

@@ -37,7 +37,7 @@ namespace currency
     std::string comment;
 
     BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(address)                      DOC_DSCR("Address of the alias.") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7") DOC_END
+      KV_SERIALIZE(address)                      DOC_DSCR("Address of the alias.") DOC_EXMP("Px3NV3xE8bLY5yQcdApjMb8tVPik5BC3LFdaevfbGq7X1KY5vdsWmUi5UQgse2GBZFbMsb47TFqBmPpdFHDDwDxR2ZuZ6qBBb") DOC_END
       KV_SERIALIZE(tracking_key)                 DOC_DSCR("View secret key of the corresponding address (optional).") DOC_EXMP("18bb94f69ed61b47b6556f3871b89dff8f9a6f4f798f706fd199b05ccf8ef20c") DOC_END
       KV_SERIALIZE(comment)                      DOC_DSCR("Arbitrary comment (optional).") DOC_EXMP("Society is never gonna make any progress until we all learn to pretend to like each other.") DOC_END
     END_KV_SERIALIZE_MAP()
@@ -62,7 +62,7 @@ namespace currency
     alias_rpc_details_base details;
 
     BEGIN_KV_SERIALIZE_MAP()
-      KV_SERIALIZE(old_address)                  DOC_DSCR("Previous address of the alias.") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7") DOC_END
+      KV_SERIALIZE(old_address)                  DOC_DSCR("Previous address of the alias.") DOC_EXMP("Px3NV3xE8bLY5yQcdApjMb8tVPik5BC3LFdaevfbGq7X1KY5vdsWmUi5UQgse2GBZFbMsb47TFqBmPpdFHDDwDxR2ZuZ6qBBb") DOC_END
       KV_SERIALIZE(alias)                        DOC_DSCR("Alias itself, a brief shortcut for an address.") DOC_EXMP("zxdya6q6whzwqjkmtcsjpc3ku") DOC_END
       KV_SERIALIZE(details)                      DOC_DSCR("Object of alias_rpc_details_base struct.") DOC_EXMP_AUTO() DOC_END
     END_KV_SERIALIZE_MAP()
@@ -195,7 +195,7 @@ namespace currency
         KV_SERIALIZE(tx_id)                      DOC_DSCR("[either] ID for a transaction if it is already in the blockchain. Can be ommited if tx_blob is provided.") DOC_EXMP("a6e8da986858e6825fce7a192097e6afae4e889cabe853a9c29b964985b23da8") DOC_END
         KV_SERIALIZE(tx_blob)                    DOC_DSCR("[or] base64-encoded or hex-encoded tx blob. Can be ommited if tx_id is provided.") DOC_EXMP("ewogICJ2ZXJzaW9uIjogMSwgC....iAgInZpbiI6IFsgewogICAgIC") DOC_END
         KV_SERIALIZE_POD_AS_HEX_STRING(tx_secret_key) DOC_DSCR("Hex-encoded transaction secret key.") DOC_EXMP("2e0b840e70dba386effd64c5d988622dea8c064040566e6bf035034cbb54a5c08") DOC_END
-        KV_SERIALIZE(outputs_addresses)          DOC_DSCR("Address of each of tx's output. Order is important and should correspond to order of tx's outputs. Empty strings are ignored.") DOC_EXMP_AGGR("ZxDNaMeZjwCjnHuU5gUNyrP1pM3U5vckbakzzV6dEHyDYeCpW8XGLBFTshcaY8LkG9RQn7FsQx8w2JeJzJwPwuDm2NfixPAXf", "ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp") DOC_END
+        KV_SERIALIZE(outputs_addresses)          DOC_DSCR("Address of each of tx's output. Order is important and should correspond to order of tx's outputs. Empty strings are ignored.") DOC_EXMP_AGGR("Px1Gvm3biCu8ZY587oVuL1HxwJop8qVUyTNLYVWUB5dwcmjnBCoWfiV3BswJaUARXTCbHAzGoW1gRMzgQfy8qbqP2ZW1hXe2j", "Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64") DOC_END
       END_KV_SERIALIZE_MAP()
     };
 
@@ -209,7 +209,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(amount)                      DOC_DSCR("Amount begin transferred.") DOC_EXMP(10000000000000)     DOC_END
-        KV_SERIALIZE(address)                     DOC_DSCR("Destination address.") DOC_EXMP("ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp")     DOC_END
+        KV_SERIALIZE(address)                     DOC_DSCR("Destination address.") DOC_EXMP("Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64")     DOC_END
         KV_SERIALIZE_POD_AS_HEX_STRING(asset_id)  DOC_DSCR("Asset id.") DOC_EXMP("cc608f59f8080e2fbfe3c8c80eb6e6a953d47cf2d6aebd345bada3a1cab99852")     DOC_END
         KV_SERIALIZE(out_index)                   DOC_DSCR("Index of the corresponding output in the transaction.") DOC_EXMP(1) DOC_END
       END_KV_SERIALIZE_MAP()
@@ -355,7 +355,7 @@ namespace currency
       uint64_t                blocks_limit = blocks_limit_default;
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE_ADDRESS_AS_TEXT(address)    DOC_DSCR("Target address for which outputs are being searched") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7") DOC_END
+        KV_SERIALIZE_ADDRESS_AS_TEXT(address)    DOC_DSCR("Target address for which outputs are being searched") DOC_EXMP("Px3NV3xE8bLY5yQcdApjMb8tVPik5BC3LFdaevfbGq7X1KY5vdsWmUi5UQgse2GBZFbMsb47TFqBmPpdFHDDwDxR2ZuZ6qBBb") DOC_END
         KV_SERIALIZE_POD_AS_HEX_STRING(viewkey)  DOC_DSCR("Secret view key corresponding to the given address.") DOC_EXMP("5fa8eaaf231a305053260ff91d69c6ef1ecbd0f5") DOC_END
         KV_SERIALIZE(blocks_limit)               DOC_DSCR("Block count limit. If 0, only the transaction pool will be searched. Maximum and default is " + epee::string_tools::num_to_string_fast(blocks_limit_default) + ".") DOC_EXMP(1711021795) DOC_END
       END_KV_SERIALIZE_MAP()
@@ -749,7 +749,7 @@ namespace currency
       uint64_t    threads_count;
 
       BEGIN_KV_SERIALIZE_MAP()
-        KV_SERIALIZE(miner_address)              DOC_DSCR("The address where the mining rewards will be deposited.") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7") DOC_END
+        KV_SERIALIZE(miner_address)              DOC_DSCR("The address where the mining rewards will be deposited.") DOC_EXMP("Px3NV3xE8bLY5yQcdApjMb8tVPik5BC3LFdaevfbGq7X1KY5vdsWmUi5UQgse2GBZFbMsb47TFqBmPpdFHDDwDxR2ZuZ6qBBb") DOC_END
         KV_SERIALIZE(threads_count)              DOC_DSCR("The number of CPU threads to use for mining.") DOC_EXMP(2) DOC_END
       END_KV_SERIALIZE_MAP()
     };
@@ -1151,7 +1151,7 @@ namespace currency
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE_BLOB_AS_HEX_STRING(explicit_transaction) DOC_DSCR("A transaction blob that must be explicitly included in the block.") DOC_EXMP("5fa8eaaf231a305053260ff91d69c6ef1ecbd0f5") DOC_END
         KV_SERIALIZE(extra_text)                 DOC_DSCR("Arbitrary data added to the extra field of the miner transaction.") DOC_EXMP("OMG, you can't just ask people why they're PoW-maxi") DOC_END
-        KV_SERIALIZE(wallet_address)             DOC_DSCR("Address where mining rewards will be deposited.") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7") DOC_END
+        KV_SERIALIZE(wallet_address)             DOC_DSCR("Address where mining rewards will be deposited.") DOC_EXMP("Px3NV3xE8bLY5yQcdApjMb8tVPik5BC3LFdaevfbGq7X1KY5vdsWmUi5UQgse2GBZFbMsb47TFqBmPpdFHDDwDxR2ZuZ6qBBb") DOC_END
         KV_SERIALIZE(stakeholder_address)        DOC_DSCR("Address where the stake is returned for PoS blocks (usually the same as 'wallet_address').") DOC_END
         KV_SERIALIZE(pe)                         DOC_DSCR("PoS entry details, relevant only for PoS block generation.") DOC_END
         KV_SERIALIZE(pos_block)                  DOC_DSCR("Flag indicating whether the block is a PoS block.") DOC_EXMP(false) DOC_END

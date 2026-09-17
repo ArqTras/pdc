@@ -4,8 +4,8 @@
   "method": "getblocktemplate",
   "params": {
     "extra_text": "Some text info about miner",
-    "wallet_address": "ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp",
-    "stakeholder_address": "ZxBvJDuQjMG9R2j4WnYUhBYNrwZPwuyXrC7FHdVmWqaESgowDvgfWtiXeNGu8Px9B24pkmjsA39fzSSiEQG1ekB225ZnrMTBp",
+    "wallet_address": "Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64",
+    "stakeholder_address": "Px1FR6FDrw621UVT1p34Di3MPXQQ9NRfr4hJZMnUho7z63DbKAp3Aa87P8dGZ9NY2G8j3fDwUhuUQA4xhBKp3GvY1XzvN5o64",
     "pos_block": false,
     "pos_amount": 0,
     "pos_index": 0

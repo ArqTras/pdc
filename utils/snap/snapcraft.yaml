@@ -1,12 +1,12 @@
-name: zano # you probably want to 'snapcraft register <name>'
+name: pdc # you probably want to 'snapcraft register <name>'
 base: core18 # the base snap is the execution environment for this snap
-version: '1.1.5' # just for humans, typically '1.2+git' or '1.3.2'
-summary: "Zano coin: official wallet. Secure. Scalable. Easy to Use."
+version: '2.0.0' # just for humans, typically '1.2+git' or '1.3.2'
+summary: "PDC: official wallet. Secure. Scalable. Easy to Use."
 description: |
-  Zano is a scalable and secure coin, designed for use in e-commerce.
+  PDC is a scalable and secure coin, designed for use in e-commerce.
   The technology behind our blockchain provides reliability, security,
   and flexibility — a perfect option for P2P transactions.
-  More info: http://zano.org
+  More info: https://github.com/ArqTras/pdc
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: devmode # use 'strict' once you have the right plugs and slots
 
@@ -99,19 +99,19 @@ parts:
       - python
       - ruby
       
-  zano-bin:
+  pdc-bin:
     after: [ libboost, qt ]
-    source: https://github.com/hyle-team/zano.git
+    source: https://github.com/ArqTras/pdc.git
     plugin: cmake
 
     override-build: |
       cmake -DCMAKE_PREFIX_PATH=$SNAPCRAFT_PART_INSTALL/qt5132 -DBOOST_ROOT=$SNAPCRAFT_STAGE/boost_1_68_0 -DBOOST_LIBRARYDIR=$SNAPCRAFT_STAGE/boost_1_68_0/stage/lib -DSTATIC=True -DBUILD_GUI=True $SNAPCRAFT_PART_SRC
-      make -j1 Zano
+      make -j1 Pdc
       #daemon simplewallet      
-      #      cp src/zanod $SNAPCRAFT_PART_INSTALL
+      #      cp src/pdcd $SNAPCRAFT_PART_INSTALL
       #      cp src/simplewallet $SNAPCRAFT_PART_INSTALL
       pwd
-      echo CLI Zano binaries built
+      echo CLI Pdc binaries built
       
       
     build-packages:
@@ -121,5 +121,5 @@ parts:
 
 
 apps:
-  zano:
+  pdc:
     command: pwd
