@@ -1076,8 +1076,10 @@ namespace
       ps_get_value_noexcept(ps, "result", result_str, params_section);
       CHECK_AND_ASSERT_MES(!nonce_str.empty(), false, "xmrig submit: missing nonce");
 
-      uint64_t nonce = 0;
-      CHECK_AND_ASSERT_MES(pod_from_net_format_reverse(nonce_str, nonce, true), false, "Can't parse nonce from " << nonce_str);
+      // XMRig encodes the 4 little-endian blob bytes at POW_NONCE_OFFSET as hex (no 0x).
+      uint32_t nonce32 = 0;
+      CHECK_AND_ASSERT_MES(pod_from_net_format(nonce_str, nonce32), false, "Can't parse nonce from " << nonce_str);
+      const uint64_t nonce = nonce32;
 
       crypto::hash header_hash = null_hash;
       if (!job_id.empty())

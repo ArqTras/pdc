@@ -131,6 +131,8 @@ namespace currency
 
   void fill_pow_blob(uint8_t blob[POW_BLOB_SIZE], const crypto::hash& block_header_hash, uint64_t nonce)
   {
+    static_assert(POW_BLOB_SIZE == 43, "XMRig rx/arq hashing blob is 43 bytes");
+    static_assert(POW_NONCE_OFFSET + sizeof(uint32_t) == POW_BLOB_SIZE, "XMRig nonce is 4 LE bytes at offset 39");
     memset(blob, 0, POW_BLOB_SIZE);
     memcpy(blob, &block_header_hash, sizeof(block_header_hash));
     const uint32_t nonce32 = static_cast<uint32_t>(nonce);
