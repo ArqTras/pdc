@@ -1174,7 +1174,7 @@ namespace currency
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(difficulty)                 DOC_DSCR("The mining difficulty targeted by the block template.") DOC_EXMP("12936195379842") DOC_END
         KV_SERIALIZE(height)                     DOC_DSCR("The height of the block template in the blockchain.") DOC_EXMP(2555002) DOC_END
-        KV_SERIALIZE_POD_AS_HEX_STRING(seed)     DOC_DSCR("Seed value for the RandomX mining algorithm's epoch.") DOC_EXMP("0518e1373ff88ccabb28493cac10cb0731313135d880dae0d846be6016ab9acf") DOC_END
+        KV_SERIALIZE_POD_AS_HEX_STRING(seed)     DOC_DSCR("Seed value for the RandomARQ mining algorithm's epoch.") DOC_EXMP("0518e1373ff88ccabb28493cac10cb0731313135d880dae0d846be6016ab9acf") DOC_END
         KV_SERIALIZE(blocktemplate_blob)         DOC_DSCR("Serialized block template blob.") DOC_EXMP("030000000000000000ae73338b792......6258a2b5ee340700") DOC_END
         KV_SERIALIZE(prev_hash)                  DOC_DSCR("Hash of the previous block in the chain.") DOC_EXMP("ae73338b7927df71b6ed477937625c230172219306750ba97995fb5109dda703") DOC_END
         KV_SERIALIZE(miner_tx_tgc)               DOC_DSCR("Miner transaction generation context. Intended for PoS blocks and Zarcanum.") DOC_EXMP_AUTO() DOC_END

@@ -471,16 +471,15 @@ namespace
       if (!is_core_syncronized())
         return R"({})";
 
-      crypto::hash target_boundary = null_hash;
-      difficulty_to_boundary_long(worker_difficulty, target_boundary);
       crypto::hash seed_hash = pow_epoch_to_seed(pow_height_to_epoch(m_block_template_height));
-      uint8_t blob[40] = {};
-      memcpy(blob, &m_block_template_header_hash, sizeof(m_block_template_header_hash));
+      uint8_t blob[POW_BLOB_SIZE] = {};
+      fill_pow_blob(blob, m_block_template_header_hash, 0);
+      const uint64_t target64 = difficulty_to_boundary(worker_difficulty);
       return std::string(R"({"blob":")") + epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(blob), sizeof(blob))) +
-        R"(","job_id":")" + pod_to_net_format(m_block_template_header_hash) +
-        R"(","target":")" + pod_to_net_format_reverse(target_boundary) +
-        R"(","seed_hash":")" + pod_to_net_format(seed_hash) +
-        R"(","algo":"rx/0","height":)" + std::to_string(m_block_template_height) + "}";
+        R"(","job_id":")" + epee::string_tools::pod_to_hex(m_block_template_header_hash) +
+        R"(","target":")" + epee::string_tools::pod_to_hex(target64) +
+        R"(","seed_hash":")" + epee::string_tools::pod_to_hex(seed_hash) +
+        R"(","algo":"rx/arq","height":)" + std::to_string(m_block_template_height) + "}";
     }
 
     void update_work(protocol_handler_t* p_ph)

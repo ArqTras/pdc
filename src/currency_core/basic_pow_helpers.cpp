@@ -54,17 +54,17 @@ namespace currency
       if (g_rx_dataset || !g_rx_cache)
         return g_rx_dataset != nullptr;
 
-      LOG_PRINT_YELLOW("RandomX: allocating full dataset for CPU mining (approx. 2 GiB)...", LOG_LEVEL_0);
+      LOG_PRINT_YELLOW("RandomARQ: allocating full dataset for CPU mining (approx. 2 GiB)...", LOG_LEVEL_0);
       g_rx_dataset = randomx_alloc_dataset(g_rx_flags);
       if (!g_rx_dataset)
       {
-        LOG_PRINT_RED("RandomX: dataset allocation failed, staying on light mode", LOG_LEVEL_0);
+        LOG_PRINT_RED("RandomARQ: dataset allocation failed, staying on light mode", LOG_LEVEL_0);
         return false;
       }
 
       const unsigned long item_count = randomx_dataset_item_count();
       randomx_init_dataset(g_rx_dataset, g_rx_cache, 0, item_count);
-      LOG_PRINT_GREEN("RandomX: full dataset ready", LOG_LEVEL_0);
+      LOG_PRINT_GREEN("RandomARQ: full dataset ready", LOG_LEVEL_0);
       return true;
     }
 
@@ -87,7 +87,7 @@ namespace currency
 
       g_rx_flags = randomx_get_flags();
       g_rx_cache = randomx_alloc_cache(g_rx_flags);
-      CHECK_AND_ASSERT_THROW_MES(g_rx_cache, "RandomX: failed to allocate cache");
+      CHECK_AND_ASSERT_THROW_MES(g_rx_cache, "RandomARQ: failed to allocate cache");
       randomx_init_cache(g_rx_cache, &seed, sizeof(seed));
       g_rx_epoch = epoch;
 
@@ -108,7 +108,7 @@ namespace currency
         vm_flags = static_cast<randomx_flags>(vm_flags | RANDOMX_FLAG_FULL_MEM);
 
       tls_rx_vm = randomx_create_vm(vm_flags, want_full ? nullptr : g_rx_cache, g_rx_dataset);
-      CHECK_AND_ASSERT_THROW_MES(tls_rx_vm, "RandomX: failed to create VM");
+      CHECK_AND_ASSERT_THROW_MES(tls_rx_vm, "RandomARQ: failed to create VM");
       tls_rx_epoch = epoch;
       tls_rx_full = want_full;
       return tls_rx_vm;
@@ -122,11 +122,19 @@ namespace currency
 
   crypto::hash pow_epoch_to_seed(int epoch)
   {
-    uint8_t buf[16] = {};
-    memcpy(buf, "PDC-RandomX", 11);
+    uint8_t buf[20] = {};
+    memcpy(buf, "PDC-RandomARQ", 13);
     const uint32_t epoch_le = static_cast<uint32_t>(epoch);
-    memcpy(buf + 12, &epoch_le, sizeof(epoch_le));
+    memcpy(buf + 16, &epoch_le, sizeof(epoch_le));
     return crypto::cn_fast_hash(buf, sizeof(buf));
+  }
+
+  void fill_pow_blob(uint8_t blob[POW_BLOB_SIZE], const crypto::hash& block_header_hash, uint64_t nonce)
+  {
+    memset(blob, 0, POW_BLOB_SIZE);
+    memcpy(blob, &block_header_hash, sizeof(block_header_hash));
+    const uint32_t nonce32 = static_cast<uint32_t>(nonce);
+    memcpy(blob + POW_NONCE_OFFSET, &nonce32, sizeof(nonce32));
   }
 
   void randomx_set_mining_mode(bool enable_full_dataset)
@@ -146,9 +154,8 @@ namespace currency
     const int epoch = pow_height_to_epoch(height);
     const crypto::hash seed = pow_epoch_to_seed(epoch);
 
-    uint8_t input[40] = {};
-    memcpy(input, &block_header_hash, sizeof(block_header_hash));
-    memcpy(input + 32, &nonce, sizeof(nonce));
+    uint8_t input[POW_BLOB_SIZE] = {};
+    fill_pow_blob(input, block_header_hash, nonce);
 
     randomx_vm* vm = nullptr;
     {
@@ -171,9 +178,9 @@ namespace currency
   void get_block_longhash(const block& b, crypto::hash& res)
   {
     /*
-    RandomX is keyed by epoch seed and hashes (header_hash || nonce_le64).
-    Header hash is computed from the block blob with nonce zeroed, same as the
-    previous ProgPoW adapter, so stratum/RPC jobs stay (header, seed, nonce).
+    RandomARQ is keyed by epoch seed and hashes a 43-byte blob matching XMRig rx/arq:
+    header_hash (32) || padding (7) || nonce_le32 at offset 39.
+    Header hash is computed from the block blob with nonce zeroed.
     Proof-of-stake is unchanged and does not use this function.
     */
     crypto::hash bl_hash = get_block_header_mining_hash(b);

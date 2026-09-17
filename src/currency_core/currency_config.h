@@ -67,8 +67,10 @@
 #define CURRENCY_MINER_TX_MAX_OUTS                      CURRENCY_TX_MAX_ALLOWED_OUTS
 #define CURRENCY_TX_OUTS_RND_SPLIT_DIGITS_TO_KEEP       3
 
-#define POW_ALGORITHM_NAME                              "RandomX"
+#define POW_ALGORITHM_NAME                              "RandomARQ"
 #define RANDOMX_EPOCH_LENGTH                            2048
+#define POW_BLOB_SIZE                                   43
+#define POW_NONCE_OFFSET                                39
 
 #define DIFFICULTY_POW_STARTER                          1
 #define DIFFICULTY_POS_TARGET                           120 // seconds
