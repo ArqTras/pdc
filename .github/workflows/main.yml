@@ -435,9 +435,9 @@ jobs:
        # Install Boost
       - name: Install Boost
         run: |
-          curl -fL -o boost_1_80_0.tar.bz2 https://archives.boost.io/release/1.80.0/source/boost_1_80_0.tar.bz2
-          tar -xjf boost_1_80_0.tar.bz2
-          cd boost_1_80_0
+          curl -fL -o boost_1_84_0.tar.bz2 https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
+          tar -xjf boost_1_84_0.tar.bz2
+          cd boost_1_84_0
           ./bootstrap.sh
           ./b2
           cd ..
@@ -462,7 +462,7 @@ jobs:
       - name: Configure
         run: |
           mkdir build && cd build
-          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_80_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_80_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D BUILD_GUI=TRUE -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_84_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_84_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D BUILD_GUI=TRUE -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
 
       # Build for macOS
       - name: Build
@@ -528,7 +528,16 @@ jobs:
 
       # Install OpenSSL
       - name: Install OpenSSL
-        run: choco install openssl -y
+        shell: pwsh
+        run: |
+          choco install openssl -y --no-progress
+          $header = Get-ChildItem -Path 'C:\Program Files','C:\Program Files (x86)' -Recurse -Filter ssl.h -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '\\include\\openssl\\ssl\.h$' } |
+            Select-Object -First 1
+          if (-not $header) { throw 'OpenSSL ssl.h not found after install' }
+          $root = (Resolve-Path (Join-Path $header.DirectoryName '..\..')).Path
+          echo "OPENSSL_ROOT_DIR=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "OpenSSL root: $root"
 
       # Install QT
       - name: Install Qt
@@ -554,7 +563,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.3" -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -D STATIC=OFF
+          cmake -G "Visual Studio 17 2022" -A x64 -T host=x64 .. -DBUILD_GUI=ON -D BOOST_ROOT=C:/local/boost_1_82_0 -D BOOST_LIBRARYDIR="C:/local/boost_1_82_0/lib64-msvc-14.3" -D OPENSSL_ROOT_DIR="$env:OPENSSL_ROOT_DIR" -D STATIC=OFF
           dir
 
       # Build for Windows

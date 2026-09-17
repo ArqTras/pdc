@@ -68,7 +68,10 @@ message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}, and built ty
 
 enable_testing()
 
-set(OPENSSL_USE_STATIC_LIBS TRUE) # link statically
+set(STATIC ${MSVC} CACHE BOOL "Link libraries statically")
+if(STATIC)
+  set(OPENSSL_USE_STATIC_LIBS TRUE)
+endif()
 find_package(OpenSSL REQUIRED)
 
 
@@ -102,16 +105,12 @@ if(CAKEWALLET)
   add_definitions(-DDISABLE_PFR_SERIALIZATION_SELFCHECK)
 endif()
 
-set(OPENSSL_USE_STATIC_LIBS TRUE) # link statically
-find_package(OpenSSL REQUIRED)
-
 if(DISABLE_TOR)
   message("NOTICE: Building with disabled TOR support!")
   add_definitions(-DDISABLE_TOR)
 endif()
 
 
-set(STATIC ${MSVC} CACHE BOOL "Link libraries statically")
 if (UNIX AND NOT APPLE)
   # Note that at the time of this writing the -Wstrict-prototypes flag added below will make this fail
   find_package(Threads REQUIRED)
