@@ -302,7 +302,15 @@ namespace nodetool
     }
   }
 
-  #define ADD_HARDCODED_SEED_NODE(host, port) append_net_address(m_seed_nodes, host, port);
+  // Seed nodes are used to fetch a peerlist and disconnect. On a young network the
+  // seed often has an empty peerlist, which would leave the client with nobody to
+  // stay connected to. Also keep the hardcoded seed as a priority peer so the
+  // connection remains open and the node can sync.
+  #define ADD_HARDCODED_SEED_NODE(host, port) \
+    do { \
+      append_net_address(m_seed_nodes, host, port); \
+      append_net_address(m_priority_peers, host, port); \
+    } while (0)
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::init(const boost::program_options::variables_map& vm)
@@ -848,7 +856,19 @@ namespace nodetool
           return false;
 
         if(try_to_connect_and_handshake_with_new_peer(m_seed_nodes[current_index], true))
+        {
+          // Handshake-and-close only copies the remote peerlist. If the seed has
+          // no other advertised peers, open a persistent connection so the node
+          // can still sync instead of reconnecting to the seed every idle tick.
+          if(!m_peerlist.get_white_peers_count() && !is_addr_connected(m_seed_nodes[current_index]))
+          {
+            LOG_PRINT_L0("Seed node returned empty peerlist, opening persistent connection to "
+              << string_tools::get_ip_string_from_int32(m_seed_nodes[current_index].ip) << ":"
+              << string_tools::num_to_string_fast(m_seed_nodes[current_index].port));
+            try_to_connect_and_handshake_with_new_peer(m_seed_nodes[current_index], false);
+          }
           break;
+        }
         if(++try_count > m_seed_nodes.size())
         {
           LOG_PRINT_RED_L0("Failed to connect to any of seed peers, continuing without seeds");
