@@ -31,12 +31,39 @@ namespace currency
     randomx_dataset* g_rx_dataset = nullptr;
     int g_rx_epoch = -1;
     bool g_rx_mining_mode = false;
+    bool g_rx_self_checked = false;
     std::vector<randomx_cache*> g_rx_old_caches;
     std::vector<randomx_dataset*> g_rx_old_datasets;
 
     thread_local randomx_vm* tls_rx_vm = nullptr;
     thread_local int tls_rx_epoch = -1;
     thread_local bool tls_rx_full = false;
+
+    randomx_flags select_rx_flags()
+    {
+      randomx_flags flags = randomx_get_flags();
+#if defined(__APPLE__)
+      // RandomARQ's A64 JIT emits into RWX pages without MAP_JIT. On Apple
+      // Silicon that leaves a null/non-executable code buffer: the same block
+      // hashes to two different PoW values, then JitCompilerA64 SIGSEGVs.
+      flags = static_cast<randomx_flags>(flags & ~(RANDOMX_FLAG_JIT | RANDOMX_FLAG_SECURE));
+#endif
+      return flags;
+    }
+
+    void self_check_vm_locked(randomx_vm* vm)
+    {
+      if (g_rx_self_checked || !vm)
+        return;
+      crypto::hash first = null_hash;
+      crypto::hash second = null_hash;
+      uint8_t probe[POW_BLOB_SIZE] = {};
+      randomx_calculate_hash(vm, probe, sizeof(probe), &first);
+      randomx_calculate_hash(vm, probe, sizeof(probe), &second);
+      CHECK_AND_ASSERT_THROW_MES(first == second, "RandomARQ is non-deterministic on this CPU; refusing to verify blocks");
+      g_rx_self_checked = true;
+      LOG_PRINT_GREEN("RandomARQ self-check OK (flags=" << static_cast<unsigned>(g_rx_flags) << ")", LOG_LEVEL_0);
+    }
 
     void destroy_tls_vm()
     {
@@ -85,8 +112,14 @@ namespace currency
         g_rx_dataset = nullptr;
       }
 
-      g_rx_flags = randomx_get_flags();
+      g_rx_flags = select_rx_flags();
       g_rx_cache = randomx_alloc_cache(g_rx_flags);
+      if (!g_rx_cache && (g_rx_flags & RANDOMX_FLAG_JIT))
+      {
+        LOG_PRINT_YELLOW("RandomARQ: JIT cache alloc failed, falling back to interpreter", LOG_LEVEL_0);
+        g_rx_flags = static_cast<randomx_flags>(g_rx_flags & ~(RANDOMX_FLAG_JIT | RANDOMX_FLAG_SECURE));
+        g_rx_cache = randomx_alloc_cache(g_rx_flags);
+      }
       CHECK_AND_ASSERT_THROW_MES(g_rx_cache, "RandomARQ: failed to allocate cache");
       randomx_init_cache(g_rx_cache, &seed, sizeof(seed));
       g_rx_epoch = epoch;
@@ -108,9 +141,24 @@ namespace currency
         vm_flags = static_cast<randomx_flags>(vm_flags | RANDOMX_FLAG_FULL_MEM);
 
       tls_rx_vm = randomx_create_vm(vm_flags, want_full ? nullptr : g_rx_cache, g_rx_dataset);
+      if (!tls_rx_vm && (vm_flags & RANDOMX_FLAG_JIT))
+      {
+        LOG_PRINT_YELLOW("RandomARQ: JIT VM failed, recreating cache without JIT", LOG_LEVEL_0);
+        if (g_rx_cache)
+          g_rx_old_caches.push_back(g_rx_cache);
+        g_rx_flags = static_cast<randomx_flags>(g_rx_flags & ~(RANDOMX_FLAG_JIT | RANDOMX_FLAG_SECURE));
+        g_rx_cache = randomx_alloc_cache(g_rx_flags);
+        CHECK_AND_ASSERT_THROW_MES(g_rx_cache, "RandomARQ: failed to allocate interpreter cache");
+        randomx_init_cache(g_rx_cache, &seed, sizeof(seed));
+        vm_flags = g_rx_flags;
+        if (want_full)
+          vm_flags = static_cast<randomx_flags>(vm_flags | RANDOMX_FLAG_FULL_MEM);
+        tls_rx_vm = randomx_create_vm(vm_flags, want_full ? nullptr : g_rx_cache, g_rx_dataset);
+      }
       CHECK_AND_ASSERT_THROW_MES(tls_rx_vm, "RandomARQ: failed to create VM");
       tls_rx_epoch = epoch;
       tls_rx_full = want_full;
+      self_check_vm_locked(tls_rx_vm);
       return tls_rx_vm;
     }
   }
