@@ -1541,9 +1541,13 @@ namespace nodetool
   void node_server<t_payload_net_handler>::on_connection_close(p2p_connection_context& context)
   {
     if(!context.m_is_income)
+    {
       LOG_PRINT_L0("["<< net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
+    }
     else
+    {
       LOG_PRINT_L2("["<< net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
+    }
   }
   //-----------------------------------------------------------------------------------
 }
