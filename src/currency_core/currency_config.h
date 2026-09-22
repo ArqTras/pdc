@@ -140,12 +140,13 @@
 #define P2P_DEFAULT_HANDSHAKE_INTERVAL                  60           //seconds
 #define P2P_DEFAULT_PACKET_MAX_SIZE                     50000000     //50000000 bytes maximum packet size
 #define P2P_DEFAULT_PEERS_IN_HANDSHAKE                  250
-#define P2P_DEFAULT_CONNECTION_TIMEOUT                  5000       //5 seconds
+#define P2P_DEFAULT_CONNECTION_TIMEOUT                  20000      //20 seconds
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000       //2 seconds
 #define P2P_DEFAULT_INVOKE_TIMEOUT                      60*2*1000  //2 minutes
-#define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            10000      //10 seconds
+#define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            30000      //30 seconds
 #define P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT       70
 #define P2P_FAILED_ADDR_FORGET_SECONDS                  (60*5)     //5 minutes
+#define P2P_PRIORITY_CONNECTION_RETRY_SECONDS           15         //backoff after a failed priority connect
 
 #define P2P_IP_BLOCKTIME                                (60*60*24) //24 hours
 #define P2P_IP_FAILS_BEFOR_BLOCK                        10

@@ -203,7 +203,9 @@ namespace nodetool
     size_t get_random_index_with_fixed_probability(size_t max_index);
     bool is_peer_id_used(const peerid_type id);
     bool is_peer_used(const peerlist_entry& peer);
-    bool is_addr_connected(const net_address& peer);  
+    bool is_addr_connected(const net_address& peer);
+    bool is_ip_connected(uint32_t ip);
+    bool is_addr_failed_within(const net_address& addr, time_t seconds);  
     template<class t_callback>
     bool try_ping(basic_node_data& node_data, p2p_connection_context& context, const t_callback& cb);
     bool make_expected_connections_count(bool white_list, size_t expected_connections);
