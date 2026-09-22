@@ -699,6 +699,34 @@ namespace nodetool
 
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
+  bool node_server<t_payload_net_handler>::is_ip_connected(uint32_t ip)
+  {
+    bool connected = false;
+    m_net_server.get_config_object().foreach_connection([&](const p2p_connection_context& cntxt)
+    {
+      if(cntxt.m_remote_ip == ip)
+      {
+        connected = true;
+        return false;
+      }
+      return true;
+    });
+    return connected;
+  }
+
+  //-----------------------------------------------------------------------------------
+  template<class t_payload_net_handler>
+  bool node_server<t_payload_net_handler>::is_addr_failed_within(const net_address& addr, time_t seconds)
+  {
+    CRITICAL_REGION_LOCAL(m_conn_fails_cache_lock);
+    auto it = m_conn_fails_cache.find(addr);
+    if(it == m_conn_fails_cache.end())
+      return false;
+    return time(NULL) - it->second < seconds;
+  }
+
+  //-----------------------------------------------------------------------------------
+  template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::try_to_connect_and_handshake_with_new_peer(const net_address& na, bool just_take_peerlist, uint64_t last_seen_stamp, bool white)
   {
     LOG_PRINT_L1("Connecting to " << string_tools::get_ip_string_from_int32(na.ip)  << ":" << string_tools::num_to_string_fast(na.port) << "(white=" << white << ", last_seen: " << (last_seen_stamp?misc_utils::get_time_interval_string(time(NULL) - last_seen_stamp):"never" ) << ")...");
@@ -884,10 +912,19 @@ namespace nodetool
       if(m_net_server.is_stop_signal_sent())
         return false;
 
-      if(is_addr_connected(na))
+      // Count incoming and outgoing links to this host. A seed that connected
+      // back uses an ephemeral remote port, so matching only ip:port outgoing
+      // would open a second socket and can drop the syncing one.
+      if(is_ip_connected(na.ip))
         continue;
+      if(is_addr_failed_within(na, P2P_PRIORITY_CONNECTION_RETRY_SECONDS))
+      {
+        LOG_PRINT_L1("skipping priority node " << string_tools::get_ip_string_from_int32(na.ip) << ":" << string_tools::num_to_string_fast(na.port) << " (retry backoff)");
+        continue;
+      }
       if (!try_to_connect_and_handshake_with_new_peer(na))
       {
+        cache_connect_fail_info(na);
         LOG_PRINT_L0("connection to priority node " << string_tools::get_ip_string_from_int32(na.ip) << ":" << string_tools::num_to_string_fast(na.port) << " failed");
       }
     }
@@ -1503,7 +1540,10 @@ namespace nodetool
   template<class t_payload_net_handler>
   void node_server<t_payload_net_handler>::on_connection_close(p2p_connection_context& context)
   {
-    LOG_PRINT_L2("["<< net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
+    if(!context.m_is_income)
+      LOG_PRINT_L0("["<< net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
+    else
+      LOG_PRINT_L2("["<< net_utils::print_connection_context(context) << "] CLOSE CONNECTION");
   }
   //-----------------------------------------------------------------------------------
 }
