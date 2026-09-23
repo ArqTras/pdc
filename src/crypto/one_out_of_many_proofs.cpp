@@ -176,7 +176,7 @@ namespace crypto
         Pk += coeffs[j * N + i] * ring[ring_size - 1];
 
       Pk += ro[j] * c_point_X;
-      result.Pk.emplace_back(std::move((c_scalar_1div8 * Pk).to_public_key()));
+      result.Pk.emplace_back((c_scalar_1div8 * Pk).to_public_key());
     }
     
     A += r_A * c_point_X;

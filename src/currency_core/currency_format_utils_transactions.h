@@ -20,6 +20,7 @@ namespace currency
     {
       output_entry() = default;
       output_entry(const output_entry &) = default;
+      output_entry& operator=(const output_entry &) = default;
       output_entry(const txout_ref_v& out_reference, const crypto::public_key& stealth_address)
         : out_reference(out_reference), stealth_address(stealth_address), concealing_point(null_pkey), amount_commitment(null_pkey) {}
       output_entry(const txout_ref_v& out_reference, const crypto::public_key& stealth_address, const crypto::public_key& concealing_point, const crypto::public_key& amount_commitment, const crypto::public_key& blinded_asset_id)
