@@ -520,10 +520,8 @@ bool blockchain_storage::init(const std::string& config_folder, const boost::pro
 //------------------------------------------------------------------
 bool blockchain_storage::set_lost_tx_unmixable_for_height(uint64_t height)
 {
-  #ifndef TESTNET
-    return set_lost_tx_unmixable();
-  #endif
-    return true;
+  // Zano mainnet patched specific lost txs at height 75738; PDC has no such legacy outputs.
+  return true;
 }
 //------------------------------------------------------------------
 bool blockchain_storage::set_lost_tx_unmixable()
@@ -533,7 +531,9 @@ bool blockchain_storage::set_lost_tx_unmixable()
 //------------------------------------------------------------------
 void  blockchain_storage::patch_out_if_needed(txout_to_key& out, const crypto::hash& tx_id, uint64_t n) const
 {
-  out.mix_attr = CURRENCY_TO_KEY_OUT_FORCED_NO_MIX;
+  // Intentionally empty: do not force mix_attr. The previous PDC change set
+  // CURRENCY_TO_KEY_OUT_FORCED_NO_MIX on every output, which rejected all PoS
+  // coinstakes that use decoys (key_offsets.size > 1).
 }
 //------------------------------------------------------------------
 void blockchain_storage::store_db_solo_options_values()
