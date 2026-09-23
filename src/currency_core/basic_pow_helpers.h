@@ -40,13 +40,19 @@ namespace currency
   inline int ethash_height_to_epoch(uint64_t height) { return pow_height_to_epoch(height); }
   inline crypto::hash ethash_epoch_to_seed(int epoch) { return pow_epoch_to_seed(epoch); }
 
-  inline uint64_t& access_nonce_in_block_blob(blobdata& bd)
+  inline void set_nonce_in_block_blob(blobdata& bd, uint64_t nonce)
   {
-    return *reinterpret_cast<uint64_t*>(&bd[CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET]);
+    CHECK_AND_ASSERT_THROW_MES(bd.size() > CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET + sizeof(uint64_t) - 1,
+      "block hashing blob too short for nonce");
+    memcpy(&bd[CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET], &nonce, sizeof(nonce));
   }
 
-  inline const uint64_t& access_nonce_in_block_blob(const blobdata& bd)
+  inline uint64_t get_nonce_in_block_blob(const blobdata& bd)
   {
-    return *reinterpret_cast<const uint64_t*>(&bd[CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET]);
+    CHECK_AND_ASSERT_THROW_MES(bd.size() > CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET + sizeof(uint64_t) - 1,
+      "block hashing blob too short for nonce");
+    uint64_t nonce = 0;
+    memcpy(&nonce, &bd[CURRENCY_MINER_BLOCK_BLOB_NONCE_OFFSET], sizeof(nonce));
+    return nonce;
   }
 }

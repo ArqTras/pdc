@@ -912,11 +912,14 @@ namespace currency
 
     if (m_core_runtime_config.is_hardfork_active_for_height(ZANO_HARDFORK_04_ZARCANUM, this->get_current_blockchain_size()))
     { 
-      //with hard fork 4 make it network rule to have at least 10 confirmations
-      
-      if (this->get_current_blockchain_size() - max_related_block_height < CURRENCY_HF4_MANDATORY_MIN_COINAGE)
+      // Align with POS_MINIMUM_COINSTAKE_AGE: coinstake_age = height - max_related - 1
+      const uint64_t height = this->get_current_blockchain_size();
+      const uint64_t coinage = (height > max_related_block_height)
+        ? (height - max_related_block_height - 1)
+        : 0;
+      if (coinage < CURRENCY_HF4_MANDATORY_MIN_COINAGE)
       {
-        LOG_ERROR("Coinage rule broken(mainblock): h = " << this->get_current_blockchain_size() << ", max_related_block_height=" << max_related_block_height << ", tx: " << get_transaction_hash(validated_tx));
+        LOG_ERROR("Coinage rule broken(mainblock): h = " << height << ", max_related_block_height=" << max_related_block_height << ", coinage=" << coinage << ", tx: " << get_transaction_hash(validated_tx));
         return false;
       }
     }

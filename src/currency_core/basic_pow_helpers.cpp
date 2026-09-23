@@ -42,7 +42,7 @@ namespace currency
     randomx_flags select_rx_flags()
     {
       randomx_flags flags = randomx_get_flags();
-#if defined(__APPLE__)
+#if defined(__APPLE__) && defined(__aarch64__)
       // RandomARQ's A64 JIT emits into RWX pages without MAP_JIT. On Apple
       // Silicon that leaves a null/non-executable code buffer: the same block
       // hashes to two different PoW values, then JitCompilerA64 SIGSEGVs.
@@ -183,7 +183,8 @@ namespace currency
     static_assert(POW_NONCE_OFFSET + sizeof(uint32_t) == POW_BLOB_SIZE, "XMRig nonce is 4 LE bytes at offset 39");
     memset(blob, 0, POW_BLOB_SIZE);
     memcpy(blob, &block_header_hash, sizeof(block_header_hash));
-    const uint32_t nonce32 = static_cast<uint32_t>(nonce);
+    // RandomARQ / XMRig only search a 32-bit nonce space; ignore high bits.
+    const uint32_t nonce32 = static_cast<uint32_t>(nonce & 0xffffffffull);
     memcpy(blob + POW_NONCE_OFFSET, &nonce32, sizeof(nonce32));
   }
 
@@ -221,7 +222,7 @@ namespace currency
   {
     blobdata bd = get_block_hashing_blob(b);
 
-    access_nonce_in_block_blob(bd) = 0;
+    set_nonce_in_block_blob(bd, 0);
     return crypto::cn_fast_hash(bd.data(), bd.size());
   }
 
@@ -234,7 +235,8 @@ namespace currency
     Proof-of-stake is unchanged and does not use this function.
     */
     crypto::hash bl_hash = get_block_header_mining_hash(b);
-    res = get_block_longhash(get_block_height(b), bl_hash, b.nonce);
+    // Bind block ID to the same 32-bit nonce space XMRig searches.
+    res = get_block_longhash(get_block_height(b), bl_hash, b.nonce & 0xffffffffull);
   }
 
   crypto::hash get_block_longhash(const block& b)

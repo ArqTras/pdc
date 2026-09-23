@@ -1880,6 +1880,9 @@ bool blockchain_storage::handle_alternative_block(const block& b, const crypto::
     }
     else
     {
+      CHECK_AND_ASSERT_MES_CUSTOM(abei.bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
+        "Alternative PoW block nonce " << abei.bl.nonce << " exceeds 32-bit space used by RandomARQ/XMRig");
+
       proof_of_work = get_block_longhash(abei.bl);
 
       if (!check_hash(proof_of_work, current_diff))
@@ -6272,7 +6275,12 @@ bool blockchain_storage::validate_pos_block(const block& b,
   }
   TIME_MEASURE_FINISH_PD(pos_validate_ki_search);
 
-  if (!is_hardfork_active(ZANO_HARDFORK_04_ZARCANUM))
+  // Use the height of the block under validation (not the main tip) so alt/reorg
+  // across HF4 selects the correct PoS scheme.
+  const uint64_t block_height = for_altchain ? (split_height + alt_chain.size()) : m_db_blocks.size();
+  const bool hf4_active = is_hardfork_active_for_height(ZANO_HARDFORK_04_ZARCANUM, block_height);
+
+  if (!hf4_active)
   {
     // the following check is de-facto not applicable since 2021-10, but left intact to avoid consensus issues
     // PoS blocks don't use etc_tx_time anymore to store actual timestamp; instead, they use tx_service_attachment in mining tx extra
@@ -6297,7 +6305,7 @@ bool blockchain_storage::validate_pos_block(const block& b,
   CHECK_AND_ASSERT_MES(r, false, "failed to build kernel_stake");
   kernel_hash = crypto::cn_fast_hash(&sk, sizeof(sk));
 
-  if (is_hardfork_active(ZANO_HARDFORK_04_ZARCANUM))
+  if (hf4_active)
   {
     CHECK_AND_ASSERT_MES(b.miner_tx.version > TRANSACTION_VERSION_PRE_HF4, false, "Zarcanum PoS: miner tx with version " << b.miner_tx.version << " is not allowed");
     CHECK_AND_ASSERT_MES(b.miner_tx.vin[1].type() == typeid(txin_zc_input), false, "incorrect input 1 type: " << b.miner_tx.vin[1].type().name() << ", txin_zc_input expected");
@@ -6411,11 +6419,15 @@ bool blockchain_storage::validate_pos_block(const block& b,
       }
     }
 
-    uint64_t block_height = for_altchain ? split_height + alt_chain.size() : m_db_blocks.size();
-    uint64_t coinstake_age = block_height - max_related_block_height - 1;
+    // Age is fully validated for alt PoS in validate_alt_block_txs (max_related is not
+    // filled here when for_altchain). Skip the placeholder check in that case.
+    if (!for_altchain)
+    {
+      uint64_t coinstake_age = block_height - max_related_block_height - 1;
 
-    CHECK_AND_ASSERT_MES(coinstake_age >= m_core_runtime_config.min_coinstake_age, false,
-      "Coinstake age is: " << coinstake_age << " is less than minimum expected: " << m_core_runtime_config.min_coinstake_age);
+      CHECK_AND_ASSERT_MES(coinstake_age >= m_core_runtime_config.min_coinstake_age, false,
+        "Coinstake age is: " << coinstake_age << " is less than minimum expected: " << m_core_runtime_config.min_coinstake_age);
+    }
   }
 
   return true;
@@ -6676,6 +6688,9 @@ bool blockchain_storage::handle_block_to_main_chain(const block& bl, const crypt
   }
   else
   {
+    // RandomARQ hashes only a 32-bit nonce; reject high bits so block ID is bound to PoW.
+    CHECK_AND_ASSERT_MES_CUSTOM(bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
+      "PoW block nonce " << bl.nonce << " exceeds 32-bit space used by RandomARQ/XMRig");
 
     proof_hash = get_block_longhash(bl);
 
@@ -7947,12 +7962,16 @@ bool blockchain_storage::validate_alt_block_input(const transaction& input_tx,
   if (p_max_related_block_height != nullptr)
     *p_max_related_block_height = max_related_block_height;
 
-  uint64_t alt_bl_h = split_height + alt_chain.size() + 1;
+  // Height of the alt block under validation (abei not yet appended to alt_chain).
+  uint64_t alt_bl_h = split_height + alt_chain.size();
   if (m_core_runtime_config.is_hardfork_active_for_height(ZANO_HARDFORK_04_ZARCANUM, alt_bl_h))
   {
-    if (alt_bl_h - max_related_block_height < CURRENCY_HF4_MANDATORY_MIN_COINAGE)
+    const uint64_t coinage = (alt_bl_h > max_related_block_height)
+      ? (alt_bl_h - max_related_block_height - 1)
+      : 0;
+    if (coinage < CURRENCY_HF4_MANDATORY_MIN_COINAGE)
     {
-      LOG_ERROR("Coinage rule broken(altblock): h = " << alt_bl_h << ", max_related_block_height=" << max_related_block_height << ", tx: " << input_tx_hash);
+      LOG_ERROR("Coinage rule broken(altblock): h = " << alt_bl_h << ", max_related_block_height=" << max_related_block_height << ", coinage=" << coinage << ", tx: " << input_tx_hash);
       return false;
     }
   }

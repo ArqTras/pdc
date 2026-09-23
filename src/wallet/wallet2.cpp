@@ -4955,11 +4955,11 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
   if (required_decoys_count > 0 && !is_auditable() && stake_allows_mixins)
   {
     COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::request decoys_req = AUTO_VAL_INIT(decoys_req);
-    // Decys must also satisfy HF4 mandatory coinage (size - height >= MIN_COINAGE) and
-    // not be newer than the most recent PoW block referenced by the stake modifier.
+    // Decys must also satisfy HF4 mandatory coinage (height - max_related - 1 >= MIN_COINAGE)
+    // and not be newer than the most recent PoW block referenced by the stake modifier.
     decoys_req.height_upper_limit = std::min(m_last_pow_block_h,
-      m_last_known_daemon_height > CURRENCY_HF4_MANDATORY_MIN_COINAGE
-        ? m_last_known_daemon_height - CURRENCY_HF4_MANDATORY_MIN_COINAGE
+      m_last_known_daemon_height > CURRENCY_HF4_MANDATORY_MIN_COINAGE + 1
+        ? m_last_known_daemon_height - CURRENCY_HF4_MANDATORY_MIN_COINAGE - 1
         : m_last_pow_block_h);
     decoys_req.use_forced_mix_outs = use_only_forced_to_mix;
     decoys_req.decoys_count = required_decoys_count + 1; // one more to be able to skip a decoy in case it hits the real output

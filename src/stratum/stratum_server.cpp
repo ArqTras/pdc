@@ -408,10 +408,10 @@ namespace
       m_blockchain_last_block_id = top_block_id;
 
       m_block_template_hash_blob = get_block_hashing_blob(m_block_template);
-      if (access_nonce_in_block_blob(m_block_template_hash_blob) != 0)
+      if (get_nonce_in_block_blob(m_block_template_hash_blob) != 0)
       {
         LOG_PRINT_RED("non-zero nonce in generated block template", LOG_LEVEL_0);
-        access_nonce_in_block_blob(m_block_template_hash_blob) = 0;
+        set_nonce_in_block_blob(m_block_template_hash_blob, 0);
       }
       m_prev_block_template_header_hash = m_block_template_header_hash;
       m_block_template_header_hash = crypto::cn_fast_hash(m_block_template_hash_blob.data(), m_block_template_hash_blob.size());
