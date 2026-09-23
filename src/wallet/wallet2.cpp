@@ -4836,7 +4836,12 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
     if (m_required_decoys_count > 0 && !is_auditable())
     {
       COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::request decoys_req = AUTO_VAL_INIT(decoys_req);
-      decoys_req.height_upper_limit = std::min(m_last_pow_block_h, m_last_known_daemon_height > m_core_runtime_config.min_coinstake_age ? m_last_known_daemon_height - m_core_runtime_config.min_coinstake_age : m_last_pow_block_h);
+      // coinstake_age = block_height - max_related_block_height - 1, so decoys must satisfy:
+      // max_related <= block_height - min_coinstake_age - 1 (== daemon_height - min_coinstake_age - 1 when synced)
+      decoys_req.height_upper_limit = std::min(m_last_pow_block_h,
+        m_last_known_daemon_height > m_core_runtime_config.min_coinstake_age + 1
+          ? m_last_known_daemon_height - m_core_runtime_config.min_coinstake_age - 1
+          : m_last_pow_block_h);
       decoys_req.use_forced_mix_outs = false;
       decoys_req.decoys_count = m_required_decoys_count + 1; // one more to be able to skip a decoy in case it hits the real output
       decoys_req.amounts.push_back(pe.amount); // request one batch of decoys
