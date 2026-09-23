@@ -4950,10 +4950,17 @@ bool wallet2::prepare_and_sign_pos_block(const mining_context& cxt, uint64_t ful
   // get decoys outputs and construct miner tx
   const size_t required_decoys_count = m_core_runtime_config.hf4_minimum_mixins == 0 ? 4 /* <-- for tests */ : m_core_runtime_config.hf4_minimum_mixins;
   static bool use_only_forced_to_mix = false;       // TODO @#@# set them somewhere else
-  if (required_decoys_count > 0 && !is_auditable())
+  // Outputs with mix_attr == FORCED_NO_MIX may only be spent directly (ring size 1), even under HF4.
+  const bool stake_allows_mixins = stake_out.mix_attr != CURRENCY_TO_KEY_OUT_FORCED_NO_MIX;
+  if (required_decoys_count > 0 && !is_auditable() && stake_allows_mixins)
   {
     COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::request decoys_req = AUTO_VAL_INIT(decoys_req);
-    decoys_req.height_upper_limit = m_last_pow_block_h; // request decoys to be either older than, or the same age as stake output's height
+    // Decys must also satisfy HF4 mandatory coinage (size - height >= MIN_COINAGE) and
+    // not be newer than the most recent PoW block referenced by the stake modifier.
+    decoys_req.height_upper_limit = std::min(m_last_pow_block_h,
+      m_last_known_daemon_height > CURRENCY_HF4_MANDATORY_MIN_COINAGE
+        ? m_last_known_daemon_height - CURRENCY_HF4_MANDATORY_MIN_COINAGE
+        : m_last_pow_block_h);
     decoys_req.use_forced_mix_outs = use_only_forced_to_mix;
     decoys_req.decoys_count = required_decoys_count + 1; // one more to be able to skip a decoy in case it hits the real output
     decoys_req.amounts.push_back(0); // request one batch of decoys for hidden amounts
