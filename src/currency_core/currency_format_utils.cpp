@@ -502,16 +502,16 @@ namespace currency
       if (tx.version > TRANSACTION_VERSION_PRE_HF4 /* && stake is zarcanum */)
       {
         // just placeholders, they will be filled in wallet2::prepare_and_sign_pos_block()
-        tx.vin.emplace_back(std::move(txin_zc_input()));
-        tx.signatures.emplace_back(std::move(zarcanum_sig()));
+        tx.vin.emplace_back(txin_zc_input());
+        tx.signatures.emplace_back(zarcanum_sig());
         ++zc_ins_count;
       }
       else
       {
         // old fashioned non-hidden amount direct spend PoS scheme
         // just placeholders, they will be filled in wallet2::prepare_and_sign_pos_block()
-        tx.vin.emplace_back(std::move(txin_to_key()));
-        tx.signatures.emplace_back(std::move(NLSAG_sig()));
+        tx.vin.emplace_back(txin_to_key());
+        tx.signatures.emplace_back(NLSAG_sig());
       }
     }
 
@@ -1360,7 +1360,7 @@ namespace currency
           result.htlc_origin = generate_origin_for_htlc(htlc, self);
 
           //calculate hash
-          if (!htlc.flags&CURRENCY_TXOUT_HTLC_FLAGS_HASH_TYPE_MASK)
+          if (!(htlc.flags & CURRENCY_TXOUT_HTLC_FLAGS_HASH_TYPE_MASK))
           {
             htlc.htlc_hash = crypto::sha256_hash(result.htlc_origin.data(), result.htlc_origin.size());
           }

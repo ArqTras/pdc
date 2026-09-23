@@ -115,6 +115,9 @@ else()
   set_source_files_properties("crypto/chacha8_stream.c" PROPERTIES COMPILE_FLAGS "-Wno-sign-compare -Wno-strict-prototypes")
 endif()
 
+# OpenSSL 3 deprecates the EC_KEY APIs used by eth_signature; silence until migrated.
+set_source_files_properties("crypto/eth_signature.cpp" PROPERTIES COMPILE_DEFINITIONS "OPENSSL_SUPPRESS_DEPRECATED")
+
 add_library(crypto ${CRYPTO})
 if(USE_BITCOIN_SECP256K1_FOR_ECDSA)
   add_dependencies(crypto secp256k1)
