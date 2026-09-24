@@ -497,6 +497,7 @@ namespace currency
     bool get_outs_index_stat(outs_index_stat& outs_stat)const;
     bool print_lookup_key_image(const crypto::key_image& ki) const;
     void reset_db_cache() const;
+    bool collect_rangeproofs_data_from_tx(const transaction& tx, const crypto::hash& tx_id, std::vector<zc_outs_range_proofs_with_commitments>& agregated_proofs);
     void clear_altblocks();
     void inspect_blocks_index() const;
     bool rebuild_tx_fee_medians();
@@ -622,7 +623,6 @@ namespace currency
     wide_difficulty_type get_next_difficulty_for_alternative_chain(const alt_chain_type& alt_chain, block_extended_info& bei, bool pos) const;
     bool handle_block_to_main_chain(const block& bl, block_verification_context& bvc);
     bool handle_block_to_main_chain(const block& bl, const crypto::hash& id, block_verification_context& bvc);
-    bool collect_rangeproofs_data_from_tx(const transaction& tx, const crypto::hash& tx_id, std::vector<zc_outs_range_proofs_with_commitments>& agregated_proofs);
     std::string print_alt_chain(alt_chain_type alt_chain);
     bool handle_alternative_block(const block& b, const crypto::hash& id, block_verification_context& bvc);
     bool is_reorganize_required(const block_extended_info& main_chain_bei, const alt_chain_type& alt_chain, const crypto::hash& proof_alt);
