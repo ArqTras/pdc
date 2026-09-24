@@ -106,12 +106,24 @@ namespace currency {
     return (hashVal * difficulty <= max256bit);
   }
 
+  bool check_hash_64(const crypto::hash &hash, wide_difficulty_type difficulty)
+  {
+    if (difficulty == 0)
+      return false;
+    const uint64_t target = difficulty_to_boundary(difficulty);
+    // Same predicate as XMRig JobResults: first 8 bytes as native uint64 < target.
+    return *reinterpret_cast<const uint64_t*>(&hash) < target;
+  }
+
   uint64_t difficulty_to_boundary(wide_difficulty_type difficulty)
   {
-    boost::multiprecision::uint256_t nominal_hash = std::numeric_limits<boost::multiprecision::uint256_t>::max();
-    nominal_hash = nominal_hash / difficulty;
-    uint64_t res = (nominal_hash >> 192).convert_to<std::uint64_t>();
-    return res;
+    // Match XMRig Diff::toTarget: target = (2^64 - 1) / difficulty
+    if (difficulty == 0)
+      return std::numeric_limits<uint64_t>::max();
+    if (difficulty > max64bit)
+      return 0;
+    const uint64_t d = difficulty.convert_to<uint64_t>();
+    return std::numeric_limits<uint64_t>::max() / d;
   }
 
   void difficulty_to_boundary_long(wide_difficulty_type difficulty, crypto::hash& result)
