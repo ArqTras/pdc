@@ -7371,7 +7371,7 @@ static int mdbx_sync_locked(MDBX_env *env, unsigned flags,
     mdbx_assert(env, ((flags ^ env->me_flags) & MDBX_WRITEMAP) == 0);
     if (flags & MDBX_WRITEMAP) {
       const size_t offset = (uint8_t *)data_page(head) - env->me_dxb_mmap.dxb;
-      const size_t paged_offset = offset & ~(env->me_os_psize - 1);
+      const size_t paged_offset = offset & ~((size_t)env->me_os_psize - 1);
       const size_t paged_length = roundup_powerof2(
           env->me_psize + offset - paged_offset, env->me_os_psize);
       rc = mdbx_msync(&env->me_dxb_mmap, paged_offset, paged_length,
@@ -8161,7 +8161,7 @@ static int __cold mdbx_setup_dxb(MDBX_env *env, const int lck_rc) {
         head->mm_datasync_sign = MDBX_DATASIGN_WEAK;
         head->mm_txnid_b.inconsistent = undo_txnid;
         const size_t offset = (uint8_t *)data_page(head) - env->me_dxb_mmap.dxb;
-        const size_t paged_offset = offset & ~(env->me_os_psize - 1);
+        const size_t paged_offset = offset & ~((size_t)env->me_os_psize - 1);
         const size_t paged_length = roundup_powerof2(
             env->me_psize + offset - paged_offset, env->me_os_psize);
         err = mdbx_msync(&env->me_dxb_mmap, paged_offset, paged_length, false);
@@ -16648,7 +16648,7 @@ __dll_export
 #else
   #ifdef __INTEL_COMPILER
     "Intel C/C++ " STRINGIFY(__INTEL_COMPILER)
-  #elsif defined(__apple_build_version__)
+  #elif defined(__apple_build_version__)
     "Apple clang " STRINGIFY(__apple_build_version__)
   #elif defined(__ibmxl__)
     "IBM clang C " STRINGIFY(__ibmxl_version__) "." STRINGIFY(__ibmxl_release__)

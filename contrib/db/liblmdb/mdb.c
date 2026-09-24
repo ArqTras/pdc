@@ -1549,7 +1549,7 @@ static int utf8_to_utf16(const char *src, int srcsize, wchar_t **dst, int *dstsi
 #endif
 
 /** Return the library version info. */
-char * ESECT
+char const * ESECT
 mdb_version(int *major, int *minor, int *patch)
 {
 	if (major) *major = MDB_VERSION_MAJOR;
@@ -1559,7 +1559,7 @@ mdb_version(int *major, int *minor, int *patch)
 }
 
 /** Table of descriptions for LMDB @ref errors */
-static char *const mdb_errstr[] = {
+static char const *const mdb_errstr[] = {
 	"MDB_KEYEXIST: Key/data pair already exists",
 	"MDB_NOTFOUND: No matching key/data pair found",
 	"MDB_PAGE_NOTFOUND: Requested page not found",
@@ -1582,7 +1582,7 @@ static char *const mdb_errstr[] = {
 	"MDB_BAD_DBI: The specified DBI handle was closed/changed unexpectedly",
 };
 
-char *
+char const *
 mdb_strerror(int err)
 {
 #ifdef _WIN32
@@ -2278,6 +2278,7 @@ mdb_page_dirty(MDB_txn *txn, MDB_page *mp)
 	mid.mptr = mp;
 	rc = insert(txn->mt_u.dirty_list, &mid);
 	mdb_tassert(txn, rc == 0);
+	(void)rc;
 	txn->mt_dirty_room--;
 }
 
@@ -7607,7 +7608,7 @@ new_sub:
 			mdb_size_t ecount;
 put_sub:
 			xdata.mv_size = 0;
-			xdata.mv_data = "";
+			xdata.mv_data = (void *)"";
 			leaf = NODEPTR(mc->mc_pg[mc->mc_top], mc->mc_ki[mc->mc_top]);
 			if (flags & MDB_CURRENT) {
 				xflags = MDB_CURRENT|MDB_NOSPILL;

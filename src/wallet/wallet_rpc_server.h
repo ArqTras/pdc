@@ -19,6 +19,7 @@ namespace tools
 {
   struct i_wallet_provider
   {
+    virtual ~i_wallet_provider() {}
     virtual void lock() {};
     virtual void unlock() {};
 //#ifndef MOBILE_WALLET_BUILD
@@ -57,6 +58,7 @@ namespace tools
   {
     wallet_provider_simple(std::shared_ptr<wallet2> wallet_ptr) : m_wallet_ptr(wallet_ptr)
     {}
+    ~wallet_provider_simple() override = default;
 
     // interface i_wallet_provider
     virtual std::shared_ptr<wallet2> get_wallet() override

@@ -1,6 +1,19 @@
 set(UPNPC_BUILD_STATIC ON CACHE BOOL "Build static library")
 set(UPNPC_BUILD_SHARED OFF CACHE BOOL "Build shared library")
 set(UPNPC_BUILD_TESTS OFF CACHE BOOL "Build test executables")
+
+# Apply in-tree warning/security fixes over vendored submodules (no upstream fork required).
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/pdc-fixes/randomx/"
+     DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/randomx/")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/miniupnp/miniupnpc")
+  file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/pdc-fixes/miniupnp/"
+       DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/miniupnp/")
+endif()
+if(NOT DISABLE_TOR AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tor-connect/torlib")
+  file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/pdc-fixes/tor-connect/"
+       DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/tor-connect/")
+endif()
+
 add_subdirectory(zlib)
 add_subdirectory(db)
 add_subdirectory(ethereum)
@@ -15,10 +28,16 @@ endif()
 if(MSVC)
   set_property(TARGET randomx APPEND_STRING PROPERTY COMPILE_FLAGS " /wd4067 /wd4101 /wd4244 /wd4267 /wd4996")
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
-  # AppleClang/Clang: avoid GCC-only -Wno-discarded-qualifiers / -Wno-unused-but-set-variable
-  set_property(TARGET randomx APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-strict-prototypes -Wno-unused-function -Wno-sign-compare -Wno-type-limits -Wno-ignored-qualifiers -Wno-implicit-fallthrough -Wno-unknown-warning-option")
+  # Language-scoped options: C-only flags must not be passed to the C++ compiler.
+  target_compile_options(randomx PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-Wno-strict-prototypes>
+    -Wno-unused-function -Wno-sign-compare -Wno-type-limits
+    -Wno-ignored-qualifiers -Wno-implicit-fallthrough -Wno-unknown-warning-option)
 else()
-  set_property(TARGET randomx APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-strict-prototypes -Wno-unused-function -Wno-unused-but-set-variable -Wno-sign-compare -Wno-type-limits -Wno-discarded-qualifiers -Wno-implicit-fallthrough")
+  target_compile_options(randomx PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-Wno-strict-prototypes -Wno-discarded-qualifiers>
+    -Wno-unused-function -Wno-unused-but-set-variable -Wno-sign-compare
+    -Wno-type-limits -Wno-implicit-fallthrough)
 endif()
 
 if(USE_BITCOIN_SECP256K1_FOR_ECDSA)
@@ -69,12 +88,18 @@ endif()
 
 
 if(MSVC)
-  set_property(TARGET upnpc-static APPEND_STRING PROPERTY COMPILE_FLAGS " /wd4244 /wd4267")
-  set_property(TARGET zlibstatic APPEND_STRING PROPERTY COMPILE_FLAGS " /wd4267 /wd4267")
+  # No blanket /wd* for miniupnp — narrowing fixed via pdc-fixes overlays.
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
-  set_property(TARGET upnpc-static APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-unknown-warning-option ")
-  set_property(TARGET zlibstatic APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough -Wno-ignored-qualifiers -Wno-unknown-warning-option ")
+  target_compile_options(libminiupnpc-static PRIVATE
+    -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough
+    -Wno-ignored-qualifiers -Wno-unknown-warning-option)
+  # zlib 1.3.1 uses ANSI prototypes; keep only residual noise filters if any remain.
+  target_compile_options(zlibstatic PRIVATE
+    -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough
+    -Wno-ignored-qualifiers -Wno-unknown-warning-option)
 else()
-  set_property(TARGET upnpc-static APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough -Wno-discarded-qualifiers ")
-  set_property(TARGET zlibstatic APPEND_STRING PROPERTY COMPILE_FLAGS " -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough -Wno-discarded-qualifiers ")
+  target_compile_options(libminiupnpc-static PRIVATE
+    -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough)
+  target_compile_options(zlibstatic PRIVATE
+    -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough)
 endif()
