@@ -73,11 +73,22 @@ macro(fetch_version name version_file)
     execute_process(COMMAND ${GIT} describe --tags --long --dirty=-dirty
       OUTPUT_VARIABLE ${name}_GIT_DESCRIBE
       OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       RESULT_VARIABLE rc)
     if(rc OR "${name}_GIT_DESCRIBE" STREQUAL "")
-      message(FATAL_ERROR "Please fetch tags and/or install latest version of git ('describe --tags --long --dirty' failed)")
+      # Tags may be missing after history rewrites or shallow CI checkouts.
+      execute_process(COMMAND ${GIT} describe --tags --long --always --dirty=-dirty
+        OUTPUT_VARIABLE ${name}_GIT_DESCRIBE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE rc)
     endif()
+    if(rc OR "${name}_GIT_DESCRIBE" STREQUAL "")
+      message(WARNING "git describe failed for ${name}; will fall back to VERSION file if present")
+      set(${name}_GIT_DESCRIBE "")
+    else()
 
     execute_process(COMMAND ${GIT} show --no-patch --format=%cI HEAD
       OUTPUT_VARIABLE ${name}_GIT_TIMESTAMP
@@ -134,6 +145,7 @@ macro(fetch_version name version_file)
         set(${name}_GIT_VERSION "0;0;0")
       endif()
     endif()
+    endif() # git describe succeeded
   endif()
 
   if(NOT ${name}_GIT_VERSION OR NOT ${name}_GIT_TIMESTAMP OR NOT ${name}_GIT_REVISION)
