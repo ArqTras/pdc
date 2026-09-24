@@ -15,16 +15,17 @@ jobs:
     name: Ubuntu 22.04
     runs-on: ubuntu-22.04
     env:
-      CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 2G
+      CCACHE_COMPRESS: "1"
+      CCACHE_COMPILERCHECK: content
       LABEL: ubuntu-22.04
       CC: gcc-11
       CXX: g++-11
+      BOOST_ROOT_DIR: ${{ github.workspace }}/boost_1_80_0
+      OPENSSL_PREFIX: ${{ github.workspace }}/openssl
     steps:
       - uses: actions/checkout@v4
-
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -33,34 +34,42 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt update
-          sudo apt upgrade
-          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc-11 g++-11
+          sudo apt-get install -y curl build-essential python3-dev autotools-dev libicu-dev libbz2-dev cmake git zlib1g-dev fuse libfuse2 libxcb-xinerama0 gcc-11 g++-11 ccache
 
-      # Install Boost
+      - name: Cache Boost 1.80.0
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.BOOST_ROOT_DIR }}
+          key: boost-1.80.0-ubuntu-22.04-gui-v1
+
       - name: Install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           curl -fL -o boost_1_80_0.tar.bz2 https://archives.boost.io/release/1.80.0/source/boost_1_80_0.tar.bz2
           tar -xjf boost_1_80_0.tar.bz2
           cd boost_1_80_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2
+          ./b2 -j"$(nproc)"
           cd ..
 
-      # Install OpenSSH
+      - name: Cache OpenSSL 1.1.1w
+        id: cache-openssl
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.OPENSSL_PREFIX }}
+          key: openssl-1.1.1w-ubuntu-22.04-gui-v1
+
       - name: Install OpenSSL
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
         run: |
           curl -fL -o openssl-1.1.1w.tar.gz https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz
           tar xaf openssl-1.1.1w.tar.gz
           cd openssl-1.1.1w/
-          ./config --prefix=/home/runner/work/pdc/pdc/openssl --openssldir=/home/runner/work/pdc/pdc/openssl shared zlib
-          make
-          make install
+          ./config --prefix="${OPENSSL_PREFIX}" --openssldir="${OPENSSL_PREFIX}" shared zlib
+          make -j"$(nproc)"
+          make install_sw
           cd ..
-
-      # Setup Ccache
-      - name: Setup ccache
-        run: |
-          sudo apt install ccache
 
       # Install Qt
       - name: Install Qt
@@ -73,25 +82,37 @@ jobs:
           arch: 'gcc_64'
           modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
-      # Retrieve Ccache
-      - name: Retrieve ccache
+      - name: Cache ccache
         uses: actions/cache@v4
         with:
-          path: .ccache
-          key: ccache-ubuntu-22.04-gui
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-gui-ubuntu-22.04-${{ github.sha }}
+          restore-keys: |
+            ccache-gui-ubuntu-22.04-
 
      # Configure the project with cmake
       - name: Configure
         run: |
-          mkdir build && cd build
-          cmake -D STATIC=TRUE -D BOOST_ROOT=/home/runner/work/pdc/pdc/boost_1_80_0 -D OPENSSL_ROOT_DIR=/home/runner/work/pdc/pdc/openssl -D CMAKE_PREFIX_PATH=/home/runner/work/pdc/Qt/5.12.12/gcc_64 -D BUILD_GUI=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
-
+          ccache -z
+          mkdir -p build && cd build
+          cmake \
+            -D STATIC=TRUE \
+            -D BOOST_ROOT="${BOOST_ROOT_DIR}" \
+            -D OPENSSL_ROOT_DIR="${OPENSSL_PREFIX}" \
+            -D CMAKE_PREFIX_PATH=/home/runner/work/pdc/Qt/5.12.12/gcc_64 \
+            -D BUILD_GUI=ON \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D BUILD_TESTS=OFF \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            ..
 
       # Build for linux
       - name: Build
         run: |
           cd build
-          make
+          make -j"$(nproc)"
+          ccache -s
 
       # Prepare for deploy
       - name: Prepare for Deploy
@@ -224,13 +245,13 @@ jobs:
     runs-on: macos-14
     env:
       LABEL: osx
-      CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 2G
+      CCACHE_COMPRESS: "1"
+      CCACHE_COMPILERCHECK: content
+      BOOST_ROOT_DIR: ${{ github.workspace }}/boost_1_84_0
     steps:
       - uses: actions/checkout@v4
-
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -240,34 +261,55 @@ jobs:
         run: |
           brew install --force ccache cmake openssl@3 qt qtwebengine
 
-       # Install Boost
+      - name: Cache Boost 1.84.0
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.BOOST_ROOT_DIR }}
+          key: boost-1.84.0-macos-14-gui-static-icu-off-v1
+
       - name: Install Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
           curl -fL -o boost_1_84_0.tar.bz2 https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
           tar -xjf boost_1_84_0.tar.bz2
           cd boost_1_84_0
           ./bootstrap.sh
-          ./b2 -j3 link=static variant=release threading=multi boost.locale.icu=off
+          ./b2 -j"$(sysctl -n hw.ncpu)" link=static variant=release threading=multi boost.locale.icu=off
           cd ..
 
-      # Retrieve ccache
-      - name: Retrieve ccache
+      - name: Cache ccache
         uses: actions/cache@v4
         with:
-          path: .ccache
-          key: ccache-osx
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-gui-osx-${{ github.sha }}
+          restore-keys: |
+            ccache-gui-osx-
 
       # Configure project with cmake
       - name: Configure
         run: |
-          mkdir build && cd build
-          cmake -D BOOST_ROOT=${{ github.workspace }}/boost_1_84_0 -D BOOST_LIBRARYDIR=${{ github.workspace }}/boost_1_84_0/stage/lib -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 -D OPENSSL_USE_STATIC_LIBS=TRUE -D CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt;/opt/homebrew/opt/qtwebengine" -D BUILD_GUI=TRUE -D CMAKE_BUILD_TYPE=Release -D BUILD_TESTS=OFF ..
+          ccache -z
+          mkdir -p build && cd build
+          cmake \
+            -D BOOST_ROOT="${BOOST_ROOT_DIR}" \
+            -D BOOST_LIBRARYDIR="${BOOST_ROOT_DIR}/stage/lib" \
+            -D OPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@3 \
+            -D OPENSSL_USE_STATIC_LIBS=TRUE \
+            -D CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt;/opt/homebrew/opt/qtwebengine" \
+            -D BUILD_GUI=TRUE \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D BUILD_TESTS=OFF \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            ..
 
       # Build for macOS
       - name: Build
         run: |
           cd build
-          make
+          make -j"$(sysctl -n hw.ncpu)"
+          ccache -s
 
        # Prepare for deploy
       - name: Prepare for Deploy
@@ -326,13 +368,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      # Checkout repository and submodules
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
       # Boost.Asio 1.84 still uses OpenSSL 1.1 ASN.1 internals; Chocolatey OpenSSL 4.x breaks the Windows build.
       - name: Cache OpenSSL 1.1.1w
         id: cache-openssl
@@ -371,8 +406,16 @@ jobs:
           arch: 'win64_msvc2017_64'
           modules: 'debug_info qtcharts qtdatavis3d qtnetworkauth qtpurchasing qtscript qtvirtualkeyboard qtwebengine qtwebglplugin'
 
-      # Install boost
+      - name: Cache Boost 1.84.0
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: C:/local/boost_1_84_0
+          key: boost-1.84.0-win64-msvc-14.3-v1
+
       - name: Install Boost 1.84.0
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        shell: pwsh
         run: |
           $link = "https://boost.teeks99.com/bin/1.84.0/boost_1_84_0-msvc-14.3-64.exe"
           $path = "C:\boost.exe"
@@ -394,7 +437,7 @@ jobs:
           $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
           cd build
           dir
-          MSBuild Pdc.sln /p:Configuration=Release /t:Build
+          MSBuild Pdc.sln /p:Configuration=Release /t:Build /m
 
       # Prepare for deploy
       - name: Prepare for Deploy
