@@ -105,13 +105,13 @@ public:
   TorLib();
 	~TorLib() override;
   // ------------- t_tranport ------------- 
-  virtual bool Init(log_lv log_level = boost::log::trivial::info);
-  virtual int Connect(const string ip, const int port, const int timeout=0);
-  virtual bool Close();
-  virtual bool Send(const string& path);
-  virtual bool Receive(string& buff, const int timeout=0);
-  virtual void SetNotifier(tools::tor::t_transport_state_notifier* pnotifier);
-  virtual void TransferExternalConsensus(std::vector<std::string>& local_consensus_data);
-  virtual void WithdrawExternalConsensus(std::vector<std::string>& local_consensus_data);
+  bool Init(log_lv log_level = boost::log::trivial::info) override;
+  int Connect(const string ip, const int port, const int timeout=0) override;
+  bool Close() override;
+  bool Send(const string& path) override;
+  bool Receive(string& buff, const int timeout=0) override;
+  void SetNotifier(tools::tor::t_transport_state_notifier* pnotifier) override;
+  void TransferExternalConsensus(std::vector<std::string>& local_consensus_data) override;
+  void WithdrawExternalConsensus(std::vector<std::string>& local_consensus_data) override;
 };
 
