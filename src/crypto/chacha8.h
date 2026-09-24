@@ -16,6 +16,8 @@
 #include "hash.h"
 
 namespace crypto {
+  void wipe(void* p, size_t n) noexcept;
+
   extern "C" {
 #endif
     void chacha8(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher);
@@ -28,7 +30,7 @@ namespace crypto {
 
     ~chacha8_key()
     {
-      memset(data, 0, sizeof(data));
+      wipe(data, sizeof(data));
     }
   };
 
@@ -50,7 +52,7 @@ namespace crypto {
     //TODO: change wallet encryption algo
     crypto::cn_fast_hash(pass, sz, pwd_hash);
     memcpy(&key.data, pwd_hash, sizeof(key.data));
-    memset(pwd_hash, 0, sizeof(pwd_hash));
+    wipe(pwd_hash, sizeof(pwd_hash));
   }
 
   inline void generate_chacha8_key(std::string password, chacha8_key& key) 

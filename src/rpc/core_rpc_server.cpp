@@ -1104,6 +1104,8 @@ namespace currency
       }
       error_resp.code = CORE_RPC_ERROR_CODE_BLOCK_NOT_ACCEPTED;
       error_resp.message = "Block not accepted";
+
+      blacklist_invalid_pool_range_proofs();
       return false;
     }
 
@@ -1149,11 +1151,35 @@ namespace currency
       }
       error_resp.code = CORE_RPC_ERROR_CODE_BLOCK_NOT_ACCEPTED;
       error_resp.message = "Block not accepted";
+
+      blacklist_invalid_pool_range_proofs();
       return false;
     }
 
     res.status = "OK";
     return true;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
+  void core_rpc_server::blacklist_invalid_pool_range_proofs()
+  {
+    // Range proofs are aggregated per block for performance; on reject we cannot tell which
+    // pool tx broke the aggregate, so validate each pool tx individually and blacklist bad ones.
+    LOG_PRINT_MAGENTA("Checking pool txs range proofs after submitblock failure", LOG_LEVEL_0);
+    std::list<std::pair<crypto::hash, transaction>> txs;
+    m_core.get_tx_pool().get_all_transactions_list(txs);
+    size_t blacklisted = 0;
+    for (const auto& tx_pair : txs)
+    {
+      std::vector<zc_outs_range_proofs_with_commitments> range_proofs_agregated;
+      if (!m_core.get_blockchain_storage().collect_rangeproofs_data_from_tx(tx_pair.second, tx_pair.first, range_proofs_agregated)
+          || !verify_multiple_zc_outs_range_proofs(range_proofs_agregated))
+      {
+        LOG_PRINT_MAGENTA("Transaction " << tx_pair.first << " has invalid range proof, will be blacklisted", LOG_LEVEL_0);
+        m_core.get_tx_pool().add_transaction_to_black_list(tx_pair.second);
+        ++blacklisted;
+      }
+    }
+    LOG_PRINT_MAGENTA("Pool range-proof check done, blacklisted: " << blacklisted << " of " << txs.size(), LOG_LEVEL_0);
   }
   //------------------------------------------------------------------------------------------------------------------------------
   uint64_t core_rpc_server::get_block_reward(const block& blk)

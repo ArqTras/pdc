@@ -12,6 +12,7 @@
 #include "include_base_utils.h"
 #include "crypto/chacha8.h"
 #include "crypto/chacha8_stream.h"
+#include "crypto/crypto.h"
 
 
 namespace tools
@@ -37,7 +38,8 @@ namespace tools
     }
     ~encrypt_chacha_processer_base()
     {
-
+      crypto::wipe(m_ctx);
+      // m_key wipes itself
     }
 
     template<typename cb_handler>

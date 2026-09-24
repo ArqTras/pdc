@@ -768,6 +768,7 @@ namespace tools
     void set_concise_mode_truncate_history(uint64_t max_entries) { m_truncate_history_max_entries = max_entries; }
 
     construct_tx_param get_default_construct_tx_param();
+    uint64_t get_current_pos_attempts() const { return m_pos_attempts_count; }
 
     //---------- m_rollback_events visitor ------------------------------------------------
     void operator()(const asset_register_event& e);
@@ -988,6 +989,7 @@ private:
     uint64_t m_last_known_daemon_height = 0;
     uint64_t m_wallet_concise_mode_max_reorg_blocks = WALLET_CONCISE_MODE_MAX_REORG_BLOCKS;
     uint64_t m_full_resync_requested_at_h = 0;
+    uint64_t m_pos_attempts_count = 0;
     uint64_t m_truncate_history_max_entries 
 #ifdef MOBILE_WALLET_BUILD
       = WALLET_CONCISE_MODE_MOBILE_MAX_HISTORY_SIZE;

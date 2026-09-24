@@ -107,7 +107,7 @@
 #define CURRENCY_PROTOCOL_MAX_TXS_REQUEST_COUNT         500    
 
 
-#define CURRENCY_ALT_BLOCK_LIVETIME_COUNT               (CURRENCY_BLOCKS_PER_DAY*7)//one week
+#define CURRENCY_ALT_BLOCK_LIVETIME_COUNT               (CURRENCY_BLOCKS_PER_DAY/12)//2 hours
 #define CURRENCY_ALT_BLOCK_MAX_COUNT                    43200 //30 days
 #define CURRENCY_MEMPOOL_TX_LIVETIME                    345600 //seconds, 4 days
 
@@ -146,6 +146,7 @@
 #define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            30000      //30 seconds
 #define P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT       70
 #define P2P_FAILED_ADDR_FORGET_SECONDS                  (60*5)     //5 minutes
+#define P2P_FAILED_ADDR_CACHE_MAX_SIZE                  1000      //hard cap for m_conn_fails_cache size
 #define P2P_PRIORITY_CONNECTION_RETRY_SECONDS           15         //backoff after a failed priority connect
 
 #define P2P_IP_BLOCKTIME                                (60*60*24) //24 hours

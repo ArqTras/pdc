@@ -505,6 +505,8 @@ namespace currency
   template<class t_core>
   int t_currency_protocol_handler<t_core>::handle_response_get_objects(int command, NOTIFY_RESPONSE_GET_OBJECTS::request& arg, currency_connection_context& context)
   {
+    TIME_MEASURE_START_MS(total_time);
+
     //do not process requests if it comes from node wich is debugged
     if (m_debug_ip_address != 0 && context.m_remote_ip == m_debug_ip_address)
       return 1;
@@ -659,10 +661,12 @@ namespace currency
       }
     }
     uint64_t current_size = m_core.get_blockchain_storage().get_current_blockchain_size();
-    LOG_PRINT_YELLOW(">>>>>>>>> sync progress: " << arg.blocks.size() << " blocks added, now have "
+    TIME_MEASURE_FINISH_MS(total_time);
+    std::string sync_speed_str = m_sync_speed_calculator.process_blocks_and_return_speed_str(arg.blocks.size());
+    LOG_PRINT_YELLOW(">>>>>>>>> sync progress: " << arg.blocks.size() << " blocks added ( " << std::fixed << std::setprecision(1) << total_time / 1000.0f << "s ), now have "
       << current_size << " of " << context.m_remote_blockchain_height
       << " ( " << std::fixed << std::setprecision(2) << current_size * 100.0 / context.m_remote_blockchain_height << "% ) and "
-      << context.m_remote_blockchain_height - current_size << " blocks left"
+      << static_cast<int64_t>(context.m_remote_blockchain_height) - static_cast<int64_t>(current_size) << " blocks left" << sync_speed_str
       , LOG_LEVEL_0);
 
     request_missing_objects(context, true);
@@ -687,6 +691,7 @@ namespace currency
     {
       LOG_PRINT_MAGENTA("Synchronized set to FALSE (" << synchronized_connections_count << " of " << total_connections_count << " conn. synced)", LOG_LEVEL_0);
       m_synchronized = false;
+      m_sync_speed_calculator.reset();
     }
 
     return m_core.on_idle();
@@ -1052,6 +1057,44 @@ namespace currency
         }
         return true; // = continue
       });
+  }
+  //-----------------------------------------------------------------------------------------------------------------------  
+  template<class t_core>
+  std::string t_currency_protocol_handler<t_core>::sync_speed_calculator_t::process_blocks_and_return_speed_str(size_t blocks_count)
+  {
+    CRITICAL_REGION_LOCAL(m_lock);
+    static constexpr double ema_alpha = 0.2;
+
+    time_t now = time(NULL);
+
+    if (m_last_objects_handled_ts == 0)
+    {
+      m_last_objects_handled_ts = now;
+      return "";
+    }
+
+    time_t period = now - m_last_objects_handled_ts;
+    if (period <= 0)
+      return "";
+    m_last_objects_handled_ts = now;
+    
+    int64_t current_speed_b_h = 3600 * blocks_count / period;
+    if (m_accumulator != 0)
+      m_accumulator = (1.0 - ema_alpha) * m_accumulator + ema_alpha * current_speed_b_h;
+    else
+      m_accumulator = current_speed_b_h;
+
+    std::string sync_speed_str = ", sync speed: " + epst::num_to_string_fast(static_cast<int64_t>(m_accumulator)) + " b/h";
+    return sync_speed_str;
+  }
+
+  template<class t_core>
+  void t_currency_protocol_handler<t_core>::sync_speed_calculator_t::reset()
+  {
+    CRITICAL_REGION_LOCAL(m_lock);
+
+    m_last_objects_handled_ts = 0;
+    m_accumulator = 0;
   }
 
 

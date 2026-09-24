@@ -11,16 +11,48 @@
 
 namespace tools
 {
-  inline bool get_wallet_info(wallet2& w, view::wallet_info& wi)
+
+  inline uint64_t get_native_entry_balance(const std::list<tools::wallet_public::asset_balance_entry>& balances)
+  {
+    for (const auto& b : balances)
+    {
+      if (b.asset_info.asset_id == currency::native_coin_asset_id)
+        return b.total;
+    }
+    return 0;
+  }
+
+  inline bool get_wallet_info_unlocked(wallet2& w, view::wallet_info& wi)
   {
     wi = AUTO_VAL_INIT_T(view::wallet_info);
     wi.address = w.get_account().get_public_address_str();
     wi.view_sec_key = epee::string_tools::pod_to_hex(w.get_account().get_keys().view_secret_key);
-    w.balance(wi.balances, wi.mined_total);
     wi.path = epee::string_encoding::wstring_to_utf8(w.get_wallet_path());
     wi.is_auditable = w.is_auditable();
     wi.is_watch_only = w.is_watch_only();
+    wi.current_pos_attempts = w.get_current_pos_attempts();
+    return true;
+  }
+
+  // Estimated from staking performance reference; gives a rough iterations-per-block estimate for current stake.
+#define ITERATIONS_NEEDED_PER_ONE_COIN_MAGIC_NUMBER 464400000
+
+  inline bool get_wallet_info(wallet2& w, view::wallet_info& wi)
+  {
+    wi = AUTO_VAL_INIT_T(view::wallet_info);
+    get_wallet_info_unlocked(w, wi);
+    w.balance(wi.balances, wi.mined_total);
     wi.has_bare_unspent_outputs = w.has_bare_unspent_outputs();
+
+    uint64_t native_amount = get_native_entry_balance(wi.balances);
+    // reduce it to decimal part of the coin, to avoid overflow
+    native_amount /= COIN;
+
+    if (native_amount)
+    {
+      wi.est_iterations_per_pos_block = ITERATIONS_NEEDED_PER_ONE_COIN_MAGIC_NUMBER / native_amount;
+    }
+
     return true;
   }
 
