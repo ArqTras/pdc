@@ -87,9 +87,7 @@ if(MSVC)
 endif()
 
 
-if(MSVC)
-  # No blanket /wd* for miniupnp — narrowing fixed via pdc-fixes overlays.
-elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
   target_compile_options(libminiupnpc-static PRIVATE
     -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough
     -Wno-ignored-qualifiers -Wno-unknown-warning-option)
@@ -97,7 +95,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
   target_compile_options(zlibstatic PRIVATE
     -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough
     -Wno-ignored-qualifiers -Wno-unknown-warning-option)
-else()
+elseif(NOT MSVC)
   target_compile_options(libminiupnpc-static PRIVATE
     -Wno-undef -Wno-unused-result -Wno-unused-value -Wno-implicit-fallthrough)
   target_compile_options(zlibstatic PRIVATE
