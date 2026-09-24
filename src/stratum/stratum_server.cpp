@@ -492,15 +492,20 @@ namespace
       uint8_t blob[POW_BLOB_SIZE] = {};
       fill_pow_blob(blob, m_block_template_header_hash, 0);
       const uint64_t target64 = difficulty_to_boundary(worker_difficulty);
-      // XMRig parses 16-char targets with strtoull(..., 16) as a big-endian integer.
-      // pod_to_hex() dumps native (LE) memory and makes the share target ~2^64 too easy.
-      char target_hex[17];
-      snprintf(target_hex, sizeof(target_hex), "%016llx", static_cast<unsigned long long>(target64));
+      // XMRig >= 6.x Job::setTarget(): fromHex() then read as native LE uint64 (NOT strtoull/BE).
+      // Encode target as 8 little-endian bytes → 16 hex chars so miner sees the intended difficulty.
+      uint8_t target_le[8];
+      for (size_t i = 0; i < 8; ++i)
+        target_le[i] = static_cast<uint8_t>((target64 >> (8 * i)) & 0xff);
+      const std::string target_hex = epee::string_tools::buff_to_hex_nodelimer(
+        std::string(reinterpret_cast<const char*>(target_le), sizeof(target_le)));
+      const uint64_t diff64 = worker_difficulty.convert_to<uint64_t>();
       return std::string(R"({"blob":")") + epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(blob), sizeof(blob))) +
         R"(","job_id":")" + epee::string_tools::pod_to_hex(m_block_template_header_hash) +
         R"(","target":")" + target_hex +
         R"(","seed_hash":")" + epee::string_tools::pod_to_hex(seed_hash) +
-        R"(","algo":"rx/arq","height":)" + std::to_string(m_block_template_height) + "}";
+        R"(","algo":"rx/arq","height":)" + std::to_string(m_block_template_height) +
+        R"(,"diff":)" + std::to_string(diff64) + "}";
     }
 
     void update_work(protocol_handler_t* p_ph)
