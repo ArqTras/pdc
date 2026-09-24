@@ -1519,15 +1519,22 @@ bool blockchain_storage::create_block_template(const create_block_template_param
   diffic = get_next_diff_conditional(pos);
   CHECK_AND_ASSERT_MES(diffic, false, "get_next_diff_conditional failed");
 
-  // check PoW block timestamp against the current blockchain timestamp median -- if it's not okay, don't create a new block
-  // TODO (performance) both get_next_diff_conditional and get_last_n_blocks_timestamps obtains last N blocks, consider data reusing -- sowle
-  if (!pos && !params.ignore_pow_ts_check)
+  // PoW template timestamp must be >= median of last N blocks.
+  // After a run of PoS blocks (which may use timestamps up to CURRENCY_POS_BLOCK_FUTURE_TIME_LIMIT ahead),
+  // wall-clock time can temporarily lag the median; bump the template timestamp instead of failing —
+  // otherwise stratum/PoW mining is stuck until the clock catches up.
+  if (!pos)
   {
     uint64_t median_ts = get_last_n_blocks_timestamps_median(BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW);
-    if(b.timestamp < median_ts)
+    if (b.timestamp < median_ts)
     {
-      LOG_PRINT_YELLOW("Block template construction failed because current core timestamp, " << b.timestamp << ", is less than median of last " << BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW << " blocks, " << median_ts, LOG_LEVEL_2);
-      return false;
+      if (!params.ignore_pow_ts_check)
+      {
+        LOG_PRINT_YELLOW("PoW block template timestamp " << b.timestamp << " < median of last "
+          << BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW << " blocks (" << median_ts
+          << "); bumping template timestamp to median", LOG_LEVEL_0);
+      }
+      b.timestamp = median_ts;
     }
   }
 
@@ -1549,7 +1556,10 @@ bool blockchain_storage::create_block_template(const create_block_template_param
     block_filled = (*pcustom_fill_block_template_func)(b, pos, median_size, already_generated_coins, txs_size, fee, height);
 
   if (!block_filled)
+  {
+    LOG_PRINT_YELLOW("Block template construction failed because block was not filled by fill_block_template()", LOG_LEVEL_0);
     return false;
+  }
 
   resp.txs_fee = fee;
 

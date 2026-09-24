@@ -389,6 +389,11 @@ namespace
     bool update_block_template(bool enforce_update = false)
     {
       CRITICAL_REGION_LOCAL(m_work_change_lock);
+      if (m_miner_addr == null_pub_addr)
+      {
+        // No miner address yet (no --stratum-miner-address and no worker login) — cannot build a template.
+        return false;
+      }
       uint64_t stub;
       crypto::hash top_block_id = null_hash;
       m_p_core->get_blockchain_top(stub, top_block_id);
@@ -400,7 +405,18 @@ namespace
       wide_difficulty_type block_template_difficulty;
       blobdata extra = AUTO_VAL_INIT(extra);
       bool r = m_p_core->get_block_template(m_block_template, m_miner_addr, m_miner_addr, block_template_difficulty, m_block_template_height, extra);
-      CHECK_AND_ASSERT_MES(r, false, "get_block_template failed");
+      if (!r)
+      {
+        // Rate-limit error spam: update thread polls ~every 200ms
+        static uint64_t last_fail_log_ts = 0;
+        uint64_t now = epee::misc_utils::get_tick_count();
+        if (now - last_fail_log_ts >= 5000)
+        {
+          LOG_PRINT_RED("get_block_template failed (stratum); will retry", LOG_LEVEL_0);
+          last_fail_log_ts = now;
+        }
+        return false;
+      }
 #if DBG_NETWORK_DIFFICULTY == 0
       m_network_difficulty = block_template_difficulty;
 #else
