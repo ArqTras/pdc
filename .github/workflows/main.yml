@@ -121,6 +121,8 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
+          # Must set before `rm -rf /home/runner/work/_temp/` (that path holds GITHUB_ENV).
+          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
           prj_root=$(pwd)
 
           echo Pdc Gui Tar.Gz
