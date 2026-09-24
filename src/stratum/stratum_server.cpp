@@ -566,7 +566,8 @@ namespace
       crypto::hash block_pow_hash = get_block_longhash(height, m_block_template_header_hash, nonce);
       wide_difficulty_type worker_difficulty = p_ph->get_context().get_worker_difficulty();
 
-      // Worker shares must use the same 64-bit predicate XMRig uses; full check_hash() is consensus-only.
+      // Worker shares must use the same 64-bit predicate XMRig uses (hash bytes [24..31]);
+      // full check_hash() is consensus-only for network difficulty / block finds.
       if (!check_hash_64(block_pow_hash, worker_difficulty))
       {
         LP_CC_WORKER_RED(p_ph->get_context(), "block pow hash " << block_pow_hash << " doesn't meet worker difficulty: " << worker_difficulty << ENDL <<

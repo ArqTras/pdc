@@ -112,8 +112,11 @@ namespace currency {
     if (difficulty == 0)
       return false;
     const uint64_t target = difficulty_to_boundary(difficulty);
-    // Same predicate as XMRig JobResults: first 8 bytes as native uint64 < target.
-    return *reinterpret_cast<const uint64_t*>(&hash) < target;
+    // Same predicate as XMRig CpuWorker / JobResults: the most-significant
+    // 64 bits of the little-endian 256-bit hash (bytes [24..31]) must be < target.
+    // Checking bytes [0..7] rejects every valid XMRig share.
+    const auto* bytes = reinterpret_cast<const uint8_t*>(&hash);
+    return *reinterpret_cast<const uint64_t*>(bytes + 24) < target;
   }
 
   uint64_t difficulty_to_boundary(wide_difficulty_type difficulty)
