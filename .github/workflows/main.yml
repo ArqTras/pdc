@@ -135,8 +135,6 @@ jobs:
           cp -r ../../src/gui/qt-daemon/layout/html Pdc-Gui-${TAG}/html
           cp ../../utils/buildings/linux/64bit/Pdc.sh Pdc-Gui-${TAG}/
           cp ../../utils/buildings/linux/64bit/Pdc.desktop Pdc-Gui-${TAG}/
-          chmod 777 Pdc-Gui-${TAG}/Pdc.desktop
-          chmod 777 Pdc-Gui-${TAG}/Pdc.sh
           mkdir Pdc-Gui-${TAG}/lib
           cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicudata.so.56 Pdc-Gui-${TAG}/lib/
           cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/lib/libicui18n.so.56 Pdc-Gui-${TAG}/lib/
@@ -169,6 +167,10 @@ jobs:
           cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/platforms/libqxcb.so Pdc-Gui-${TAG}/lib/platforms/
           mkdir Pdc-Gui-${TAG}/xcbglintegrations
           cp /home/runner/work/pdc/Qt/5.12.12/gcc_64/plugins/xcbglintegrations/libqxcb-glx-integration.so Pdc-Gui-${TAG}/xcbglintegrations
+          # upload-artifact zip of bare dirs drops +x; set modes before tar and publish the archive.
+          chmod a+x Pdc-Gui-${TAG}/pdcd Pdc-Gui-${TAG}/connectivity_tool Pdc-Gui-${TAG}/simplewallet Pdc-Gui-${TAG}/Pdc \
+            Pdc-Gui-${TAG}/Pdc.sh Pdc-Gui-${TAG}/QtWebEngineProcess
+          chmod a+r Pdc-Gui-${TAG}/Pdc.desktop
           tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
 
           echo Pdc GUI AppImage
@@ -200,6 +202,8 @@ jobs:
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
           ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
+          chmod a+x Pdc-GUI-${TAG}-${LABEL}.AppImage
+          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -230,14 +234,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Pdc-Gui-${{ github.sha }}
+          path: ./build/src/Pdc-Gui-${{ env.PKG_TAG }}-${{ env.LABEL }}.tar.gz
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
-          path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
+          path: ./build/src/Pdc-GUI-${{ env.PKG_TAG }}-${{ env.LABEL }}.AppImage
 
  # Mac builds on Catalina VM
   macos_build:
@@ -333,7 +337,10 @@ jobs:
           rm -rf Pdc-Gui-${TAG}
           mkdir Pdc-Gui-${TAG}
           cp ${TARGETS} Pdc-Gui-${TAG}/
+          # upload-artifact zip of bare dirs drops +x; set modes before tar and publish the archive.
+          chmod a+x Pdc-Gui-${TAG}/*
           tar cvfz Pdc-Gui-${TAG}-${LABEL}.tar.gz Pdc-Gui-${TAG}/
+          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -352,7 +359,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Pdc-Gui-${{ github.sha }}
+          path: ./build/src/Pdc-Gui-${{ env.PKG_TAG }}-${{ env.LABEL }}.tar.gz
 
 
   # Windows 10

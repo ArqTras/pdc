@@ -128,7 +128,10 @@ jobs:
           rm -rf Pdc-${TAG}
           mkdir Pdc-${TAG}
           cp ${TARGETS} Pdc-${TAG}/
+          # upload-artifact zip of bare dirs drops +x; set modes before tar and publish the archive.
+          chmod a+x Pdc-${TAG}/*
           tar cvfz Pdc-${TAG}-${LABEL}.tar.gz Pdc-${TAG}/
+          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -147,7 +150,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Pdc-${{ github.sha }}
+          path: ./build/src/Pdc-${{ env.PKG_TAG }}-${{ env.LABEL }}.tar.gz
 
 
   # Mac builds on Catalina VM
@@ -242,7 +245,10 @@ jobs:
           rm -rf Pdc-${TAG}
           mkdir Pdc-${TAG}
           cp ${TARGETS} Pdc-${TAG}/
+          # upload-artifact zip of bare dirs drops +x; set modes before tar and publish the archive.
+          chmod a+x Pdc-${TAG}/*
           tar cvfz Pdc-${TAG}-${LABEL}.tar.gz Pdc-${TAG}/
+          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -261,7 +267,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Pdc-${{ github.sha }}
+          path: ./build/src/Pdc-${{ env.PKG_TAG }}-${{ env.LABEL }}.tar.gz
 
 
   # Windows 10
