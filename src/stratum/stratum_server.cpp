@@ -15,6 +15,7 @@
 #include "currency_protocol/currency_protocol_handler.h"
 
 #include <cstring>
+#include <cstdio>
 
 #undef LOG_DEFAULT_CHANNEL 
 #define LOG_DEFAULT_CHANNEL "stratum"
@@ -475,9 +476,13 @@ namespace
       uint8_t blob[POW_BLOB_SIZE] = {};
       fill_pow_blob(blob, m_block_template_header_hash, 0);
       const uint64_t target64 = difficulty_to_boundary(worker_difficulty);
+      // XMRig parses 16-char targets with strtoull(..., 16) as a big-endian integer.
+      // pod_to_hex() dumps native (LE) memory and makes the share target ~2^64 too easy.
+      char target_hex[17];
+      snprintf(target_hex, sizeof(target_hex), "%016llx", static_cast<unsigned long long>(target64));
       return std::string(R"({"blob":")") + epee::string_tools::buff_to_hex_nodelimer(std::string(reinterpret_cast<const char*>(blob), sizeof(blob))) +
         R"(","job_id":")" + epee::string_tools::pod_to_hex(m_block_template_header_hash) +
-        R"(","target":")" + epee::string_tools::pod_to_hex(target64) +
+        R"(","target":")" + target_hex +
         R"(","seed_hash":")" + epee::string_tools::pod_to_hex(seed_hash) +
         R"(","algo":"rx/arq","height":)" + std::to_string(m_block_template_height) + "}";
     }
