@@ -1880,7 +1880,8 @@ bool blockchain_storage::handle_alternative_block(const block& b, const crypto::
     }
     else
     {
-      CHECK_AND_ASSERT_MES_CUSTOM(abei.bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
+      // Genesis keeps CURRENCY_GENESIS_NONCE; all other PoW blocks must fit XMRig's 32-bit nonce.
+      CHECK_AND_ASSERT_MES_CUSTOM(abei.height == 0 || abei.bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
         "Alternative PoW block nonce " << abei.bl.nonce << " exceeds 32-bit space used by RandomARQ/XMRig");
 
       proof_of_work = get_block_longhash(abei.bl);
@@ -6689,7 +6690,8 @@ bool blockchain_storage::handle_block_to_main_chain(const block& bl, const crypt
   else
   {
     // RandomARQ hashes only a 32-bit nonce; reject high bits so block ID is bound to PoW.
-    CHECK_AND_ASSERT_MES_CUSTOM(bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
+    // Genesis keeps the historical CURRENCY_GENESIS_NONCE (>> 32-bit) by design.
+    CHECK_AND_ASSERT_MES_CUSTOM(height == 0 || bl.nonce <= UINT32_MAX, false, bvc.m_verification_failed = true,
       "PoW block nonce " << bl.nonce << " exceeds 32-bit space used by RandomARQ/XMRig");
 
     proof_hash = get_block_longhash(bl);
