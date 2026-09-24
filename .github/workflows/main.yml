@@ -121,8 +121,6 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           if [[ "${TAG:5:4}" == "tags" ]]; then export TAG=${TAG:10}; else export TAG=${COMMIT_SHA}; fi
-          # Must set before `rm -rf /home/runner/work/_temp/` (that path holds GITHUB_ENV).
-          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
           prj_root=$(pwd)
 
           echo Pdc Gui Tar.Gz
@@ -205,7 +203,6 @@ jobs:
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
           ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
           chmod a+x Pdc-GUI-${TAG}-${LABEL}.AppImage
-          echo "PKG_TAG=${TAG}" >> "$GITHUB_ENV"
 
       # Upload to GH Release
       - name: Upload to GH Release
