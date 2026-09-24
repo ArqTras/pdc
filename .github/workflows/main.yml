@@ -203,6 +203,9 @@ jobs:
           chmod 777 Pdc-GUI-${TAG}/*/*/*/*/*
           ARCH=x86_64 /home/runner/work/pdc/pdc/build/src/appimagetool-x86_64.AppImage ./Pdc-GUI-${TAG} Pdc-GUI-${TAG}-${LABEL}.AppImage
           chmod a+x Pdc-GUI-${TAG}-${LABEL}.AppImage
+          # linuxdeployqt wipes GITHUB_ENV via rm _temp; always emit sha-named archives for upload-artifact.
+          cp -f "Pdc-Gui-${TAG}-${LABEL}.tar.gz" "Pdc-Gui-${COMMIT_SHA}-${LABEL}.tar.gz"
+          cp -f "Pdc-GUI-${TAG}-${LABEL}.AppImage" "Pdc-GUI-${COMMIT_SHA}-${LABEL}.AppImage"
 
       # Upload to GH Release
       - name: Upload to GH Release
@@ -233,14 +236,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}
-          path: ./build/src/Pdc-Gui-${{ env.PKG_TAG }}-${{ env.LABEL }}.tar.gz
+          path: ./build/src/Pdc-Gui-${{ github.sha }}-${{ env.LABEL }}.tar.gz
 
       # Upload to GH Actions Artifacts AppData
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
-          path: ./build/src/Pdc-GUI-${{ env.PKG_TAG }}-${{ env.LABEL }}.AppImage
+          path: ./build/src/Pdc-GUI-${{ github.sha }}-${{ env.LABEL }}.AppImage
 
  # Mac builds on Catalina VM
   macos_build:
