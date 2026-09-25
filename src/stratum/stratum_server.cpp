@@ -601,7 +601,8 @@ namespace
       if (!check_hash(block_pow_hash, m_network_difficulty))
       {
         // work is enough for worker difficulty, but not enough for network difficulty -- it's okay, move on!
-        LP_CC_WORKER_GREEN(p_ph->get_context(), "share found for difficulty " << worker_difficulty << ", nonce: 0x" << epee::string_tools::pod_to_hex(nonce), LOG_LEVEL_1);
+        LP_CC_WORKER_GREEN(p_ph->get_context(), "share found for worker difficulty " << worker_difficulty
+          << " (network PoW difficulty " << m_network_difficulty << "), nonce: 0x" << epee::string_tools::pod_to_hex(nonce), LOG_LEVEL_1);
         LP_CC_WORKER_GREEN(p_ph->get_context(), "shares: " << p_ph->get_context().get_current_valid_shares_count() << ", share period av: " << p_ph->get_context().get_average_share_period_ms() << ", target: " << p_ph->get_context().m_vd_params.target_time_ms
           << ", variance: " << int64_t(100 * p_ph->get_context().get_average_share_period_ms() / p_ph->get_context().m_vd_params.target_time_ms - 100) << " %", LOG_LEVEL_3);
         return true;
@@ -810,8 +811,25 @@ namespace
           ss << ph.second->get_context().m_worker_name << ": [" << ph.second->get_context().get_blocks_count() << "] " << HR_TO_STREAM_IN_KHS_1P(reported_hr) << " (" << HR_TO_STREAM_IN_KHS_1P(estimated_hr) << "), ";
         }
         auto s = ss.str();
-        LOG_PRINT_CYAN("Blocks found: [" << m_total_blocks_found << "], total speed: " << HR_TO_STREAM_IN_KHS_3P(total_reported_hr) << " KH/s as reported by miners (" << HR_TO_STREAM_IN_KHS_3P(total_estimated_hr) << " KH/s estimated by the server), current shares/min: " << m_shares_per_minute.get_speed() << ENDL <<
-          m_protocol_handlers.size() << " worker(s): " << s.substr(0, s.length() > 2 ? s.length() - 2 : 0), LOG_LEVEL_0);
+        // Solo/stratum share difficulty (vardiff) is unrelated to finding a block;
+        // a block requires meeting m_network_difficulty (shown here for ETA).
+        std::string eta = "n/a";
+        if (total_estimated_hr > 0 && m_network_difficulty > 0)
+        {
+          const double secs = m_network_difficulty.convert_to<double>() / double(total_estimated_hr);
+          if (secs < 120.0)
+            eta = std::to_string(int(secs + 0.5)) + "s";
+          else if (secs < 7200.0)
+            eta = std::to_string(int(secs / 60.0 + 0.5)) + "min";
+          else
+            eta = std::to_string(secs / 3600.0) + "h";
+        }
+        LOG_PRINT_CYAN("Blocks found: [" << m_total_blocks_found << "], net PoW diff: " << m_network_difficulty
+          << " (ETA ~" << eta << " at current hashrate), total speed: "
+          << HR_TO_STREAM_IN_KHS_3P(total_reported_hr) << " KH/s as reported by miners ("
+          << HR_TO_STREAM_IN_KHS_3P(total_estimated_hr) << " KH/s estimated by the server), current shares/min: "
+          << m_shares_per_minute.get_speed() << ENDL
+          << m_protocol_handlers.size() << " worker(s): " << s.substr(0, s.length() > 2 ? s.length() - 2 : 0), LOG_LEVEL_0);
       }
 
       m_last_ts_total_hr_was_printed = epee::misc_utils::get_tick_count();
