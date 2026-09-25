@@ -34,7 +34,7 @@ namespace
 
 #define STRATUM_BIND_IP_DEFAULT "0.0.0.0"
 #define STRATUM_THREADS_COUNT_DEFAULT 2
-#define STRATUM_BLOCK_TEMPLATE_UPD_PERIOD_DEFAULT 30 // sec
+#define STRATUM_BLOCK_TEMPLATE_UPD_PERIOD_DEFAULT 120 // sec; keep >= vdiff target time so jobs aren't reset before a share
 #define STRATUM_TOTAL_HR_PRINT_INTERVAL_S_DEFAULT 60 // sec
 #define VDIFF_TARGET_MIN_DEFAULT 10000ull
 #define VDIFF_TARGET_MAX_DEFAULT 50000000ull
@@ -42,6 +42,7 @@ namespace
 #define VDIFF_RETARGET_TIME_DEFAULT 240 // sec
 #define VDIFF_RETARGET_SHARES_COUNT 12 // enforce retargeting if this many shares are received (high performace in terms of current difficulty)
 #define VDIFF_VARIANCE_PERCENT_DEFAULT 25 // %
+#define VDIFF_MAX_STEP_FACTOR 2 // max ×/÷ per retarget; avoids 10k→250k jumps that starve ~10 KH/s miners
 
   const command_line::arg_descriptor<bool>        arg_stratum                ("stratum",                   "Stratum server: enable" );
   const command_line::arg_descriptor<std::string> arg_stratum_bind_ip        ("stratum-bind-ip",           "Stratum server: IP to bind",                STRATUM_BIND_IP_DEFAULT );
@@ -230,6 +231,22 @@ namespace
             new_d = m_vd_params.target_min;
           if (new_d > m_vd_params.target_max)
             new_d = m_vd_params.target_max;
+
+          // Clamp step size so a burst of easy shares cannot raise difficulty by 20–25×
+          // in one template refresh (which also resets the XMRig blob/job_id).
+          if (m_worker_difficulty > 0)
+          {
+            const wide_difficulty_type max_up = m_worker_difficulty * VDIFF_MAX_STEP_FACTOR;
+            const wide_difficulty_type min_down = (m_worker_difficulty + VDIFF_MAX_STEP_FACTOR - 1) / VDIFF_MAX_STEP_FACTOR;
+            if (new_d > max_up)
+              new_d = max_up;
+            if (new_d < min_down)
+              new_d = min_down;
+            if (new_d < m_vd_params.target_min)
+              new_d = m_vd_params.target_min;
+            if (new_d > m_vd_params.target_max)
+              new_d = m_vd_params.target_max;
+          }
           
           if (new_d != m_worker_difficulty)
           {
