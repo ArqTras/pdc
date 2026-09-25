@@ -359,7 +359,7 @@ namespace currency
       //access_nonce_in_block_blob(local_blob_data) = b.nonce;
       crypto::hash h = get_block_longhash(local_height, local_blob_data_hash, nonce);
 
-      if(check_hash(h, local_diff))
+      if(check_hash_64(h, local_diff))
       {
         b.nonce = nonce & 0xffffffffull;
         ++m_config.current_extra_message_index;

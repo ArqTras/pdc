@@ -19,8 +19,9 @@ namespace currency
     typedef boost::multiprecision::uint128_t wide_difficulty_type;
 
     bool check_hash(const crypto::hash &hash, wide_difficulty_type difficulty);
-    // XMRig rx/* share check: first 8 hash bytes (native LE uint64) vs (2^64-1)/difficulty.
-    // Must match xmrig Diff::toTarget + JobResults check — full check_hash() is for consensus blocks only.
+    // RandomARQ / XMRig PoW predicate: most-significant 64 bits of the LE hash
+    // (bytes [24..31]) vs (2^64-1)/difficulty. Used for shares and consensus PoW.
+    // Legacy check_hash() (byte-reversed 256-bit) remains for PoS kernels only.
     bool check_hash_64(const crypto::hash &hash, wide_difficulty_type difficulty);
     wide_difficulty_type next_difficulty_1(std::vector<std::uint64_t>& timestamps, std::vector<wide_difficulty_type>& cumulative_difficulties, size_t target_seconds, const wide_difficulty_type& difficulty_starter);
     wide_difficulty_type next_difficulty_2(std::vector<std::uint64_t>& timestamps, std::vector<wide_difficulty_type>& cumulative_difficulties, size_t target_seconds, const wide_difficulty_type& difficulty_starter);

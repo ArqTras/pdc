@@ -1896,7 +1896,7 @@ bool blockchain_storage::handle_alternative_block(const block& b, const crypto::
 
       proof_of_work = get_block_longhash(abei.bl);
 
-      if (!check_hash(proof_of_work, current_diff))
+      if (!check_hash_64(proof_of_work, current_diff))
       {
         LOG_PRINT_RED_L0("Block with id: " << id
           << ENDL << " for alternative chain, have not enough proof of work: " << proof_of_work
@@ -2202,7 +2202,7 @@ bool blockchain_storage::pre_validate_relayed_block(block& bl, block_verificatio
   {
     proof_hash = get_block_longhash(bl); //get_block_longhash(bl);
 
-    if (!check_hash(proof_hash, current_diffic))
+    if (!check_hash_64(proof_hash, current_diffic))
     {
       LOG_PRINT_L0("Block with id: " << id << ENDL
         << "	: " << proof_hash << ENDL
@@ -6715,7 +6715,7 @@ bool blockchain_storage::handle_block_to_main_chain(const block& bl, const crypt
 
     proof_hash = get_block_longhash(bl);
 
-    if (!check_hash(proof_hash, current_diffic))
+    if (!check_hash_64(proof_hash, current_diffic))
     {
       LOG_ERROR("Block with id: " << id << ENDL
         << "PoW hash: " << proof_hash << ENDL

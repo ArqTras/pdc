@@ -66,7 +66,7 @@ namespace currency
       for(; bl.nonce != std::numeric_limits<uint64_t>::max(); bl.nonce++)
       {
         crypto::hash h = get_block_longhash(height, bd_hash, bl.nonce);
-        if(check_hash(h, diffic))
+        if(check_hash_64(h, diffic))
         {
           LOG_PRINT_L1("Found nonce for block: " << get_block_hash(bl) << "[" << height << "]: PoW:" << h << " (diff:" << diffic << "), ts: " << bl.timestamp);
           return true;

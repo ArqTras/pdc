@@ -583,8 +583,10 @@ namespace
       crypto::hash block_pow_hash = get_block_longhash(height, m_block_template_header_hash, nonce);
       wide_difficulty_type worker_difficulty = p_ph->get_context().get_worker_difficulty();
 
-      // Worker shares must use the same 64-bit predicate XMRig uses (hash bytes [24..31]);
-      // full check_hash() is consensus-only for network difficulty / block finds.
+      // Worker shares and network PoW blocks both use XMRig's 64-bit predicate
+      // (hash bytes [24..31]). Legacy check_hash() looks at the other end of the
+      // hash after a byte reverse, so shares that meet network difficulty under
+      // XMRig would almost never count as blocks if we used it here.
       if (!check_hash_64(block_pow_hash, worker_difficulty))
       {
         LP_CC_WORKER_RED(p_ph->get_context(), "block pow hash " << block_pow_hash << " doesn't meet worker difficulty: " << worker_difficulty << ENDL <<
@@ -598,7 +600,7 @@ namespace
       p_ph->get_context().increment_normal_shares_count();
       m_shares_per_minute.chick();
 
-      if (!check_hash(block_pow_hash, m_network_difficulty))
+      if (!check_hash_64(block_pow_hash, m_network_difficulty))
       {
         // work is enough for worker difficulty, but not enough for network difficulty -- it's okay, move on!
         LP_CC_WORKER_GREEN(p_ph->get_context(), "share found for worker difficulty " << worker_difficulty
