@@ -556,7 +556,7 @@ namespace
       {
         // TODO: make an option for more aggressive mining in case there's a little difference in blockchain size (1..2)
         LP_CC_WORKER_BLUE(p_ph->get_context(), "Work received, but the core is NOT syncronized. Skip...", LOG_LEVEL_1);
-        p_ph->send_response_default(id);
+        p_ph->send_response_share_ok(id);
         return true;
       }
   
@@ -569,7 +569,7 @@ namespace
         {
           // Got stale share, do nothing. In future it can be used for more aggressive mining strategies
           LP_CC_WORKER_BLUE(p_ph->get_context(), "got stale share, skip it", LOG_LEVEL_1);
-          p_ph->send_response_default(id);
+          p_ph->send_response_share_ok(id);
           p_ph->get_context().increment_stale_shares_count();
           return true;
         }
@@ -594,7 +594,7 @@ namespace
         return false;
       }
 
-      p_ph->send_response_default(id);
+      p_ph->send_response_share_ok(id);
       p_ph->get_context().increment_normal_shares_count();
       m_shares_per_minute.chick();
 
@@ -1166,6 +1166,16 @@ namespace
     void send_response_default(const jsonrpc_id_t& id)
     {
       send_response(id, R"("result":true)");
+    }
+
+    // XMRig only counts a share when result is an object with status "OK"
+    // (see Client::parseResponse). ethminer accepts boolean true.
+    void send_response_share_ok(const jsonrpc_id_t& id)
+    {
+      if (m_context.m_xmrig_protocol)
+        send_response(id, R"("error":null,"result":{"status":"OK"})");
+      else
+        send_response_default(id);
     }
 
     void send_response_error(const jsonrpc_id_t& id, int64_t error_code, const std::string& error_message)
